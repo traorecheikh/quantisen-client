@@ -1,283 +1,664 @@
 <template>
   <div class="beverages-page">
-    <header class="page-header">
-      <h1>Beverages</h1>
-      <p class="page-subtitle">View and manage all beverage products.</p>
-    </header>
-    <section class="beverages-section">
-      <button class="app-btn app-btn-primary add-beverage-btn" type="button" @click="showAddBeverageModal = true">Add Beverage</button>
-      <div class="beverages-table-wrapper">
-        <table class="app-table">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-text">
+          <h1 class="page-title">Boissons</h1>
+          <p class="page-subtitle">Gérer tous les produits de boisson de votre inventaire</p>
+        </div>
+        <div class="header-actions">
+          <button
+            class="add-btn primary"
+            @click="openAddModal"
+          >
+            <PlusIcon class="w-4 h-4" />
+            Ajouter Boisson
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Beverages Table -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="beverages-table">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Nom</th>
               <th>Description</th>
-              <th>Price</th>
+              <th>Prix</th>
               <th>Volume</th>
-              <th>Unit</th>
-              <th>Stock Threshold</th>
+              <th>Seuil de Stock</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <!-- Example rows, replace with dynamic data later -->
-            <tr>
-              <td>Coca-Cola</td>
-              <td>Classic soda</td>
-              <td>1.5</td>
-              <td>330</td>
-              <td>ml</td>
-              <td>50</td>
-              <td>
-                <button class="app-btn app-btn-primary app-btn-sm" type="button" @click="openEditBeverageModal('Coca-Cola')">Edit</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Fanta</td>
-              <td>Orange soda</td>
-              <td>1.4</td>
-              <td>330</td>
-              <td>ml</td>
-              <td>40</td>
-              <td>
-                <button class="app-btn app-btn-primary app-btn-sm" type="button" @click="openEditBeverageModal('Fanta')">Edit</button>
+            <tr v-for="beverage in beverages" :key="beverage.id">
+              <td class="name-cell">{{ beverage.name }}</td>
+              <td class="description-cell">{{ beverage.description }}</td>
+              <td class="price-cell">{{ beverage.price.toFixed(2) }} FCFA </td>
+              <td class="volume-cell">{{ beverage.volume }}{{ beverage.unit }}</td>
+              <td class="threshold-cell">{{ beverage.stockThreshold }}</td>
+              <td class="actions-cell">
+                <button
+                  class="edit-btn"
+                  @click="openEditModal(beverage)"
+                  title="Modifier"
+                >
+                  <PencilIcon class="w-4 h-4" />
+                </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <!-- Add Beverage Modal -->
-      <div v-if="showAddBeverageModal" class="modal-backdrop">
-        <div class="modal">
-          <div class="modal-header">
-            <h2>Add New Beverage</h2>
-            <button class="modal-close" @click="showAddBeverageModal = false">&times;</button>
-          </div>
-          <form class="modal-form">
-            <div class="form-group">
-              <label for="beverage-name">Name</label>
-              <input id="beverage-name" type="text" class="app-input" placeholder="Enter beverage name" />
-            </div>
-            <div class="form-group">
-              <label for="beverage-description">Description</label>
-              <input id="beverage-description" type="text" class="app-input" placeholder="Enter description" />
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="beverage-price">Price</label>
-                <input id="beverage-price" type="number" class="app-input" placeholder="0.00" />
-              </div>
-              <div class="form-group">
-                <label for="beverage-volume">Volume</label>
-                <input id="beverage-volume" type="number" class="app-input" placeholder="e.g. 330" />
-              </div>
-              <div class="form-group">
-                <label for="beverage-unit">Unit</label>
-                <select id="beverage-unit" class="app-input">
-                  <option value="ml">ml</option>
-                  <option value="cl">cl</option>
-                  <option value="L">L</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="beverage-seuil">Stock Threshold</label>
-              <input id="beverage-seuil" type="number" class="app-input" placeholder="e.g. 50" />
-            </div>
-            <button class="app-btn app-btn-primary" type="button">Create Beverage</button>
-          </form>
+    </div>
+
+    <!-- Add Beverage Modal -->
+    <div v-if="showAddModal" class="modal-backdrop" @click="closeAddModal">
+      <div class="modal" @click.stop>
+        <div class="modal-header">
+          <h2>Ajouter une Boisson</h2>
+          <button class="close-btn" @click="closeAddModal">
+            <XMarkIcon class="w-5 h-5" />
+          </button>
         </div>
-      </div>
-      <!-- Edit Beverage Modal -->
-      <div v-if="showEditBeverageModal" class="modal-backdrop">
-        <div class="modal">
-          <div class="modal-header">
-            <h2>Edit Beverage</h2>
-            <button class="modal-close" @click="showEditBeverageModal = false">&times;</button>
+
+        <form @submit.prevent="addBeverage" class="modal-form">
+          <div class="form-group">
+            <label for="add-name">Nom de la boisson</label>
+            <input
+              id="add-name"
+              v-model="addForm.name"
+              type="text"
+              class="form-input"
+              placeholder="Ex: Coca-Cola Classique"
+              required
+            />
           </div>
-          <form class="modal-form">
+
+          <div class="form-group">
+            <label for="add-description">Description</label>
+            <textarea
+              id="add-description"
+              v-model="addForm.description"
+              class="form-input"
+              placeholder="Description du produit"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
-              <label for="edit-beverage-name">Name</label>
-              <input id="edit-beverage-name" type="text" class="app-input" :value="editBeverageName" disabled />
+              <label for="add-price">Prix (XOF)</label>
+              <input
+                id="add-price"
+                v-model.number="addForm.price"
+                type="number"
+                step="0.01"
+                min="0"
+                class="form-input"
+                placeholder="0.00"
+                required
+              />
             </div>
+
             <div class="form-group">
-              <label for="edit-beverage-description">Description</label>
-              <input id="edit-beverage-description" type="text" class="app-input" placeholder="Enter description" />
+              <label for="add-volume">Volume</label>
+              <input
+                id="add-volume"
+                v-model.number="addForm.volume"
+                type="number"
+                min="1"
+                class="form-input"
+                placeholder="330"
+                required
+              />
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit-beverage-price">Price</label>
-                <input id="edit-beverage-price" type="number" class="app-input" placeholder="0.00" />
-              </div>
-              <div class="form-group">
-                <label for="edit-beverage-volume">Volume</label>
-                <input id="edit-beverage-volume" type="number" class="app-input" placeholder="e.g. 330" />
-              </div>
-              <div class="form-group">
-                <label for="edit-beverage-unit">Unit</label>
-                <select id="edit-beverage-unit" class="app-input">
-                  <option value="ml">ml</option>
-                  <option value="cl">cl</option>
-                  <option value="L">L</option>
-                </select>
-              </div>
-            </div>
+
             <div class="form-group">
-              <label for="edit-beverage-seuil">Stock Threshold</label>
-              <input id="edit-beverage-seuil" type="number" class="app-input" placeholder="e.g. 50" />
+              <label for="add-unit">Unité</label>
+              <select id="add-unit" v-model="addForm.unit" class="form-input" required>
+                <option value="ml">ml</option>
+                <option value="cl">cl</option>
+                <option value="L">L</option>
+              </select>
             </div>
-            <button class="app-btn app-btn-primary" type="button">Save Changes</button>
-          </form>
-        </div>
+          </div>
+
+          <div class="form-group">
+            <label for="add-threshold">Seuil de Stock</label>
+            <input
+              id="add-threshold"
+              v-model.number="addForm.stockThreshold"
+              type="number"
+              min="1"
+              class="form-input"
+              placeholder="50"
+              required
+            />
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="cancel-btn" @click="closeAddModal">
+              Annuler
+            </button>
+            <button type="submit" class="submit-btn primary">
+              Ajouter
+            </button>
+          </div>
+        </form>
       </div>
-    </section>
+    </div>
+
+    <!-- Edit Beverage Modal -->
+    <div v-if="showEditModal" class="modal-backdrop" @click="closeEditModal">
+      <div class="modal" @click.stop>
+        <div class="modal-header">
+          <h2>Modifier la Boisson</h2>
+          <button class="close-btn" @click="closeEditModal">
+            <XMarkIcon class="w-5 h-5" />
+          </button>
+        </div>
+
+        <form @submit.prevent="updateBeverage" class="modal-form">
+          <div class="form-group">
+            <label for="edit-name">Nom de la boisson</label>
+            <input
+              id="edit-name"
+              :value="editForm.name"
+              type="text"
+              class="form-input disabled"
+              disabled
+              title="Le nom ne peut pas être modifié"
+            />
+            <span class="field-note">Le nom ne peut pas être modifié</span>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-description">Description</label>
+            <textarea
+              id="edit-description"
+              v-model="editForm.description"
+              class="form-input"
+              placeholder="Description du produit"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-price">Prix (XOF)</label>
+              <input
+                id="edit-price"
+                v-model.number="editForm.price"
+                type="number"
+                step="0.01"
+                min="0"
+                class="form-input"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="edit-volume">Volume</label>
+              <input
+                id="edit-volume"
+                v-model.number="editForm.volume"
+                type="number"
+                min="1"
+                class="form-input"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="edit-unit">Unité</label>
+              <select id="edit-unit" v-model="editForm.unit" class="form-input" required>
+                <option value="ml">ml</option>
+                <option value="cl">cl</option>
+                <option value="L">L</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-threshold">Seuil de Stock</label>
+            <input
+              id="edit-threshold"
+              v-model.number="editForm.stockThreshold"
+              type="number"
+              min="1"
+              class="form-input"
+              required
+            />
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="cancel-btn" @click="closeEditModal">
+              Annuler
+            </button>
+            <button type="submit" class="submit-btn primary">
+              Enregistrer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-const showAddBeverageModal = ref(false);
-const showEditBeverageModal = ref(false);
-const editBeverageName = ref('');
-function openEditBeverageModal(name: string) {
-  editBeverageName.value = name;
-  showEditBeverageModal.value = true;
+import { ref } from 'vue'
+import { PlusIcon, PencilIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+
+interface Beverage {
+  id: number
+  name: string
+  description: string
+  price: number
+  volume: number
+  unit: string
+  stockThreshold: number
 }
-// No logic yet
+
+const showAddModal = ref(false)
+const showEditModal = ref(false)
+const editingBeverage = ref<Beverage | null>(null)
+
+// Sample beverages data
+const beverages = ref<Beverage[]>([
+  {
+    id: 1,
+    name: 'Coca-Cola Light',
+    description: 'Soda classique au cola',
+    price: 450,
+    volume: 330,
+    unit: 'ml',
+    stockThreshold: 50
+  },
+  {
+    id: 2,
+    name: 'Fanta Orange Original',
+    description: 'Soda à l\'orange pétillant',
+    price: 250,
+    volume: 330,
+    unit: 'ml',
+    stockThreshold: 40
+  },
+  {
+    id: 3,
+    name: 'Sprite',
+    description: 'Limonade claire et rafraîchissante',
+    price: 400,
+    volume: 500,
+    unit: 'ml',
+    stockThreshold: 30
+  }
+])
+
+// Add form
+const addForm = ref({
+  name: '',
+  description: '',
+  price: 0,
+  volume: 0,
+  unit: 'ml',
+  stockThreshold: 0
+})
+
+// Edit form
+const editForm = ref({
+  name: '',
+  description: '',
+  price: 0,
+  volume: 0,
+  unit: 'ml',
+  stockThreshold: 0
+})
+
+const openAddModal = () => {
+  addForm.value = {
+    name: '',
+    description: '',
+    price: 0,
+    volume: 0,
+    unit: 'ml',
+    stockThreshold: 0
+  }
+  showAddModal.value = true
+}
+
+const closeAddModal = () => {
+  showAddModal.value = false
+}
+
+const openEditModal = (beverage: Beverage) => {
+  editingBeverage.value = beverage
+  editForm.value = { ...beverage }
+  showEditModal.value = true
+}
+
+const closeEditModal = () => {
+  showEditModal.value = false
+  editingBeverage.value = null
+}
+
+const addBeverage = () => {
+  const newBeverage: Beverage = {
+    id: Date.now(),
+    ...addForm.value
+  }
+  beverages.value.push(newBeverage)
+  closeAddModal()
+}
+
+const updateBeverage = () => {
+  if (editingBeverage.value) {
+    const index = beverages.value.findIndex(b => b.id === editingBeverage.value!.id)
+    if (index !== -1) {
+      beverages.value[index] = { ...editForm.value, id: editingBeverage.value.id }
+    }
+  }
+  closeEditModal()
+}
 </script>
 
 <style scoped>
 .beverages-page {
-  min-height: 100vh;
-  background: #f3f4f6;
-  padding: 40px 0 0 0;
-}
-.page-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-.page-header h1 {
-  font-size: 2rem;
-  color: #4f46e5;
-  font-weight: bold;
-}
-.page-subtitle {
-  color: #6b7280;
-  font-size: 1.1rem;
-  margin-top: 8px;
-}
-.beverages-section {
-  max-width: 1100px;
-  margin: 0 auto;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(79,70,229,0.08);
-  padding: 32px 24px;
-}
-.add-beverage-btn {
-  margin-bottom: 24px;
-  float: right;
-}
-.beverages-table-wrapper {
-  overflow-x: auto;
-}
-.app-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-}
-.app-table th, .app-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f3f4f6;
-  text-align: left;
-}
-.app-table th {
-  color: #4f46e5;
-  font-weight: 600;
-  font-size: 1rem;
-}
-.app-table td {
-  color: #111827;
-  font-size: 1rem;
-}
-.app-btn {
-  border: none;
-  border-radius: 4px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 8px 16px;
-  transition: background 0.2s;
-}
-.app-btn-primary {
-  background: #4f46e5;
-  color: #fff;
-}
-.app-btn-sm {
-  padding: 6px 12px;
-  font-size: 0.9rem;
-}
-.app-btn-primary:hover {
-  background: #3730a3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
 }
 
-/* Modal styles */
+.page-header {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.header-text {
+  flex: 1;
+}
+
+.page-title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.page-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-500);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.add-btn:hover {
+  background: var(--color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.table-section {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.beverages-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.beverages-table th,
+.beverages-table td {
+  padding: var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.beverages-table th {
+  background: var(--color-bg-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.beverages-table td {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.name-cell {
+  font-weight: var(--font-weight-medium);
+}
+
+.price-cell {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-600);
+}
+
+.actions-cell {
+  width: 80px;
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.edit-btn:hover {
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+/* Modal Styles */
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.18);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
+
 .modal {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(79,70,229,0.16);
-  padding: 32px 24px;
-  min-width: 340px;
-  max-width: 95vw;
-  position: relative;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2xl);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: var(--space-4);
 }
+
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border-light);
 }
+
 .modal-header h2 {
-  font-size: 1.3rem;
-  color: #4f46e5;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
-.modal-close {
-  background: none;
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
   border: none;
-  font-size: 2rem;
-  color: #6b7280;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
   cursor: pointer;
-  line-height: 1;
+  transition: all var(--transition-fast);
 }
+
+.close-btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
 .modal-form {
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
 }
-.form-row {
+
+.form-group {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: var(--space-2);
 }
-@media (max-width: 700px) {
-  .beverages-section {
-    padding: 16px 4px;
-  }
-  .app-table th, .app-table td {
-    padding: 8px 8px;
-  }
-  .form-row {
+
+.form-group label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.form-input {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.form-input.disabled {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.field-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cancel-btn {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+}
+
+.cancel-btn:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.submit-btn.primary {
+  background: var(--color-primary-500);
+  color: var(--color-text-inverse);
+}
+
+.submit-btn.primary:hover {
+  background: var(--color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+  .header-content {
     flex-direction: column;
-    gap: 8px;
+    align-items: stretch;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal {
+    margin: var(--space-2);
+  }
+
+  .modal-actions {
+    flex-direction: column;
   }
 }
 </style>

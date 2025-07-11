@@ -4,17 +4,10 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-text">
-          <h1 class="page-title">Dashboard Overview</h1>
-          <p class="page-subtitle">Monitor your beverage inventory and operations</p>
+          <h1 class="page-title">Tableau de bord</h1>
+          <p class="page-subtitle">Surveillez votre inventaire de boissons et vos opérations</p>
         </div>
-        <div class="header-actions">
-          <button class="action-btn primary">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 2a1 1 0 011 1v4h4a1 1 0 110 2H9v4a1 1 0 11-2 0V9H3a1 1 0 110-2h4V3a1 1 0 011-1z"/>
-            </svg>
-            Quick Actions
-          </button>
-        </div>
+
       </div>
     </div>
 
@@ -28,9 +21,9 @@
             </svg>
           </div>
           <div class="metric-details">
-            <h3 class="metric-title">Total Products</h3>
+            <h3 class="metric-title">Total des produits</h3>
             <p class="metric-value">{{ totalProducts }}</p>
-            <p class="metric-change positive">+12% from last month</p>
+            <p class="metric-change positive">+12% par rapport au mois dernier</p>
           </div>
         </div>
       </div>
@@ -43,9 +36,9 @@
             </svg>
           </div>
           <div class="metric-details">
-            <h3 class="metric-title">Low Stock Items</h3>
+            <h3 class="metric-title">Articles en stock faible</h3>
             <p class="metric-value">{{ lowStockItems }}</p>
-            <p class="metric-change negative">Requires attention</p>
+            <p class="metric-change negative">Nécessite attention</p>
           </div>
         </div>
       </div>
@@ -54,199 +47,75 @@
         <div class="metric-header">
           <div class="metric-icon info">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
           </div>
           <div class="metric-details">
-            <h3 class="metric-title">Active Lots</h3>
-            <p class="metric-value">{{ activeLots }}</p>
-            <p class="metric-change neutral">{{ expiringSoon }} expiring soon</p>
+            <h3 class="metric-title">Valeur totale du stock</h3>
+            <p class="metric-value">{{ totalValue.toLocaleString() }} FCFA</p>
+            <p class="metric-change positive">+5% cette semaine</p>
           </div>
         </div>
       </div>
 
       <div class="metric-card">
         <div class="metric-header">
-          <div class="metric-icon primary">
+          <div class="metric-icon error">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-6h2v6zm0-8h-2V7h2v4z"/>
             </svg>
           </div>
           <div class="metric-details">
-            <h3 class="metric-title">Today's Movements</h3>
-            <p class="metric-value">{{ todayMovements }}</p>
-            <p class="metric-change positive">{{ entryMovements }} entries, {{ exitMovements }} exits</p>
+            <h3 class="metric-title">Produits expirés</h3>
+            <p class="metric-value">{{ expiredItems }}</p>
+            <p class="metric-change negative">Action requise</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Main Content Grid -->
-    <div class="content-grid">
-      <!-- Quick Actions Panel -->
-      <div class="panel">
-        <div class="panel-header">
-          <h2 class="panel-title">Quick Actions</h2>
-        </div>
-        <div class="panel-content">
-          <div class="action-grid">
-            <router-link to="/beverages" class="action-card">
-              <div class="action-icon">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                  <path d="M6 8h20v16a4 4 0 01-4 4H10a4 4 0 01-4-4V8zM10 4h12v4H10z"/>
-                </svg>
-              </div>
-              <div class="action-content">
-                <h3 class="action-title">Manage Beverages</h3>
-                <p class="action-description">Add, edit, or view beverage products</p>
-              </div>
-            </router-link>
-
-            <router-link to="/lots" class="action-card">
-              <div class="action-icon">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                  <path d="M8 6h16v20a2 2 0 01-2 2H10a2 2 0 01-2-2V6zM12 2h8v4h-8z"/>
-                </svg>
-              </div>
-              <div class="action-content">
-                <h3 class="action-title">Track Lots</h3>
-                <p class="action-description">Monitor lot status and expiration dates</p>
-              </div>
-            </router-link>
-
-            <router-link to="/movements" class="action-card">
-              <div class="action-icon">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                  <path d="M16 4L8 12h6v12h4V12h6l-8-8zM4 28h24v-4H4v4z"/>
-                </svg>
-              </div>
-              <div class="action-content">
-                <h3 class="action-title">Record Movement</h3>
-                <p class="action-description">Log stock entries, exits, and adjustments</p>
-              </div>
-            </router-link>
-
-            <router-link to="/stocks" class="action-card">
-              <div class="action-icon">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
-                  <path d="M4 4h24v24H4V4zm4 4v16h16V8H8zm4 4h8v8h-8v-8z"/>
-                </svg>
-              </div>
-              <div class="action-content">
-                <h3 class="action-title">View Stock</h3>
-                <p class="action-description">Check current inventory levels</p>
-              </div>
-            </router-link>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Activity Panel -->
-      <div class="panel">
-        <div class="panel-header">
-          <h2 class="panel-title">Recent Activity</h2>
-          <router-link to="/movements" class="panel-action">View All</router-link>
-        </div>
-        <div class="panel-content">
-          <div class="activity-list">
-            <div v-for="activity in recentActivities" :key="activity.id" class="activity-item">
-              <div class="activity-icon" :class="activity.type">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path v-if="activity.type === 'entry'" d="M8 2a1 1 0 011 1v4h4a1 1 0 110 2H9v4a1 1 0 11-2 0V9H3a1 1 0 110-2h4V3a1 1 0 011-1z"/>
-                  <path v-else-if="activity.type === 'exit'" d="M3 8a1 1 0 011-1h8a1 1 0 110 2H4a1 1 0 01-1-1z"/>
-                  <path v-else d="M8 15A7 7 0 118 1a7 7 0 010 14zm0 1A8 8 0 108 0a8 8 0 000 16z"/>
-                </svg>
-              </div>
-              <div class="activity-content">
-                <p class="activity-description">{{ activity.description }}</p>
-                <p class="activity-time">{{ activity.time }}</p>
-              </div>
-              <div class="activity-quantity" :class="activity.type">
-                {{ activity.type === 'exit' ? '-' : '+' }}{{ activity.quantity }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Alert Notifications -->
-    <div class="alerts-section" v-if="alerts.length > 0">
-      <div class="panel">
-        <div class="panel-header">
-          <h2 class="panel-title">System Alerts</h2>
-        </div>
-        <div class="panel-content">
-          <div class="alert-list">
-            <div v-for="alert in alerts" :key="alert.id" class="alert-item" :class="alert.severity">
-              <div class="alert-icon">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
-                </svg>
-              </div>
-              <div class="alert-content">
-                <h4 class="alert-title">{{ alert.title }}</h4>
-                <p class="alert-message">{{ alert.message }}</p>
-              </div>
-              <button class="alert-dismiss">×</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
-// Mock data - replace with real API calls
-const totalProducts = ref(45)
-const lowStockItems = ref(3)
-const activeLots = ref(28)
-const expiringSoon = ref(5)
-const todayMovements = ref(12)
-const entryMovements = ref(8)
-const exitMovements = ref(4)
+const totalProducts = ref(0)
+const lowStockItems = ref(0)
+const totalValue = ref(0)
+const expiredItems = ref(0)
 
 const recentActivities = ref([
   {
     id: 1,
-    type: 'entry',
-    description: 'Coca-Cola stock entry from Lot LOT-001',
-    time: '2 hours ago',
-    quantity: 50
+    type: 'success',
+    title: 'Nouveau stock ajouté',
+    description: 'Coca-Cola 500ml - 100 unités',
+    time: 'Il y a 2 heures'
   },
   {
     id: 2,
-    type: 'exit',
-    description: 'Fanta stock exit for delivery',
-    time: '4 hours ago',
-    quantity: 20
+    type: 'warning',
+    title: 'Stock faible détecté',
+    description: 'Pepsi 330ml - 15 unités restantes',
+    time: 'Il y a 4 heures'
   },
   {
     id: 3,
-    type: 'adjustment',
-    description: 'Stock adjustment - damaged items',
-    time: '1 day ago',
-    quantity: 5
+    type: 'info',
+    title: 'Rapport généré',
+    description: 'Rapport mensuel des ventes',
+    time: 'Il y a 6 heures'
   }
 ])
 
-const alerts = ref([
-  {
-    id: 1,
-    severity: 'warning',
-    title: 'Low Stock Alert',
-    message: '3 beverages are below their minimum stock threshold and need restocking.'
-  },
-  {
-    id: 2,
-    severity: 'error',
-    title: 'Expiration Warning',
-    message: 'Lot LOT-003 (Pepsi) expires in 2 days. Please prioritize for sale.'
-  }
-])
+onMounted(() => {
+  // Simulate loading data
+  totalProducts.value = 245
+  lowStockItems.value = 8
+  totalValue.value = 1655420
+  expiredItems.value = 3
+})
 </script>
 
 <style scoped>
