@@ -4,24 +4,20 @@
       <!-- Logo and Brand -->
       <div class="header-brand">
         <div class="brand-logo">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="32" rx="8" fill="var(--color-primary-600)"/>
-            <path d="M8 12h16v12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V12z" fill="white"/>
-            <path d="M12 8h8v4H12z" fill="var(--color-primary-200)"/>
-          </svg>
+          <img src="/logo.png" alt="Boisson Stock Logo" width="32" height="32" />
         </div>
+
+
         <div class="brand-text">
-          <h1 class="brand-title">BevStock</h1>
-          <p class="brand-subtitle">Inventory Management</p>
+          <h1 class="brand-title">QuantiSen</h1>
+          <p class="brand-subtitle">Gestion des Stocks de Boissons</p>
         </div>
       </div>
 
       <!-- Navigation Actions -->
       <div class="header-actions">
-        <button class="action-btn" @click="toggleSidebar">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M3 5h14a1 1 0 110 2H3a1 1 0 110-2zm0 4h14a1 1 0 110 2H3a1 1 0 110-2zm0 4h14a1 1 0 110 2H3a1 1 0 110-2z"/>
-          </svg>
+        <button class="action-btn" @click="toggleSidebar" title="Menu">
+          <Bars3Icon class="w-4 h-4" />
         </button>
 
         <!-- User Menu -->
@@ -32,25 +28,19 @@
             </div>
             <div class="user-info">
               <span class="user-name">{{ user.email }}</span>
-              <span class="user-role">{{ user.role }}</span>
+              <span class="user-role">{{ getRoleText(user.role) }}</span>
             </div>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M4.427 9.573l3.396-3.396a.25.25 0 01.354 0l3.396 3.396a.25.25 0 01-.177.427H4.604a.25.25 0 01-.177-.427z"/>
-            </svg>
+            <ChevronDownIcon class="w-3 h-3" />
           </button>
 
           <div v-if="showUserMenu" class="user-dropdown">
             <router-link to="/profile" class="dropdown-item">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 8a3 3 0 100-6 3 3 0 000 6zM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 00-11.215 0c-.22.578.254 1.139.872 1.139h9.471z"/>
-              </svg>
-              Profile Settings
+              <UserIcon class="w-3 h-3" />
+              Paramètres du profil
             </router-link>
             <button @click="logout" class="dropdown-item logout-btn">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M3 2a1 1 0 011-1h8a1 1 0 011 1v2H3V2zM3 6h10v6a2 2 0 01-2 2H5a2 2 0 01-2-2V6z"/>
-              </svg>
-              Sign Out
+              <ArrowRightOnRectangleIcon class="w-3 h-3" />
+              Se déconnecter
             </button>
           </div>
         </div>
@@ -60,7 +50,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
+import {
+  Bars3Icon,
+  ChevronDownIcon,
+  UserIcon,
+  ArrowRightOnRectangleIcon
+} from '@heroicons/vue/24/outline'
 // import { useAuthStore } from '@/stores/auth'
 
 const showUserMenu = ref(false)
@@ -76,6 +72,17 @@ const emit = defineEmits(['toggle-sidebar'])
 
 const toggleSidebar = () => {
   emit('toggle-sidebar')
+}
+
+const getRoleText = (role: string) => {
+  switch (role) {
+    case 'GERANT':
+      return 'Gérant'
+    case 'EMPLOYE':
+      return 'Employé'
+    default:
+      return role
+  }
 }
 
 const logout = () => {

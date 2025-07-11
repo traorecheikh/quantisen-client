@@ -4,53 +4,42 @@
       <!-- Navigation Menu -->
       <nav class="sidebar-nav">
         <div class="nav-section">
-          <h3 class="nav-section-title">Overview</h3>
+          <h3 class="nav-section-title">Aperçu</h3>
           <ul class="nav-list">
             <li class="nav-item">
               <router-link to="/dashboard" class="nav-link" active-class="active">
-                <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                </svg>
-                <span class="nav-text">Dashboard</span>
+                <HomeIcon class="nav-icon w-5 h-5" />
+                <span class="nav-text">Tableau de bord</span>
               </router-link>
             </li>
             <li class="nav-item">
               <router-link to="/stocks" class="nav-link" active-class="active">
-                <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                  <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-3a2 2 0 100 4h3v2a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
-                </svg>
-                <span class="nav-text">Stock Overview</span>
+                <ChartBarSquareIcon class="nav-icon w-5 h-5" />
+                <span class="nav-text">Vue d'ensemble</span>
               </router-link>
             </li>
           </ul>
         </div>
 
         <div class="nav-section">
-          <h3 class="nav-section-title">Inventory</h3>
+          <h3 class="nav-section-title">Inventaire</h3>
           <ul class="nav-list">
             <li class="nav-item">
               <router-link to="/beverages" class="nav-link" active-class="active">
-                <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
-                </svg>
-                <span class="nav-text">Beverages</span>
+                <BeakerIcon class="nav-icon w-5 h-5" />
+                <span class="nav-text">Boissons</span>
               </router-link>
             </li>
             <li class="nav-item">
               <router-link to="/lots" class="nav-link" active-class="active">
-                <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1-2H8l-1 2H5V5z"/>
-                </svg>
-                <span class="nav-text">Lots & Batches</span>
+                <ArchiveBoxIcon class="nav-icon w-5 h-5" />
+                <span class="nav-text">Lots et Batches</span>
               </router-link>
             </li>
             <li class="nav-item">
               <router-link to="/movements" class="nav-link" active-class="active">
-                <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935L11.033 2.744A1 1 0 0112 2z"/>
-                </svg>
-                <span class="nav-text">Stock Movements</span>
+                <ArrowsUpDownIcon class="nav-icon w-5 h-5" />
+                <span class="nav-text">Mouvements</span>
               </router-link>
             </li>
           </ul>
@@ -61,10 +50,22 @@
           <ul class="nav-list">
             <li class="nav-item">
               <router-link to="/users" class="nav-link" active-class="active">
-                <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-                </svg>
-                <span class="nav-text">User Management</span>
+                <UserGroupIcon class="nav-icon w-5 h-5" />
+                <span class="nav-text">Utilisateurs</span>
+              </router-link>
+            </li>
+
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <h3 class="nav-section-title">Rapports</h3>
+          <ul class="nav-list">
+
+            <li class="nav-item">
+              <router-link to="/analytics" class="nav-link" active-class="active">
+                <PresentationChartLineIcon class="nav-icon w-5 h-5" />
+                <span class="nav-text">Analyses</span>
               </router-link>
             </li>
           </ul>
@@ -76,15 +77,26 @@
     <div class="sidebar-footer">
       <div class="footer-content">
         <div class="app-version">
-          <span class="version-text">v1.0.0</span>
+          <TagIcon class="w-4 h-4 version-icon" />
+          <span class="version-text">v1.0.5</span>
         </div>
-      </div>
+         </div>
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import {
+  HomeIcon,
+  ChartBarSquareIcon,
+BeakerIcon,
+  ArchiveBoxIcon,
+  ArrowsUpDownIcon,
+  UserGroupIcon,
+  PresentationChartLineIcon,
+  TagIcon,
+} from '@heroicons/vue/24/outline'
 // import { useAuthStore } from '@/stores/auth'
 
 interface Props {
@@ -115,6 +127,7 @@ const isGerant = computed(() => user.role === 'GERANT')
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-sm);
 }
 
 .app-sidebar.collapsed {
@@ -125,29 +138,40 @@ const isGerant = computed(() => user.role === 'GERANT')
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--space-4) 0;
+  padding: var(--space-6) 0;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-8);
 }
 
 .nav-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .nav-section-title {
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 0 var(--space-4);
   margin-bottom: var(--space-2);
+  position: relative;
+}
+
+.nav-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: var(--space-2);
+  left: var(--space-4);
+  right: var(--space-4);
+  height: 1px;
+  background: var(--color-border-light);
 }
 
 .collapsed .nav-section-title {
@@ -177,6 +201,8 @@ const isGerant = computed(() => user.role === 'GERANT')
   font-weight: var(--font-weight-medium);
   transition: all var(--transition-fast);
   position: relative;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  margin-right: var(--space-2);
 }
 
 .nav-link::before {
@@ -189,16 +215,19 @@ const isGerant = computed(() => user.role === 'GERANT')
   background: var(--color-primary-500);
   transform: scaleY(0);
   transition: transform var(--transition-fast);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .nav-link:hover {
   color: var(--color-text-primary);
   background: var(--color-bg-secondary);
+  transform: translateX(2px);
 }
 
 .nav-link.active {
   color: var(--color-primary-600);
   background: var(--color-primary-50);
+  font-weight: var(--font-weight-semibold);
 }
 
 .nav-link.active::before {
@@ -207,8 +236,15 @@ const isGerant = computed(() => user.role === 'GERANT')
 
 .nav-icon {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover .nav-icon {
+  transform: scale(1.05);
+}
+
+.nav-link.active .nav-icon {
+  color: var(--color-primary-600);
 }
 
 .nav-text {
@@ -227,28 +263,59 @@ const isGerant = computed(() => user.role === 'GERANT')
 .sidebar-footer {
   border-top: 1px solid var(--color-border-light);
   padding: var(--space-4);
+  background: var(--color-bg-secondary);
 }
 
 .footer-content {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: var(--space-3);
 }
 
 .app-version {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.version-icon {
+  flex-shrink: 0;
 }
 
 .version-text {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
   font-weight: var(--font-weight-medium);
 }
 
 .collapsed .version-text {
   display: none;
+}
+
+.footer-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.footer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.footer-btn:hover {
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  transform: translateY(-1px);
 }
 
 /* Mobile Responsive */
@@ -269,7 +336,7 @@ const isGerant = computed(() => user.role === 'GERANT')
 
 /* Scrollbar Styling */
 .sidebar-content::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 .sidebar-content::-webkit-scrollbar-track {
@@ -283,5 +350,39 @@ const isGerant = computed(() => user.role === 'GERANT')
 
 .sidebar-content::-webkit-scrollbar-thumb:hover {
   background: var(--color-border-dark);
+}
+
+/* Tooltip for collapsed state */
+.collapsed .nav-link {
+  position: relative;
+}
+
+.collapsed .nav-link:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-text-primary);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
 }
 </style>
