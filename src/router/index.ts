@@ -8,6 +8,7 @@ import LotsPage from '../pages/LotsPage.vue';
 import StocksPage from '../pages/StocksPage.vue';
 import MovementsPage from '../pages/MovementsPage.vue';
 import ProfilePage from '../pages/ProfilePage.vue';
+import AnalyticsPage from '../pages/AnalyticsPage.vue';
 
 const routes = [
   { path: '/', redirect: '/dashboard' },
@@ -18,6 +19,7 @@ const routes = [
   { path: '/lots', component: LotsPage },
   { path: '/stocks', component: StocksPage },
   { path: '/movements', component: MovementsPage },
+  { path: '/analytics', component: AnalyticsPage },
   { path: '/profile', component: ProfilePage },
 ];
 
@@ -27,4 +29,3 @@ const router = createRouter({
 });
 
 export default router;
-

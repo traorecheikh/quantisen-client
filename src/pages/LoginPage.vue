@@ -12,26 +12,20 @@
             </svg>
           </div>
           <h1 class="brand-title">BevStock</h1>
-          <p class="brand-subtitle">Professional Beverage Inventory Management</p>
+          <p class="brand-subtitle">Gestion Professionnelle des Stocks de Boissons</p>
 
           <div class="features-list">
             <div class="feature-item">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
-              </svg>
-              <span>Real-time inventory tracking</span>
+              <CheckCircleIcon class="w-3 h-3" />
+              <span>Suivi des stocks en temps réel</span>
             </div>
             <div class="feature-item">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
-              </svg>
-              <span>Lot & expiration management</span>
+              <CheckCircleIcon class="w-3 h-3" />
+              <span>Gestion des lots et dates d'expiration</span>
             </div>
             <div class="feature-item">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
-              </svg>
-              <span>Advanced reporting & analytics</span>
+              <CheckCircleIcon class="w-3 h-3" />
+              <span>Rapports et analyses avancés</span>
             </div>
           </div>
         </div>
@@ -41,38 +35,35 @@
       <div class="login-form-section">
         <div class="form-container">
           <div class="form-header">
-            <h2 class="form-title">Welcome Back</h2>
-            <p class="form-subtitle">Sign in to access your inventory dashboard</p>
+            <h2 class="form-title">Bon retour</h2>
+            <p class="form-subtitle">Connectez-vous pour accéder à votre tableau de bord</p>
           </div>
 
           <form class="login-form" @submit.prevent="handleLogin">
             <div class="form-group">
-              <label for="email" class="form-label">Email Address</label>
+              <label for="email" class="form-label">Adresse e-mail</label>
               <div class="input-container">
                 <input
                   id="email"
                   v-model="loginForm.email"
                   type="email"
                   class="form-input"
-                  placeholder="Enter your email"
+                  placeholder="Entrez votre e-mail"
                   required
                 />
-                <svg class="input-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                </svg>
+                <EnvelopeIcon class="input-icon w-5 h-5" />
               </div>
             </div>
 
             <div class="form-group">
-              <label for="password" class="form-label">Password</label>
+              <label for="password" class="form-label">Mot de passe</label>
               <div class="input-container">
                 <input
                   id="password"
                   v-model="loginForm.password"
                   :type="showPassword ? 'text' : 'password'"
                   class="form-input"
-                  placeholder="Enter your password"
+                  placeholder="Entrez votre mot de passe"
                   required
                 />
                 <button
@@ -80,41 +71,30 @@
                   class="password-toggle"
                   @click="showPassword = !showPassword"
                 >
-                  <svg v-if="!showPassword" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
-                  </svg>
-                  <svg v-else width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"/>
-                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/>
-                  </svg>
+                  <EyeIcon v-if="!showPassword" class="w-5 h-5" />
+                  <EyeSlashIcon v-else class="w-5 h-5" />
                 </button>
               </div>
             </div>
 
             <div class="form-actions">
               <button type="submit" class="login-btn" :disabled="isLoading">
-                <svg v-if="isLoading" class="loading-spinner" width="20" height="20" viewBox="0 0 20 20">
-                  <path d="M10 3a7 7 0 100 14 7 7 0 000-14zm0 2a5 5 0 110 10 5 5 0 010-10z" opacity="0.25"/>
-                  <path d="M10 3a7 7 0 017 7h-2a5 5 0 00-5-5V3z"/>
-                </svg>
-                <span v-if="!isLoading">Sign In</span>
-                <span v-else>Signing In...</span>
+                <ArrowPathIcon v-if="isLoading" class="loading-spinner w-5 h-5" />
+                <span v-if="!isLoading">Se connecter</span>
+                <span v-else>Connexion...</span>
               </button>
             </div>
           </form>
 
           <!-- Error Message -->
           <div v-if="errorMessage" class="error-message">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
-            </svg>
+            <ExclamationTriangleIcon class="w-5 h-5" />
             {{ errorMessage }}
           </div>
 
           <div class="form-footer">
             <p class="help-text">
-              Need access? Contact your system administrator for login credentials.
+              Besoin d'un accès ? Contactez votre administrateur système pour obtenir vos identifiants de connexion.
             </p>
           </div>
         </div>
@@ -126,6 +106,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import {
+  CheckCircleIcon,
+  EnvelopeIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  ArrowPathIcon,
+  ExclamationTriangleIcon
+} from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 
@@ -151,10 +139,10 @@ const handleLogin = async () => {
       // Successful login - redirect to dashboard
       router.push('/dashboard')
     } else {
-      errorMessage.value = 'Please enter valid credentials'
+      errorMessage.value = 'Veuillez entrer des identifiants valides'
     }
   } catch (error) {
-    errorMessage.value = 'Login failed. Please try again.'
+    errorMessage.value = 'Échec de la connexion. Veuillez réessayer.'
   } finally {
     isLoading.value = false
   }
