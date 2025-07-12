@@ -1,5 +1,5 @@
-import api from '../api';
-import type { Movement, CreateMovementRequest } from './movementModel';
+import api from '../../../api.ts';
+import type { Movement, CreateMovementRequest } from '../models/movementModel.ts';
 
 export const movementService = {
   create(data: CreateMovementRequest) {

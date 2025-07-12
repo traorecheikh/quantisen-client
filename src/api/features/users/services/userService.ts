@@ -1,5 +1,5 @@
-import api from '../api';
-import type { User, RegisterUserRequest, LoginRequest, ChangePasswordRequest } from './userModel';
+import api from '../../../api.ts';
+import type { User, RegisterUserRequest, LoginRequest, ChangePasswordRequest } from '../models/userModel.ts';
 
 export const userService = {
   login(data: LoginRequest) {

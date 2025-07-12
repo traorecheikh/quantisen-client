@@ -1,5 +1,5 @@
-import api from '../api';
-import type { Beverage, CreateBeverageRequest } from './beverageModel';
+import api from '../../../api.ts';
+import type { Beverage, CreateBeverageRequest } from '../models/beverageModel.ts';
 
 export const beverageService = {
   getAll() {

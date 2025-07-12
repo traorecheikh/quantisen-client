@@ -1,5 +1,5 @@
-import api from '../api';
-import type {CreateLotRequest, Lot, UpdateLotRequest} from "./lotModel.ts";
+import api from '../../../api.ts';
+import type {CreateLotRequest, Lot, UpdateLotRequest} from "../models/lotModel.ts";
 
 export const lotService = {
   getAll() {

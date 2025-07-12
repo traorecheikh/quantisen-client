@@ -1,5 +1,5 @@
-import api from '../api';
-import type {Stock} from "./stockModel.ts";
+import api from '../../../api.ts';
+import type {Stock} from "../models/stockModel.ts";
 
 export const stockService = {
   getByBeverage(boissonId: number) {
