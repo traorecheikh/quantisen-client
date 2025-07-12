@@ -1,30 +1,40 @@
-type UserRole = 'GERANT' | 'EMPLOYE' | 'LIVREUR';
+// User role enum
+
+
+// User model
+import type {UserRole} from "../../../enums/userRole.ts";
 
 export interface User {
   id: number;
+  firstName: string;
+    lastName: string;
   email: string;
   role: UserRole;
-  createdAt: string;
+  isActive: boolean;
+  createdAt?: string;
 }
 
-export interface RegisterUserRequest {
+// Create user request
+export interface CreateUserRequest {
   email: string;
   motDePasse: string;
   role: UserRole;
 }
 
+// Login request
 export interface LoginRequest {
   email: string;
   motDePasse: string;
 }
 
+// Login response
 export interface LoginResponse {
-  email: string;
   token: string;
+  user: User;
 }
 
-export interface ChangePasswordRequest {
+// Password change request
+export interface PasswordChangeRequest {
   ancienMotDePasse: string;
   nouveauMotDePasse: string;
 }
-
