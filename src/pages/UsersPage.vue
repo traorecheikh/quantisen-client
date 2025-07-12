@@ -23,9 +23,18 @@
     <div class="filters-section">
       <div class="filters-container">
         <select v-model="roleFilter" class="filter-select">
-          <option value="all">Tous les rôles</option>
-          <option value="GERANT">Gérants uniquement</option>
-          <option value="EMPLOYE">Employés uniquement</option>
+          <option value="all">
+            <UserIcon class="w-4 h-4 inline mr-1" /> Tous les rôles
+          </option>
+          <option value="GERANT">
+            <ShieldCheckIcon class="w-4 h-4 inline mr-1" /> Gérants uniquement
+          </option>
+          <option value="EMPLOYE">
+            <UserIcon class="w-4 h-4 inline mr-1" /> Employés uniquement
+          </option>
+          <option value="LIVREUR">
+            <UserIcon class="w-4 h-4 inline mr-1" /> Livreurs uniquement
+          </option>
         </select>
 
         <input
@@ -50,7 +59,7 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="filteredUsers.length > 0">
             <tr v-for="user in filteredUsers" :key="user.id">
               <td class="user-cell">
                 <div class="user-info">
@@ -79,10 +88,26 @@
               <td class="actions-cell">
                 <button
                   class="edit-btn"
-                  @click="openEditModal(user)"
-                  title="Modifier"
+                  :disabled="user.role === 'GERANT'"
+                  @click="toggleActive(user)"
+                  :title="user.isActive ? 'Désactiver' : 'Activer'"
                 >
-                  <PencilIcon class="w-4 h-4" />
+                  <template v-if="user.role !== 'GERANT'">
+                    <span v-if="user.isActive">
+                      <!-- Ban icon (Heroicons outline) for active user -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636A9 9 0 105.636 18.364 9 9 0 0018.364 5.636z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.343 6.343l11.314 11.314" />
+                      </svg>
+                    </span>
+                    <span v-else>
+                      <!-- Check circle icon (Heroicons outline) for inactive user -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" />
+                      </svg>
+                    </span>
+                  </template>
                 </button>
                 <button
                   class="delete-btn"
@@ -92,6 +117,33 @@
                 >
                   <TrashIcon class="w-4 h-4" />
                 </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else>
+            <tr>
+              <td colspan="5" class="empty-state-cell">
+                <div class="empty-state">
+                  <div class="empty-state-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 4V3C15 2.4 14.6 2 14 2H10C9.4 2 9 2.4 9 3V4L3 7V9H4L5 15H7L6 9H9V15C9 15.6 9.4 16 10 16H14C14.6 16 15 15.6 15 15V9H18L17 15H19L20 9H21ZM11 10V14H13V10H11Z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                  <div class="empty-state-content">
+                    <h3 class="empty-state-title">{{ emptyStateContent.title }}</h3>
+                    <p class="empty-state-description">
+                      {{ emptyStateContent.description }}
+                    </p>
+                    <button
+                      v-if="emptyStateContent.showButton"
+                      class="empty-state-button"
+                      @click="openAddModalWithRole"
+                    >
+                      <UserPlusIcon class="w-5 h-5" />
+                      {{ emptyStateContent.buttonText }}
+                    </button>
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -182,94 +234,6 @@
       </div>
     </div>
 
-    <!-- Edit User Modal -->
-    <div v-if="showEditModal" class="modal-backdrop" @click="closeEditModal">
-      <div class="modal" @click.stop>
-        <div class="modal-header">
-          <h2>Modifier l'Utilisateur</h2>
-          <button class="close-btn" @click="closeEditModal">
-            <XMarkIcon class="w-5 h-5" />
-          </button>
-        </div>
-
-        <form @submit.prevent="updateUser" class="modal-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="edit-firstName">Prénom</label>
-              <input
-                id="edit-firstName"
-                v-model="editForm.firstName"
-                type="text"
-                class="form-input"
-                required
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="edit-lastName">Nom</label>
-              <input
-                id="edit-lastName"
-                v-model="editForm.lastName"
-                type="text"
-                class="form-input"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="edit-email">Adresse e-mail</label>
-            <input
-              id="edit-email"
-              :value="editForm.email"
-              type="email"
-              class="form-input disabled"
-              disabled
-              title="L'email ne peut pas être modifié"
-            />
-            <span class="field-note">L'email ne peut pas être modifié</span>
-          </div>
-
-          <div class="form-group">
-            <label for="edit-role">Rôle</label>
-            <select
-              id="edit-role"
-              v-model="editForm.role"
-              class="form-input"
-              :disabled="editForm.role === 'GERANT' && gerantCount <= 1"
-              required
-            >
-              <option value="EMPLOYE">Employé</option>
-              <option value="GERANT">Gérant</option>
-            </select>
-            <span v-if="editForm.role === 'GERANT' && gerantCount <= 1" class="field-note warning">
-              Impossible de modifier le dernier gérant
-            </span>
-          </div>
-
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input
-                type="checkbox"
-                v-model="editForm.isActive"
-                class="checkbox-input"
-              />
-              <span class="checkbox-text">Compte actif</span>
-            </label>
-          </div>
-
-          <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="closeEditModal">
-              Annuler
-            </button>
-            <button type="submit" class="submit-btn primary">
-              Enregistrer
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
     <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteModal" class="modal-backdrop" @click="closeDeleteModal">
       <div class="modal small" @click.stop>
@@ -299,111 +263,115 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   UserPlusIcon,
-  PencilIcon,
   TrashIcon,
   XMarkIcon,
   ShieldCheckIcon,
-  UserIcon
+  UserIcon,
+  PowerIcon
 } from '@heroicons/vue/24/outline'
-
-interface User {
-  id: number
-  email: string
-  firstName: string
-  lastName: string
-  role: 'GERANT' | 'EMPLOYE'
-  isActive: boolean
-  createdAt: string
-}
+import {type User, UserService} from "../api";
+import {UserRole} from "../api/enums/userRole.ts";
+import {POSITION, useToast} from 'vue-toastification'
 
 const showAddModal = ref(false)
-const showEditModal = ref(false)
 const showDeleteModal = ref(false)
-const editingUser = ref<User | null>(null)
 const userToDelete = ref<User | null>(null)
 const roleFilter = ref('all')
 const searchQuery = ref('')
 
-// Sample users data
-const users = ref<User[]>([
-  {
-    id: 1,
-    email: 'admin@bevstock.com',
-    firstName: 'Admin',
-    lastName: 'Principal',
-    role: 'GERANT',
-    isActive: true,
-    createdAt: '2025-01-15'
-  },
-  {
-    id: 2,
-    email: 'marie.martin@bevstock.com',
-    firstName: 'Marie',
-    lastName: 'Martin',
-    role: 'EMPLOYE',
-    isActive: true,
-    createdAt: '2025-03-10'
-  },
-  {
-    id: 3,
-    email: 'pierre.durand@bevstock.com',
-    firstName: 'Pierre',
-    lastName: 'Durand',
-    role: 'EMPLOYE',
-    isActive: false,
-    createdAt: '2025-02-20'
-  }
-])
+const users = ref<User[]>([])
+
+onMounted(async () => {
+  users.value = await UserService.getAllUsers()
+})
 
 // Forms
 const addForm = ref({
   firstName: '',
   lastName: '',
   email: '',
-  role: '',
+  role: UserRole.EMPLOYE as UserRole,
   password: ''
 })
 
-const editForm = ref({
-  firstName: '',
-  lastName: '',
-  email: '',
-  role: 'EMPLOYE' as 'GERANT' | 'EMPLOYE',
-  isActive: true
-})
-
 const filteredUsers = computed(() => {
-  let filtered = users.value
+  let filtered = users.value;
 
   if (roleFilter.value !== 'all') {
-    filtered = filtered.filter(user => user.role === roleFilter.value)
+    filtered = filtered.filter(user => user.role === roleFilter.value);
   }
 
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
+    const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(user =>
-      user.email.toLowerCase().includes(query) ||
-      user.firstName.toLowerCase().includes(query) ||
-      user.lastName.toLowerCase().includes(query)
-    )
+      user.email.toLowerCase().includes(query)
+    );
   }
 
-  return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  return filtered.sort((a, b) => {
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return dateB - dateA;
+  });
 })
 
+// Dynamic empty state messages
+const emptyStateContent = computed(() => {
+  if (searchQuery.value) {
+    // When searching by email
+    return {
+      title: 'Aucun utilisateur trouvé',
+      description: `Aucun utilisateur ne correspond à la recherche "${searchQuery.value}". Essayez avec un autre email.`,
+      buttonText: 'Ajouter un utilisateur',
+      showButton: true
+    }
+  } else if (roleFilter.value !== 'all') {
+    // When filtering by role
+    const roleText = getRoleText(roleFilter.value);
+    return {
+      title: `Aucun ${roleText.toLowerCase()} trouvé`,
+      description: `Vous n'avez pas encore d'utilisateur avec le rôle "${roleText}". Ajoutez votre premier ${roleText.toLowerCase()} pour commencer.`,
+      buttonText: `Ajouter un ${roleText.toLowerCase()}`,
+      showButton: true
+    }
+  } else {
+    // When no filters are applied
+    return {
+      title: 'Aucun utilisateur trouvé',
+      description: 'Commencez à construire votre équipe en ajoutant votre premier utilisateur. Vous pourrez gérer leurs rôles et permissions facilement.',
+      buttonText: 'Ajouter votre premier utilisateur',
+      showButton: true
+    }
+  }
+})
+
+// Function to open modal with pre-selected role if filtering
+const openAddModalWithRole = () => {
+  addForm.value = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    role: roleFilter.value !== 'all' ? roleFilter.value as UserRole : UserRole.EMPLOYE,
+    password: ''
+  }
+  showAddModal.value = true
+}
+
 const gerantCount = computed(() =>
-  users.value.filter(user => user.role === 'GERANT').length
+  users.value.filter(user => user.role === UserRole.GERANT).length
 )
+
+const toast = useToast()
 
 const openAddModal = () => {
   addForm.value = {
     firstName: '',
     lastName: '',
     email: '',
-    role: '',
+    role: UserRole.EMPLOYE,
     password: ''
   }
   showAddModal.value = true
@@ -411,17 +379,6 @@ const openAddModal = () => {
 
 const closeAddModal = () => {
   showAddModal.value = false
-}
-
-const openEditModal = (user: User) => {
-  editingUser.value = user
-  editForm.value = { ...user }
-  showEditModal.value = true
-}
-
-const closeEditModal = () => {
-  showEditModal.value = false
-  editingUser.value = null
 }
 
 const confirmDelete = (user: User) => {
@@ -434,28 +391,22 @@ const closeDeleteModal = () => {
   userToDelete.value = null
 }
 
-const addUser = () => {
-  const newUser: User = {
-    id: Date.now(),
-    firstName: addForm.value.firstName,
-    lastName: addForm.value.lastName,
-    email: addForm.value.email,
-    role: addForm.value.role as 'GERANT' | 'EMPLOYE',
-    isActive: true,
-    createdAt: new Date().toISOString().split('T')[0]
+const addUser = async () => {
+  try {
+    const newUser = await UserService.createUser({
+      email: addForm.value.email,
+      motDePasse: addForm.value.password,
+      role: addForm.value.role,
+    })
+    users.value.push(newUser)
+    toast.success('Utilisateur ajouté avec succès !', {
+      timeout: 2000,
+      position: POSITION.BOTTOM_RIGHT,
+    })
+    closeAddModal()
+  } catch (error) {
+    // Error toast is shown globally
   }
-  users.value.push(newUser)
-  closeAddModal()
-}
-
-const updateUser = () => {
-  if (editingUser.value) {
-    const index = users.value.findIndex(u => u.id === editingUser.value!.id)
-    if (index !== -1) {
-      users.value[index] = { ...editForm.value, id: editingUser.value.id, email: editingUser.value.email }
-    }
-  }
-  closeEditModal()
 }
 
 const deleteUser = () => {
@@ -466,6 +417,25 @@ const deleteUser = () => {
     }
   }
   closeDeleteModal()
+}
+
+const toggleActive = async (user: User) => {
+  if (user.role === UserRole.GERANT) return;
+  try {
+    await UserService.changeStatus(user.id, !user.isActive);
+
+    user.isActive = !user.isActive;
+
+    toast.success(
+      user.isActive ? 'Utilisateur activé avec succès !' : 'Utilisateur bloqué avec succès !',
+      { timeout: 2000, position: POSITION.BOTTOM_RIGHT }
+    );
+  } catch (error) {
+    toast.error(
+      'Erreur lors de la modification du statut de l\'utilisateur',
+      { timeout: 2000, position: POSITION.BOTTOM_RIGHT }
+    );
+  }
 }
 
 const getRoleText = (role: string) => {
@@ -479,7 +449,8 @@ const getRoleText = (role: string) => {
   }
 }
 
-const formatDate = (dateStr: string) => {
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return ''
   return new Date(dateStr).toLocaleDateString('fr-FR')
 }
 </script>
@@ -688,6 +659,8 @@ const formatDate = (dateStr: string) => {
 .actions-cell {
   display: flex;
   gap: var(--space-2);
+  min-height: 100px;
+  align-items: center;
 }
 
 .edit-btn,
@@ -722,10 +695,100 @@ const formatDate = (dateStr: string) => {
   background: var(--color-error-100);
   color: var(--color-error-700);
 }
+:root {
+  --color-error-100: #fee2e2;
+  --color-error-700: #b91c1c;
+}
+
 
 .delete-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Empty State Styles */
+.empty-state-cell {
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+  border-bottom: none;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.empty-state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+  color: var(--color-primary-500);
+  margin-bottom: var(--space-2);
+  transition: all var(--transition-fast);
+}
+
+.empty-state-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.empty-state-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.empty-state-description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  text-align: center;
+  max-width: 320px;
+}
+
+.empty-state-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-500);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state-button:hover {
+  background: var(--color-primary-600);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.empty-state-button:active {
+  transform: translateY(0);
 }
 
 /* Modal Styles */
