@@ -1,3 +1,4 @@
+// Beverage model
 export interface Beverage {
   id: number;
   nom: string;
@@ -9,6 +10,7 @@ export interface Beverage {
   isActive: boolean;
 }
 
+// Create beverage request
 export interface CreateBeverageRequest {
   nom: string;
   description: string;
@@ -16,5 +18,5 @@ export interface CreateBeverageRequest {
   volume: number;
   unite: string;
   seuil: number;
+  isActive?: boolean;
 }
-
