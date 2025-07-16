@@ -272,20 +272,20 @@ import {
   UserIcon,
   PowerIcon
 } from '@heroicons/vue/24/outline'
-import {type User, UserService} from "../api";
+import {type Utilisateur, UtilisateurService} from "../api";
 import {UserRole} from "../api/enums/userRole.ts";
 import {POSITION, useToast} from 'vue-toastification'
 
 const showAddModal = ref(false)
 const showDeleteModal = ref(false)
-const userToDelete = ref<User | null>(null)
+const userToDelete = ref<Utilisateur | null>(null)
 const roleFilter = ref('all')
 const searchQuery = ref('')
 
-const users = ref<User[]>([])
+const users = ref<Utilisateur[]>([])
 
 onMounted(async () => {
-  users.value = await UserService.getAllUsers()
+  users.value = await UtilisateurService.getAllUsers()
 })
 
 // Forms
@@ -301,7 +301,7 @@ const filteredUsers = computed(() => {
   let filtered = users.value;
 
   if (roleFilter.value !== 'all') {
-    filtered = filtered.filter(user => user.role === roleFilter.value);
+    filtered = filtered.filter(utilisateur => utilisateur.role === roleFilter.value);
   }
 
   if (searchQuery.value) {
@@ -381,8 +381,8 @@ const closeAddModal = () => {
   showAddModal.value = false
 }
 
-const confirmDelete = (user: User) => {
-  userToDelete.value = user
+const confirmDelete = (utilisateur: Utilisateur) => {
+  userToDelete.value = utilisateur
   showDeleteModal.value = true
 }
 
@@ -393,7 +393,7 @@ const closeDeleteModal = () => {
 
 const addUser = async () => {
   try {
-    const newUser = await UserService.createUser({
+    const newUser = await UtilisateurService.createUser({
       email: addForm.value.email,
       motDePasse: addForm.value.password,
       role: addForm.value.role,
@@ -419,15 +419,15 @@ const deleteUser = () => {
   closeDeleteModal()
 }
 
-const toggleActive = async (user: User) => {
-  if (user.role === UserRole.GERANT) return;
+const toggleActive = async (utilisateur: Utilisateur) => {
+  if (utilisateur.role === UserRole.GERANT) return;
   try {
-    await UserService.changeStatus(user.id, !user.isActive);
+    await UtilisateurService.changeStatus(utilisateur.id, !utilisateur.isActive);
 
-    user.isActive = !user.isActive;
+    utilisateur.isActive = !utilisateur.isActive;
 
     toast.success(
-      user.isActive ? 'Utilisateur activé avec succès !' : 'Utilisateur bloqué avec succès !',
+      utilisateur.isActive ? 'Utilisateur activé avec succès !' : 'Utilisateur bloqué avec succès !',
       { timeout: 2000, position: POSITION.BOTTOM_RIGHT }
     );
   } catch (error) {

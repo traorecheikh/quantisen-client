@@ -97,7 +97,6 @@ BeakerIcon,
   PresentationChartLineIcon,
   TagIcon,
 } from '@heroicons/vue/24/outline'
-// import { useAuthStore } from '@/stores/auth'
 
 interface Props {
   isCollapsed: boolean
@@ -105,9 +104,7 @@ interface Props {
 
 defineProps<Props>()
 
-// const authStore = useAuthStore()
 
-// Temporary mock - replace with actual auth store
 const user = { role: 'GERANT' }
 
 const isGerant = computed(() => user.role === 'GERANT')

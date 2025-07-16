@@ -6,7 +6,7 @@ import UsersPage from '../pages/UsersPage.vue';
 import BeveragesPage from '../pages/BeveragesPage.vue';
 import LotsPage from '../pages/LotsPage.vue';
 import StocksPage from '../pages/StocksPage.vue';
-import MovementsPage from '../pages/MovementsPage.vue';
+import MovementsPage from '../pages/MouvementsPage.vue';
 import ProfilePage from '../pages/ProfilePage.vue';
 import AnalyticsPage from '../pages/AnalyticsPage.vue';
 

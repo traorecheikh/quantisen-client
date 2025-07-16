@@ -105,13 +105,13 @@ import {
   ShieldCheckIcon,
   UserIcon
 } from '@heroicons/vue/24/outline'
-import { type User, UserService } from "../api"
+import { type Utilisateur, UtilisateurService } from "../api"
 import { POSITION, useToast } from 'vue-toastification'
 
 const router = useRouter()
 const toast = useToast()
 
-const currentUser = ref<User | null>(null)
+const currentUser = ref<Utilisateur | null>(null)
 const passwordForm = ref({
   currentPassword: '',
   newPassword: '',
@@ -158,9 +158,9 @@ const changePassword = async () => {
 
   try {
     if (currentUser.value?.id) {
-      await UserService.changePassword(currentUser.value.id, {
-        currentPassword: passwordForm.value.currentPassword,
-        newPassword: passwordForm.value.newPassword
+      await UtilisateurService.changePassword(currentUser.value.id, {
+        ancienMotDePasse: passwordForm.value.currentPassword,
+        nouveauMotDePasse: passwordForm.value.newPassword
       })
 
       toast.success('Mot de passe modifié avec succès !', {

@@ -35,11 +35,11 @@
           </thead>
           <tbody>
             <tr v-for="beverage in beverages" :key="beverage.id">
-              <td class="name-cell">{{ beverage.name }}</td>
+              <td class="name-cell">{{ beverage.nom }}</td>
               <td class="description-cell">{{ beverage.description }}</td>
-              <td class="price-cell">{{ beverage.price.toFixed(2) }} FCFA </td>
-              <td class="volume-cell">{{ beverage.volume }}{{ beverage.unit }}</td>
-              <td class="threshold-cell">{{ beverage.stockThreshold }}</td>
+              <td class="price-cell">{{ beverage.prix.toFixed(2) }} FCFA </td>
+              <td class="volume-cell">{{ beverage.volume }}{{ beverage.unite }}</td>
+              <td class="threshold-cell">{{ beverage.seuil }}</td>
               <td class="actions-cell">
                 <button
                   class="edit-btn"
@@ -70,7 +70,7 @@
             <label for="add-name">Nom de la boisson</label>
             <input
               id="add-name"
-              v-model="addForm.name"
+              v-model="addForm.nom"
               type="text"
               class="form-input"
               placeholder="Ex: Coca-Cola Classique"
@@ -94,7 +94,7 @@
               <label for="add-price">Prix (XOF)</label>
               <input
                 id="add-price"
-                v-model.number="addForm.price"
+                v-model.number="addForm.prix"
                 type="number"
                 step="0.01"
                 min="0"
@@ -119,7 +119,7 @@
 
             <div class="form-group">
               <label for="add-unit">Unité</label>
-              <select id="add-unit" v-model="addForm.unit" class="form-input" required>
+              <select id="add-unit" v-model="addForm.unite" class="form-input" required>
                 <option value="ml">ml</option>
                 <option value="cl">cl</option>
                 <option value="L">L</option>
@@ -131,7 +131,7 @@
             <label for="add-threshold">Seuil de Stock</label>
             <input
               id="add-threshold"
-              v-model.number="addForm.stockThreshold"
+              v-model.number="addForm.seuil"
               type="number"
               min="1"
               class="form-input"
@@ -167,7 +167,7 @@
             <label for="edit-name">Nom de la boisson</label>
             <input
               id="edit-name"
-              :value="editForm.name"
+              :value="editForm.nom"
               type="text"
               class="form-input disabled"
               disabled
@@ -192,7 +192,7 @@
               <label for="edit-price">Prix (XOF)</label>
               <input
                 id="edit-price"
-                v-model.number="editForm.price"
+                v-model.number="editForm.prix"
                 type="number"
                 step="0.01"
                 min="0"
@@ -215,7 +215,7 @@
 
             <div class="form-group">
               <label for="edit-unit">Unité</label>
-              <select id="edit-unit" v-model="editForm.unit" class="form-input" required>
+              <select id="edit-unit" v-model="editForm.unite" class="form-input" required>
                 <option value="ml">ml</option>
                 <option value="cl">cl</option>
                 <option value="L">L</option>
@@ -227,7 +227,7 @@
             <label for="edit-threshold">Seuil de Stock</label>
             <input
               id="edit-threshold"
-              v-model.number="editForm.stockThreshold"
+              v-model.number="editForm.seuil"
               type="number"
               min="1"
               class="form-input"
@@ -250,82 +250,74 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import { PlusIcon, PencilIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-
-interface Beverage {
-  id: number
-  name: string
-  description: string
-  price: number
-  volume: number
-  unit: string
-  stockThreshold: number
-}
+import {type Boisson, BoissonService} from "../api";
 
 const showAddModal = ref(false)
 const showEditModal = ref(false)
-const editingBeverage = ref<Beverage | null>(null)
+const editingBeverage = ref<Boisson | null>(null)
 
-// Sample beverages data
-const beverages = ref<Beverage[]>([
+const beverages = ref<Boisson[]>([
   {
     id: 1,
-    name: 'Coca-Cola Light',
-    description: 'Soda classique au cola',
-    price: 450,
+    nom: 'Coca-Cola Classique',
+    description: 'Soda classique au goût de cola',
+    prix: 300,
     volume: 330,
-    unit: 'ml',
-    stockThreshold: 50
+    unite: 'ml',
+    seuil: 50,
+    isActive: true
   },
   {
     id: 2,
-    name: 'Fanta Orange Original',
-    description: 'Soda à l\'orange pétillant',
-    price: 250,
+    nom: 'Fanta Orange',
+    description: 'Soda à l’orange pétillant',
+    prix: 350,
     volume: 330,
-    unit: 'ml',
-    stockThreshold: 40
+    unite: 'ml',
+    seuil: 40,
+    isActive: true
   },
   {
     id: 3,
-    name: 'Sprite',
-    description: 'Limonade claire et rafraîchissante',
-    price: 400,
-    volume: 500,
-    unit: 'ml',
-    stockThreshold: 30
+    nom: 'Sprite',
+    description: 'Soda citron-lime rafraîchissant',
+    prix: 320,
+    volume: 330,
+    unite: 'ml',
+    seuil: 30,
+    isActive: true
   }
 ])
 
-// Add form
 const addForm = ref({
-  name: '',
+  nom: '',
   description: '',
-  price: 0,
+  prix: 0,
   volume: 0,
-  unit: 'ml',
-  stockThreshold: 0
+  unite: 'ml',
+  seuil: 0
 })
 
-// Edit form
 const editForm = ref({
-  name: '',
+  nom: '',
   description: '',
-  price: 0,
+  prix: 0,
   volume: 0,
-  unit: 'ml',
-  stockThreshold: 0
+  unite: 'ml',
+  seuil: 0,
+  isActive: true
 })
 
 const openAddModal = () => {
   addForm.value = {
-    name: '',
+    nom: '',
     description: '',
-    price: 0,
+    prix: 0,
     volume: 0,
-    unit: 'ml',
-    stockThreshold: 0
+    unite: 'ml',
+    seuil: 0,
   }
   showAddModal.value = true
 }
@@ -334,9 +326,9 @@ const closeAddModal = () => {
   showAddModal.value = false
 }
 
-const openEditModal = (beverage: Beverage) => {
+const openEditModal = (beverage: Boisson) => {
   editingBeverage.value = beverage
-  editForm.value = { ...beverage }
+  editForm.value = { ...beverage, }
   showEditModal.value = true
 }
 
@@ -346,8 +338,9 @@ const closeEditModal = () => {
 }
 
 const addBeverage = () => {
-  const newBeverage: Beverage = {
+  const newBeverage: Boisson = {
     id: Date.now(),
+    isActive: false,
     ...addForm.value
   }
   beverages.value.push(newBeverage)
@@ -358,11 +351,17 @@ const updateBeverage = () => {
   if (editingBeverage.value) {
     const index = beverages.value.findIndex(b => b.id === editingBeverage.value!.id)
     if (index !== -1) {
-      beverages.value[index] = { ...editForm.value, id: editingBeverage.value.id }
+      beverages.value[index] = { ...editForm.value, id: editingBeverage.value.id , isActive:true}
     }
   }
   closeEditModal()
 }
+
+async function loadLots() {
+  beverages.value = await BoissonService.getAllBeverages();
+}
+
+onMounted(loadLots)
 </script>
 
 <style scoped>
