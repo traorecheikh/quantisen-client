@@ -22,8 +22,7 @@ export class StatisticsService {
       return response.data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Dashboard statistics error:', error);
-      console.log('🔄 [StatisticsService] Using mock dashboard data');
-      return this.getMockDashboardStatistics();
+      throw error;
     }
   }
 
@@ -41,8 +40,6 @@ export class StatisticsService {
       if (!this.isValidWeeklyStockMovement(data)) {
         console.warn('❌ [StatisticsService] Invalid weekly stock movement data structure');
         console.log('🔍 [StatisticsService] Data validation failed for:', data);
-        console.log('🔄 [StatisticsService] Using mock weekly stock movement data');
-        return this.getMockWeeklyStockMovement();
       }
 
       console.log('✅ [StatisticsService] Weekly stock movement data validation passed');
@@ -50,7 +47,7 @@ export class StatisticsService {
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Weekly stock movement error:', error);
       console.log('🔄 [StatisticsService] Using mock weekly stock movement data');
-      return this.getMockWeeklyStockMovement();
+
     }
   }
 
@@ -68,8 +65,7 @@ export class StatisticsService {
       if (!this.isValidMovementTrends(data)) {
         console.warn('❌ [StatisticsService] Invalid movement trends data structure');
         console.log('🔍 [StatisticsService] Data validation failed for:', data);
-        console.log('🔄 [StatisticsService] Using mock movement trends data');
-        return this.getMockMovementTrends(period);
+
       }
 
       console.log('✅ [StatisticsService] Movement trends data validation passed');
@@ -77,7 +73,7 @@ export class StatisticsService {
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Movement trends error:', error);
       console.log('🔄 [StatisticsService] Using mock movement trends data');
-      return this.getMockMovementTrends(period);
+
     }
   }
 
@@ -91,8 +87,7 @@ export class StatisticsService {
       return response.data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Daily movements error:', error);
-      console.log('🔄 [StatisticsService] Using mock daily movements data');
-      return this.getMockDailyMovements();
+      throw error;
     }
   }
 
@@ -110,8 +105,7 @@ export class StatisticsService {
       if (!this.isValidBeveragePerformance(data)) {
         console.warn('❌ [StatisticsService] Invalid beverage performance data structure');
         console.log('🔍 [StatisticsService] Data validation failed for:', data);
-        console.log('🔄 [StatisticsService] Using mock beverage performance data');
-        return this.getMockBeveragePerformance();
+
       }
 
       console.log('✅ [StatisticsService] Beverage performance data validation passed');
@@ -119,7 +113,7 @@ export class StatisticsService {
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Beverage performance error:', error);
       console.log('🔄 [StatisticsService] Using mock beverage performance data');
-      return this.getMockBeveragePerformance();
+
     }
   }
 
@@ -137,8 +131,7 @@ export class StatisticsService {
       if (!this.isValidInventoryAnalytics(data)) {
         console.warn('❌ [StatisticsService] Invalid inventory analytics data structure');
         console.log('🔍 [StatisticsService] Data validation failed for:', data);
-        console.log('🔄 [StatisticsService] Using mock inventory analytics data');
-        return this.getMockInventoryAnalytics();
+
       }
 
       console.log('✅ [StatisticsService] Inventory analytics data validation passed');
@@ -146,7 +139,7 @@ export class StatisticsService {
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Inventory analytics error:', error);
       console.log('🔄 [StatisticsService] Using mock inventory analytics data');
-      return this.getMockInventoryAnalytics();
+
     }
   }
 
@@ -160,8 +153,7 @@ export class StatisticsService {
       return response.data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Stock alerts error:', error);
-      console.log('🔄 [StatisticsService] Using mock stock alerts data');
-      return this.getMockStockAlerts();
+      throw error;
     }
   }
 
@@ -175,8 +167,7 @@ export class StatisticsService {
       return response.data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Expiration alerts error:', error);
-      console.log('🔄 [StatisticsService] Using mock expiration alerts data');
-      return this.getMockExpirationAlerts();
+      throw error;
     }
   }
 
@@ -190,8 +181,7 @@ export class StatisticsService {
       return response.data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] User activity error:', error);
-      console.log('🔄 [StatisticsService] Using mock user activity data');
-      return this.getMockUserActivity();
+      throw error;
     }
   }
 
@@ -205,8 +195,7 @@ export class StatisticsService {
       return response.data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Revenue metrics error:', error);
-      console.log('🔄 [StatisticsService] Using mock revenue metrics data');
-      return this.getMockRevenueMetrics();
+      throw error;
     }
   }
 
@@ -236,376 +225,7 @@ export class StatisticsService {
     }
   }
 
-  // Mock data methods for development
-  private static getMockDashboardStatistics(): DashboardStatistics {
-    return {
-      totalBeverages: 25,
-      totalStock: 1250,
-      lowStockAlerts: 3,
-      totalMovements: 147,
-      totalUsers: 8,
-      totalValue: 2500000,
-      recentMovements: [
-        {
-          id: 1,
-          beverageName: 'Coca-Cola 500ml',
-          movementType: 'ENTREE',
-          quantity: 100,
-          date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          userName: 'Admin User'
-        },
-        {
-          id: 2,
-          beverageName: 'Pepsi 330ml',
-          movementType: 'SORTIE',
-          quantity: 50,
-          date: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          userName: 'John Doe'
-        },
-        {
-          id: 3,
-          beverageName: 'Sprite 500ml',
-          movementType: 'AJUSTEMENT',
-          quantity: 25,
-          date: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          userName: 'Jane Smith'
-        }
-      ],
-      topBeverages: [
-        {
-          id: 1,
-          name: 'Coca-Cola 500ml',
-          totalMovements: 45,
-          totalQuantity: 450
-        },
-        {
-          id: 2,
-          name: 'Pepsi 330ml',
-          totalMovements: 32,
-          totalQuantity: 320
-        },
-        {
-          id: 3,
-          name: 'Sprite 500ml',
-          totalMovements: 28,
-          totalQuantity: 280
-        }
-      ],
-      stockAlerts: [
-        {
-          id: 1,
-          beverageName: 'Fanta Orange 500ml',
-          currentStock: 5,
-          threshold: 20,
-          alertLevel: 'CRITICAL'
-        },
-        {
-          id: 2,
-          beverageName: 'Coca-Cola Zero 330ml',
-          currentStock: 15,
-          threshold: 30,
-          alertLevel: 'LOW'
-        },
-        {
-          id: 3,
-          beverageName: 'Pepsi Max 500ml',
-          currentStock: 0,
-          threshold: 25,
-          alertLevel: 'OUT_OF_STOCK'
-        }
-      ]
-    };
-  }
-
-  private static getMockWeeklyStockMovement(): WeeklyStockMovement {
-    return {
-      weekDates: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
-      datasets: [
-        {
-          label: 'Entrées',
-          data: [120, 95, 140, 80, 110, 160, 90],
-          movementType: 'ENTREE',
-          color: '#10b981'
-        },
-        {
-          label: 'Sorties',
-          data: [85, 110, 95, 125, 90, 75, 105],
-          movementType: 'SORTIE',
-          color: '#ef4444'
-        },
-        {
-          label: 'Ajustements',
-          data: [10, 5, 15, 8, 12, 6, 9],
-          movementType: 'AJUSTEMENT',
-          color: '#f59e0b'
-        }
-      ],
-      totalEntries: 795,
-      totalExits: 685,
-      totalAdjustments: 65
-    };
-  }
-
-  private static getMockMovementTrends(period: string): MovementTrend[] {
-    return [
-      {
-        period: 'Cette semaine',
-        totalMovements: 1545,
-        percentageChange: 12.5,
-        trend: 'UP'
-      },
-      {
-        period: 'Ce mois',
-        totalMovements: 6250,
-        percentageChange: -3.2,
-        trend: 'DOWN'
-      },
-      {
-        period: 'Cette année',
-        totalMovements: 85000,
-        percentageChange: 18.7,
-        trend: 'UP'
-      }
-    ];
-  }
-
-  private static getMockDailyMovements(): DailyMovement[] {
-    return [
-      {
-        date: '2025-07-06',
-        entries: 120,
-        exits: 85,
-        adjustments: 10,
-        netMovement: 45
-      },
-      {
-        date: '2025-07-07',
-        entries: 95,
-        exits: 110,
-        adjustments: 5,
-        netMovement: -20
-      },
-      {
-        date: '2025-07-08',
-        entries: 140,
-        exits: 95,
-        adjustments: 15,
-        netMovement: 60
-      }
-    ];
-  }
-
-  private static getMockBeveragePerformance(): BeveragePerformance[] {
-    return [
-      {
-        id: 1,
-        name: 'Coca-Cola 500ml',
-        totalMovements: 45,
-        totalQuantity: 450,
-        revenueImpact: 225000,
-        rank: 1
-      },
-      {
-        id: 2,
-        name: 'Pepsi 330ml',
-        totalMovements: 32,
-        totalQuantity: 320,
-        revenueImpact: 160000,
-        rank: 2
-      },
-      {
-        id: 3,
-        name: 'Sprite 500ml',
-        totalMovements: 28,
-        totalQuantity: 280,
-        revenueImpact: 140000,
-        rank: 3
-      }
-    ];
-  }
-
-  private static getMockInventoryAnalytics(): InventoryAnalytics {
-    return {
-      stockDistribution: [
-        {
-          category: 'Coca-Cola',
-          percentage: 35,
-          value: 875000,
-          color: '#ef4444'
-        },
-        {
-          category: 'Pepsi',
-          percentage: 25,
-          value: 625000,
-          color: '#3b82f6'
-        },
-        {
-          category: 'Sprite',
-          percentage: 20,
-          value: 500000,
-          color: '#10b981'
-        },
-        {
-          category: 'Autres',
-          percentage: 20,
-          value: 500000,
-          color: '#f59e0b'
-        }
-      ],
-      expirationTracking: {
-        lotsSoonToExpire: [
-          {
-            id: 1,
-            beverageName: 'Coca-Cola 500ml',
-            lotNumber: 'LOT-001',
-            expirationDate: '2025-07-20',
-            quantity: 50,
-            daysUntilExpiration: 8,
-            value: 25000
-          },
-          {
-            id: 2,
-            beverageName: 'Pepsi 330ml',
-            lotNumber: 'LOT-002',
-            expirationDate: '2025-07-25',
-            quantity: 30,
-            daysUntilExpiration: 13,
-            value: 15000
-          }
-        ],
-        expiredLots: [],
-        totalExpiringValue: 40000
-      },
-      movementAnalysis: {
-        mostActiveBeverages: [
-          {
-            id: 1,
-            name: 'Coca-Cola 500ml',
-            movementCount: 45,
-            lastMovementDate: '2025-07-12',
-            activityScore: 95
-          },
-          {
-            id: 2,
-            name: 'Pepsi 330ml',
-            movementCount: 32,
-            lastMovementDate: '2025-07-11',
-            activityScore: 85
-          }
-        ],
-        leastActiveBeverages: [
-          {
-            id: 10,
-            name: 'Boisson Énergisante 250ml',
-            movementCount: 2,
-            lastMovementDate: '2025-07-01',
-            activityScore: 15
-          },
-          {
-            id: 11,
-            name: 'Thé Glacé 500ml',
-            movementCount: 3,
-            lastMovementDate: '2025-07-03',
-            activityScore: 25
-          }
-        ],
-        seasonalTrends: [
-          {
-            period: 'Été 2025',
-            totalMovements: 2500,
-            averageDaily: 35,
-            trend: 'UP'
-          }
-        ]
-      }
-    };
-  }
-
-  private static getMockStockAlerts(): StockAlert[] {
-    return [
-      {
-        id: 1,
-        beverageName: 'Fanta Orange 500ml',
-        currentStock: 5,
-        threshold: 20,
-        alertLevel: 'CRITICAL',
-        severity: 9
-      },
-      {
-        id: 2,
-        beverageName: 'Coca-Cola Zero 330ml',
-        currentStock: 15,
-        threshold: 30,
-        alertLevel: 'LOW',
-        severity: 5
-      }
-    ];
-  }
-
-  private static getMockExpirationAlerts(): any {
-    return {
-      lots: [
-        {
-          id: 1,
-          beverageName: 'Coca-Cola 500ml',
-          lotNumber: 'LOT-001',
-          expirationDate: '2025-07-20',
-          quantity: 50,
-          daysUntilExpiration: 8,
-          value: 25000
-        }
-      ]
-    };
-  }
-
-  private static getMockUserActivity(): UserActivityStats[] {
-    return [
-      {
-        userId: 1,
-        userName: 'Admin User',
-        totalMovements: 45,
-        lastActivity: '2025-07-12',
-        activityScore: 95
-      },
-      {
-        userId: 2,
-        userName: 'John Doe',
-        totalMovements: 32,
-        lastActivity: '2025-07-11',
-        activityScore: 85
-      }
-    ];
-  }
-
-  private static getMockRevenueMetrics(): RevenueMetrics {
-    return {
-      totalRevenue: 2500000,
-      revenueByPeriod: [
-        {
-          period: 'Cette semaine',
-          revenue: 125000,
-          profit: 25000,
-          margin: 20
-        },
-        {
-          period: 'Ce mois',
-          revenue: 500000,
-          profit: 100000,
-          margin: 20
-        }
-      ],
-      topRevenueGenerators: [
-        {
-          beverageId: 1,
-          beverageName: 'Coca-Cola 500ml',
-          revenue: 225000,
-          profit: 45000,
-          margin: 20
-        }
-      ],
-      profitMargin: 20
-    };
-  }
+  
 
   // Data validation methods
   private static isValidWeeklyStockMovement(data: any): data is WeeklyStockMovement {
