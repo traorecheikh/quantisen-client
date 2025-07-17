@@ -1,5 +1,6 @@
-import { api } from '../../../api';
-import type { DashboardStatistics } from './../models/DashboardStatisticsModel';
+import { cachedGet } from '../../../api';
+import { CACHE_TTL } from '../../../../utils/cache';
+import type {DashboardStatistics, Stock} from './../models/DashboardStatisticsModel';
 import type { WeeklyStockMovement, MovementTrend, DailyMovement } from './../models/WeeklyStockMovementModel';
 import type {
   BeveragePerformance,
@@ -12,233 +13,172 @@ import type {
 export class StatisticsService {
   private static readonly BASE_PATH = '/statistics';
 
-  // Get dashboard statistics
   static async getDashboardStatistics(): Promise<DashboardStatistics> {
     try {
-      console.log('🔍 [StatisticsService] Fetching dashboard statistics...');
-      const response = await api.get<DashboardStatistics>(`${this.BASE_PATH}/dashboard`);
-      console.log('✅ [StatisticsService] Dashboard statistics response received:', response);
-      console.log('📊 [StatisticsService] Dashboard data structure:', JSON.stringify(response.data, null, 2));
-      return response.data;
+      const data = await cachedGet<DashboardStatistics>(
+        `${this.BASE_PATH}/dashboard`,
+        { ttl: CACHE_TTL.DASHBOARD_STATS }
+      );
+      return data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Dashboard statistics error:', error);
       throw error;
     }
   }
 
-  // Get weekly stock movement data
   static async getWeeklyStockMovement(): Promise<WeeklyStockMovement> {
     try {
-      console.log('🔍 [StatisticsService] Fetching weekly stock movement...');
-      const response = await api.get<WeeklyStockMovement>(`${this.BASE_PATH}/weekly-stock-movement`);
-      console.log('✅ [StatisticsService] Weekly stock movement response received:', response);
-      console.log('📊 [StatisticsService] Weekly movement data:', JSON.stringify(response.data, null, 2));
+      const data = await cachedGet<WeeklyStockMovement>(
+        `${this.BASE_PATH}/weekly-stock-movement`,
+        { ttl: CACHE_TTL.ANALYTICS }
+      );
 
-      const data = response.data;
-
-      // Validate the data structure
       if (!this.isValidWeeklyStockMovement(data)) {
         console.warn('❌ [StatisticsService] Invalid weekly stock movement data structure');
         console.log('🔍 [StatisticsService] Data validation failed for:', data);
       }
-
-      console.log('✅ [StatisticsService] Weekly stock movement data validation passed');
       return data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Weekly stock movement error:', error);
-      console.log('🔄 [StatisticsService] Using mock weekly stock movement data');
-
+      throw error;
     }
   }
 
-  // Get movement trends
   static async getMovementTrends(period: 'weekly' | 'monthly' | 'yearly' = 'weekly'): Promise<MovementTrend[]> {
     try {
-      console.log(`🔍 [StatisticsService] Fetching movement trends for period: ${period}`);
-      const response = await api.get<MovementTrend[]>(`${this.BASE_PATH}/movement-trends?period=${period}`);
-      console.log('✅ [StatisticsService] Movement trends response received:', response);
-      console.log('📊 [StatisticsService] Movement trends data:', JSON.stringify(response.data, null, 2));
+      const data = await cachedGet<MovementTrend[]>(
+        `${this.BASE_PATH}/movement-trends?period=${period}`,
+        { ttl: CACHE_TTL.MOVEMENTS }
+      );
 
-      const data = response.data;
-
-      // Validate the data structure
       if (!this.isValidMovementTrends(data)) {
         console.warn('❌ [StatisticsService] Invalid movement trends data structure');
         console.log('🔍 [StatisticsService] Data validation failed for:', data);
-
       }
 
-      console.log('✅ [StatisticsService] Movement trends data validation passed');
       return data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Movement trends error:', error);
-      console.log('🔄 [StatisticsService] Using mock movement trends data');
-
+      throw error;
     }
   }
 
-  // Get daily movements with date range
   static async getDailyMovements(startDate: string, endDate: string): Promise<DailyMovement[]> {
     try {
-      console.log(`🔍 [StatisticsService] Fetching daily movements from ${startDate} to ${endDate}`);
-      const response = await api.get<DailyMovement[]>(`${this.BASE_PATH}/daily-movements?start=${startDate}&end=${endDate}`);
-      console.log('✅ [StatisticsService] Daily movements response received:', response);
-      console.log('📊 [StatisticsService] Daily movements data:', JSON.stringify(response.data, null, 2));
-      return response.data;
+      const data = await cachedGet<DailyMovement[]>(
+        `${this.BASE_PATH}/daily-movements?start=${startDate}&end=${endDate}`,
+        { ttl: CACHE_TTL.MOVEMENTS }
+      );
+      return data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Daily movements error:', error);
       throw error;
     }
   }
 
-  // Get beverage performance statistics
   static async getBeveragePerformance(): Promise<BeveragePerformance[]> {
     try {
-      console.log('🔍 [StatisticsService] Fetching beverage performance...');
-      const response = await api.get<BeveragePerformance[]>(`${this.BASE_PATH}/beverage-performance`);
-      console.log('✅ [StatisticsService] Beverage performance response received:', response);
-      console.log('📊 [StatisticsService] Beverage performance data:', JSON.stringify(response.data, null, 2));
+      const data = await cachedGet<BeveragePerformance[]>(
+        `${this.BASE_PATH}/beverage-performance`,
+        { ttl: CACHE_TTL.ANALYTICS }
+      );
 
-      const data = response.data;
-
-      // Validate the data structure
       if (!this.isValidBeveragePerformance(data)) {
         console.warn('❌ [StatisticsService] Invalid beverage performance data structure');
         console.log('🔍 [StatisticsService] Data validation failed for:', data);
-
       }
-
-      console.log('✅ [StatisticsService] Beverage performance data validation passed');
       return data;
     } catch (error) {
       console.warn('⚠️ [StatisticsService] Beverage performance error:', error);
-      console.log('🔄 [StatisticsService] Using mock beverage performance data');
-
+      throw error;
     }
   }
 
-  // Get inventory analytics
   static async getInventoryAnalytics(): Promise<InventoryAnalytics> {
     try {
-      console.log('🔍 [StatisticsService] Fetching inventory analytics...');
-      const response = await api.get<InventoryAnalytics>(`${this.BASE_PATH}/inventory-analytics`);
-      console.log('✅ [StatisticsService] Inventory analytics response received:', response);
-      console.log('📊 [StatisticsService] Inventory analytics data:', JSON.stringify(response.data, null, 2));
+      const data = await cachedGet<InventoryAnalytics>(
+        `${this.BASE_PATH}/inventory-analytics`,
+        { ttl: CACHE_TTL.ANALYTICS }
+      );
 
-      const data = response.data;
-
-      // Validate the data structure
       if (!this.isValidInventoryAnalytics(data)) {
         console.warn('❌ [StatisticsService] Invalid inventory analytics data structure');
         console.log('🔍 [StatisticsService] Data validation failed for:', data);
-
       }
-
-      console.log('✅ [StatisticsService] Inventory analytics data validation passed');
       return data;
     } catch (error) {
-      console.warn('⚠️ [StatisticsService] Inventory analytics error:', error);
-      console.log('🔄 [StatisticsService] Using mock inventory analytics data');
-
+      throw error;
     }
   }
 
-  // Get stock alerts
   static async getStockAlerts(): Promise<StockAlert[]> {
     try {
-      console.log('🔍 [StatisticsService] Fetching stock alerts...');
-      const response = await api.get<StockAlert[]>(`${this.BASE_PATH}/stock-alerts`);
-      console.log('✅ [StatisticsService] Stock alerts response received:', response);
-      console.log('📊 [StatisticsService] Stock alerts data:', JSON.stringify(response.data, null, 2));
-      return response.data;
+      const data = await cachedGet<StockAlert[]>(
+        `${this.BASE_PATH}/stock-alerts`,
+        { ttl: CACHE_TTL.STOCKS }
+      );
+      return data;
     } catch (error) {
-      console.warn('⚠️ [StatisticsService] Stock alerts error:', error);
       throw error;
     }
   }
 
-  // Get expiration alerts
+  static async getStocks(): Promise<Stock[]> {
+    try {
+      const data = await cachedGet<Stock[]>(
+        `${this.BASE_PATH}/stocks`,
+        { ttl: CACHE_TTL.STOCKS }
+      );
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async getExpirationAlerts(): Promise<any> {
     try {
-      console.log('🔍 [StatisticsService] Fetching expiration alerts...');
-      const response = await api.get(`${this.BASE_PATH}/expiration-alerts`);
-      console.log('✅ [StatisticsService] Expiration alerts response received:', response);
-      console.log('📊 [StatisticsService] Expiration alerts data:', JSON.stringify(response.data, null, 2));
-      return response.data;
+      const data = await cachedGet<any>(
+        `${this.BASE_PATH}/expiration-alerts`,
+        { ttl: CACHE_TTL.STOCKS }
+      );
+      return data;
     } catch (error) {
-      console.warn('⚠️ [StatisticsService] Expiration alerts error:', error);
       throw error;
     }
   }
 
-  // Get user activity statistics
   static async getUserActivity(): Promise<UserActivityStats[]> {
     try {
-      console.log('🔍 [StatisticsService] Fetching user activity...');
-      const response = await api.get<UserActivityStats[]>(`${this.BASE_PATH}/user-activity`);
-      console.log('✅ [StatisticsService] User activity response received:', response);
-      console.log('📊 [StatisticsService] User activity data:', JSON.stringify(response.data, null, 2));
-      return response.data;
+      const data = await cachedGet<UserActivityStats[]>(
+        `${this.BASE_PATH}/user-activity`,
+        { ttl: CACHE_TTL.USERS }
+      );
+      return data;
     } catch (error) {
-      console.warn('⚠️ [StatisticsService] User activity error:', error);
       throw error;
     }
   }
 
-  // Get revenue metrics
   static async getRevenueMetrics(): Promise<RevenueMetrics> {
     try {
-      console.log('🔍 [StatisticsService] Fetching revenue metrics...');
-      const response = await api.get<RevenueMetrics>(`${this.BASE_PATH}/revenue-metrics`);
-      console.log('✅ [StatisticsService] Revenue metrics response received:', response);
-      console.log('📊 [StatisticsService] Revenue metrics data:', JSON.stringify(response.data, null, 2));
-      return response.data;
+      const data = await cachedGet<RevenueMetrics>(
+        `${this.BASE_PATH}/revenue-metrics`,
+        { ttl: CACHE_TTL.ANALYTICS }
+      );
+      return data;
     } catch (error) {
-      console.warn('⚠️ [StatisticsService] Revenue metrics error:', error);
       throw error;
     }
   }
 
-  // Export statistics as PDF
-  static async exportStatisticsPDF(type: 'dashboard' | 'analytics' | 'inventory'): Promise<Blob> {
-    try {
-      const response = await api.get(`${this.BASE_PATH}/export/pdf?type=${type}`, {
-        responseType: 'blob'
-      });
-      return response.data;
-    } catch (error) {
-      console.warn('Backend export not available');
-      throw new Error('Export functionality not available');
-    }
-  }
-
-  // Export statistics as Excel
-  static async exportStatisticsExcel(type: 'movements' | 'inventory' | 'performance'): Promise<Blob> {
-    try {
-      const response = await api.get(`${this.BASE_PATH}/export/excel?type=${type}`, {
-        responseType: 'blob'
-      });
-      return response.data;
-    } catch (error) {
-      console.warn('Backend export not available');
-      throw new Error('Export functionality not available');
-    }
-  }
-
-  
-
-  // Data validation methods
   private static isValidWeeklyStockMovement(data: any): data is WeeklyStockMovement {
     if (!data || typeof data !== 'object') return false;
 
-    // Check required properties
     if (!Array.isArray(data.weekDates) || !Array.isArray(data.datasets)) return false;
     if (typeof data.totalEntries !== 'number' || typeof data.totalExits !== 'number' || typeof data.totalAdjustments !== 'number') return false;
 
-    // Validate weekDates length
     if (data.weekDates.length !== 7) return false;
 
-    // Validate datasets structure
     if (data.datasets.length !== 3) return false;
 
     for (const dataset of data.datasets) {
@@ -283,7 +223,6 @@ export class StatisticsService {
   private static isValidInventoryAnalytics(data: any): data is InventoryAnalytics {
     if (!data || typeof data !== 'object') return false;
 
-    // Validate stockDistribution
     if (!Array.isArray(data.stockDistribution)) return false;
     for (const item of data.stockDistribution) {
       if (!item || typeof item !== 'object') return false;
@@ -292,13 +231,11 @@ export class StatisticsService {
       if (item.percentage < 0 || item.percentage > 100 || item.value < 0) return false;
     }
 
-    // Validate expirationTracking
     if (!data.expirationTracking || typeof data.expirationTracking !== 'object') return false;
     if (!Array.isArray(data.expirationTracking.lotsSoonToExpire)) return false;
     if (!Array.isArray(data.expirationTracking.expiredLots)) return false;
     if (typeof data.expirationTracking.totalExpiringValue !== 'number' || data.expirationTracking.totalExpiringValue < 0) return false;
 
-    // Validate expiring lots
     for (const lot of data.expirationTracking.lotsSoonToExpire) {
       if (!lot || typeof lot !== 'object') return false;
       if (typeof lot.id !== 'number' || typeof lot.beverageName !== 'string' || typeof lot.lotNumber !== 'string') return false;
@@ -307,12 +244,10 @@ export class StatisticsService {
       if (lot.quantity < 0 || lot.daysUntilExpiration < 0 || lot.value < 0) return false;
     }
 
-    // Validate movementAnalysis
     if (!data.movementAnalysis || typeof data.movementAnalysis !== 'object') return false;
     if (!Array.isArray(data.movementAnalysis.mostActiveBeverages) || !Array.isArray(data.movementAnalysis.leastActiveBeverages)) return false;
     if (!Array.isArray(data.movementAnalysis.seasonalTrends)) return false;
 
-    // Validate beverage activity data
     const allBeverages = [...data.movementAnalysis.mostActiveBeverages, ...data.movementAnalysis.leastActiveBeverages];
     for (const beverage of allBeverages) {
       if (!beverage || typeof beverage !== 'object') return false;

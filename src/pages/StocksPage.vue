@@ -23,21 +23,21 @@
     <!-- Stock Cards Grid -->
     <div class="stocks-grid">
       <div
-        v-for="stock in filteredStocks"
-        :key="stock.id"
+        v-for="stock in stocks"
+        :key="stock.beverageName"
         class="stock-card"
         :class="getStockStatusClass(stock)"
       >
         <div class="stock-header">
-          <h3 class="stock-name">{{ stock.name }}</h3>
+          <h3 class="stock-name">{{ stock.beverageName }}</h3>
           <div class="stock-status-badge" :class="getStockStatusClass(stock)">
-            {{ getStatusText(stock.status) }}
+            {{ stock.alertSecurityLevel }}
           </div>
         </div>
 
         <div class="stock-details">
           <div class="stock-quantity">
-            <span class="quantity-current">{{ stock.currentQuantity }}</span>
+            <span class="quantity-current">{{ stock.currentStockLevel }}</span>
             <span class="quantity-unit">unités</span>
           </div>
 
@@ -49,12 +49,7 @@
                 :class="getStockStatusClass(stock)"
               ></div>
             </div>
-            <span class="threshold-text">Seuil: {{ stock.threshold }}</span>
           </div>
-        </div>
-
-        <div class="stock-meta">
-          <span class="last-updated">Dernière mise à jour: {{ stock.lastUpdated }}</span>
         </div>
       </div>
     </div>
@@ -66,7 +61,7 @@
           <div class="summary-icon normal">📦</div>
           <div class="summary-content">
             <h4>Stock Normal</h4>
-            <p>{{ normalStockCount }} produits</p>
+            <p>{{ stocks.reduce((total, m) => total + (+m.currentStockLevel || 0), 0) }} produits</p>
           </div>
         </div>
 
@@ -74,7 +69,14 @@
           <div class="summary-icon warning">⚠️</div>
           <div class="summary-content">
             <h4>Stock Faible</h4>
-            <p>{{ lowStockCount }} produits</p>
+            <p>
+              {{
+                stocks.filter(m =>
+                    (+m.currentStockLevel || 0) > 0 &&
+                    (+m.currentStockLevel || 0) <= (+m.thresholdLevel || 0)
+                ).length
+              }} produits
+            </p>
           </div>
         </div>
 
@@ -82,91 +84,30 @@
           <div class="summary-icon critical">🚨</div>
           <div class="summary-content">
             <h4>Stock Critique</h4>
-            <p>{{ criticalStockCount }} produits</p>
+            <p>
+              {{
+                stocks.filter(m => (+m.currentStockLevel || 0) <= 0).length
+              }} produits
+            </p>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
-interface Stock {
-  id: number
-  name: string
-  currentQuantity: number
-  threshold: number
-  status: 'normal' | 'low' | 'critical'
-  lastUpdated: string
-}
+import {ref, computed, onMounted} from 'vue'
+import {StatisticsService, type Stock, type StockAlert} from "../api";
 
 const statusFilter = ref('all')
 
-// Sample stock data
-const stocks = ref<Stock[]>([
-  {
-    id: 1,
-    name: 'Coca-Cola 330ml',
-    currentQuantity: 180,
-    threshold: 50,
-    status: 'normal',
-    lastUpdated: '11/07/2025'
-  },
-  {
-    id: 2,
-    name: 'Fanta Orange 330ml',
-    currentQuantity: 25,
-    threshold: 40,
-    status: 'low',
-    lastUpdated: '10/07/2025'
-  },
-  {
-    id: 3,
-    name: 'Sprite 330ml',
-    currentQuantity: 8,
-    threshold: 30,
-    status: 'critical',
-    lastUpdated: '11/07/2025'
-  },
-  {
-    id: 4,
-    name: 'Pepsi 500ml',
-    currentQuantity: 95,
-    threshold: 35,
-    status: 'normal',
-    lastUpdated: '11/07/2025'
-  },
-  {
-    id: 5,
-    name: 'Orangina 250ml',
-    currentQuantity: 15,
-    threshold: 25,
-    status: 'low',
-    lastUpdated: '09/07/2025'
-  }
-])
+const stocks = ref<Stock[]>([])
 
-const filteredStocks = computed(() => {
-  if (statusFilter.value === 'all') return stocks.value
-  return stocks.value.filter(stock => stock.status === statusFilter.value)
-})
-
-const normalStockCount = computed(() =>
-  stocks.value.filter(stock => stock.status === 'normal').length
-)
-
-const lowStockCount = computed(() =>
-  stocks.value.filter(stock => stock.status === 'low').length
-)
-
-const criticalStockCount = computed(() =>
-  stocks.value.filter(stock => stock.status === 'critical').length
-)
 
 const getStockStatusClass = (stock: Stock) => {
-  return `status-${stock.status}`
+  return `status-${stock.alertSecurityLevel}`
 }
 
 const getStatusText = (status: string) => {
@@ -179,9 +120,15 @@ const getStatusText = (status: string) => {
 }
 
 const getThresholdPercentage = (stock: Stock) => {
-  const maxQuantity = Math.max(stock.currentQuantity, stock.threshold * 2)
-  return Math.min((stock.currentQuantity / maxQuantity) * 100, 100)
+  const maxQuantity = Math.max(stock.currentStockLevel, stock.threshold * 2)
+  return Math.min((stock.currentStockLevel / maxQuantity) * 100, 100)
 }
+async function loadStocks(){
+  stocks.value = await StatisticsService.getStocks();
+}
+onMounted(() => {
+  loadStocks()
+})
 </script>
 
 <style scoped>

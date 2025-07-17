@@ -10,8 +10,8 @@
         <div class="header-actions">
           <button @click="refreshData" class="btn btn-primary" :disabled="loading">
             <svg v-if="loading" class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-              <path d="m12 2 0 4 m0 12 0 4" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.25"/>
+              <path d="m12 2 0 4 m0 12 0 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
             <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -32,196 +32,144 @@
     <div v-else-if="dashboardStats" class="dashboard-content">
       <!-- Key Metrics Cards -->
       <div class="metrics-grid">
+        <!-- Total Beverages Card -->
         <div class="metric-card">
           <div class="metric-header">
             <div class="metric-icon success">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 5M7 13h10m-10 0L5.4 5M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"/>
+                <path d="M5 12V7a1 1 0 011-1h12a1 1 0 011 1v5M5 12l2 6h10l2-6M5 12h14M12 6V2m-4 8v6m8-6v6"/>
               </svg>
             </div>
             <div class="metric-details">
-              <h3 class="metric-title">Total des boissons</h3>
-              <p class="metric-value">{{ dashboardStats.totalBeverages }}</p>
-              <p class="metric-change positive">{{ dashboardStats.totalBeverages > 0 ? 'Actif' : 'Aucun produit' }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-header">
-            <div class="metric-icon info">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </div>
-            <div class="metric-details">
-              <h3 class="metric-title">Stock total</h3>
-              <p class="metric-value">{{ dashboardStats.totalStock }}</p>
-              <p class="metric-change">unités en stock</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-header">
-            <div class="metric-icon" :class="dashboardStats.lowStockAlerts > 0 ? 'warning' : 'success'">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-6h2v6zm0-8h-2V7h2v4z"/>
-              </svg>
-            </div>
-            <div class="metric-details">
-              <h3 class="metric-title">Alertes stock faible</h3>
-              <p class="metric-value">{{ dashboardStats.lowStockAlerts }}</p>
-              <p class="metric-change" :class="dashboardStats.lowStockAlerts > 0 ? 'negative' : 'positive'">
-                {{ dashboardStats.lowStockAlerts > 0 ? 'Nécessite attention' : 'Aucune alerte' }}
+              <h3 class="metric-title">Total Boissons</h3>
+              <p class="metric-value counting-animation">{{ animatedBeverages }}</p>
+              <p class="metric-change positive">
+                {{ dashboardStats.totalBeverages > 0 ? 'Produits actifs' : 'Aucun produit' }}
               </p>
             </div>
           </div>
         </div>
 
+        <!-- Total Stock Card -->
         <div class="metric-card">
           <div class="metric-header">
             <div class="metric-icon primary">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 5M7 13h10m-10 0L5.4 5M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"/>
+                <path d="M3 3h18v4H3V3zm0 6h18v2H3V9zm0 4h18v2H3v-2zm0 4h18v4H3v-4z"/>
               </svg>
             </div>
             <div class="metric-details">
-              <h3 class="metric-title">Total mouvements</h3>
-              <p class="metric-value">{{ dashboardStats.totalMovements }}</p>
+              <h3 class="metric-title">Stock Total</h3>
+              <p class="metric-value counting-animation">{{ animatedStock }}</p>
+              <p class="metric-change">unités en stock</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Movements Card -->
+        <div class="metric-card">
+          <div class="metric-header">
+            <div class="metric-icon warning">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <div class="metric-details">
+              <h3 class="metric-title">Mouvements</h3>
+              <p class="metric-value counting-animation">{{ animatedMovements }}</p>
               <p class="metric-change">opérations effectuées</p>
             </div>
           </div>
         </div>
 
+        <!-- Active Users Card -->
         <div class="metric-card">
           <div class="metric-header">
-            <div class="metric-icon secondary">
+            <div class="metric-icon info">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
             </div>
             <div class="metric-details">
-              <h3 class="metric-title">Utilisateurs actifs</h3>
-              <p class="metric-value">{{ dashboardStats.totalUsers }}</p>
+              <h3 class="metric-title">Utilisateurs</h3>
+              <p class="metric-value counting-animation">{{ animatedUsers }}</p>
               <p class="metric-change">utilisateurs système</p>
             </div>
           </div>
         </div>
 
+        <!-- Stock Value Card -->
         <div class="metric-card">
           <div class="metric-header">
             <div class="metric-icon success">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
               </svg>
             </div>
             <div class="metric-details">
-              <h3 class="metric-title">Valeur totale</h3>
-              <p class="metric-value">{{ formatCurrency(dashboardStats.totalValue) }}</p>
+              <h3 class="metric-title">Valeur Totale</h3>
+              <p class="metric-value counting-animation">{{ animatedValue }}</p>
               <p class="metric-change positive">valeur du stock</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Recent Activities and Alerts -->
-      <div class="dashboard-grid">
-        <!-- Recent Movements -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <h2 class="section-title">Mouvements récents</h2>
-            <router-link to="/movements" class="btn btn-outline-primary btn-sm">
-              Voir tout
-            </router-link>
-          </div>
-          <div class="movements-list">
-            <div v-if="dashboardStats.recentMovements.length === 0" class="empty-state">
-              <div class="empty-icon">📦</div>
-              <p class="empty-title">Aucun mouvement récent</p>
-              <p class="empty-subtitle">Les mouvements de stock apparaîtront ici</p>
-            </div>
-            <div v-else>
-              <div v-for="movement in dashboardStats.recentMovements" :key="movement.id" class="movement-item">
-                <div class="movement-icon" :class="getMovementTypeClass(movement.movementType)">
-                  {{ getMovementIcon(movement.movementType) }}
-                </div>
-                <div class="movement-details">
-                  <h4 class="movement-title">{{ movement.beverageName }}</h4>
-                  <p class="movement-description">
-                    {{ getMovementDescription(movement.movementType, movement.quantity) }}
-                  </p>
-                  <div class="movement-meta">
-                    <span class="movement-user">{{ movement.userName }}</span>
-                    <span class="movement-date">{{ formatDate(movement.date) }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <!-- Performance Section -->
+      <div class="performance-section">
+        <div class="section-header">
+          <h2 class="section-title">Performance</h2>
         </div>
 
-        <!-- Stock Alerts -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <h2 class="section-title">Alertes de stock</h2>
-            <router-link to="/stocks" class="btn btn-outline-warning btn-sm">
-              Gérer le stock
-            </router-link>
-          </div>
-          <div class="alerts-list">
-            <div v-if="dashboardStats.stockAlerts.length === 0" class="empty-state">
-              <div class="empty-icon">✅</div>
-              <p class="empty-title">Aucune alerte de stock</p>
-              <p class="empty-subtitle">Tous les produits sont bien approvisionnés</p>
-            </div>
-            <div v-else>
-              <div v-for="alert in dashboardStats.stockAlerts" :key="alert.id" class="alert-item" :class="getAlertClass(alert.alertLevel)">
-                <div class="alert-icon">
-                  {{ getAlertIcon(alert.alertLevel) }}
-                </div>
-                <div class="alert-details">
-                  <h4 class="alert-title">{{ alert.beverageName }}</h4>
-                  <p class="alert-description">
-                    Stock actuel: {{ alert.currentStock }} / Seuil: {{ alert.threshold }}
-                  </p>
-                  <span class="alert-badge" :class="getAlertClass(alert.alertLevel)">
-                    {{ getAlertText(alert.alertLevel) }}
-                  </span>
-                </div>
+        <div class="performance-grid">
+          <div class="performance-card">
+            <div class="performance-header">
+              <div class="performance-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
               </div>
+              <h3>Efficacité</h3>
+            </div>
+            <div class="performance-content">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%"></div>
+              </div>
+              <span class="progress-text">85%</span>
             </div>
           </div>
-        </div>
 
-        <!-- Top Beverages -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <h2 class="section-title">Boissons les plus actives</h2>
-            <router-link to="/analytics" class="btn btn-outline-info btn-sm">
-              Voir les analyses
-            </router-link>
-          </div>
-          <div class="beverages-list">
-            <div v-if="dashboardStats.topBeverages.length === 0" class="empty-state">
-              <div class="empty-icon">📊</div>
-              <p class="empty-title">Aucune donnée disponible</p>
-              <p class="empty-subtitle">Les statistiques de performance apparaîtront ici</p>
-            </div>
-            <div v-else>
-              <div v-for="beverage in dashboardStats.topBeverages" :key="beverage.id" class="beverage-item">
-                <div class="beverage-details">
-                  <h4 class="beverage-name">{{ beverage.name }}</h4>
-                  <p class="beverage-stats">
-                    {{ beverage.totalMovements }} mouvements • {{ beverage.totalQuantity }} unités
-                  </p>
-                </div>
-                <div class="beverage-progress">
-                  <div class="progress-bar">
-                    <div class="progress-fill" :style="{ width: getBeverageProgressWidth(beverage.totalMovements) }"></div>
-                  </div>
-                </div>
+          <div class="performance-card">
+            <div class="performance-header">
+              <div class="performance-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zm-8-2h2v-4h-2v4zm0-6h2V7h-2v4z"/>
+                </svg>
               </div>
+              <h3>Productivité</h3>
+            </div>
+            <div class="performance-content">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 92%"></div>
+              </div>
+              <span class="progress-text">92%</span>
+            </div>
+          </div>
+
+          <div class="performance-card">
+            <div class="performance-header">
+              <div class="performance-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <h3>Qualité</h3>
+            </div>
+            <div class="performance-content">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 96%"></div>
+              </div>
+              <span class="progress-text">96%</span>
             </div>
           </div>
         </div>
@@ -253,31 +201,101 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { StatisticsService } from '../api/features/stats/services/statService'
 import type { DashboardStatistics } from '../api/features/stats/models/DashboardStatisticsModel'
 import { showToast } from '../utils/toast'
 
-// Reactive state
 const dashboardStats = ref<DashboardStatistics | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-// Computed properties
-const maxMovements = computed(() => {
-  if (!dashboardStats.value?.topBeverages.length) return 1
-  return Math.max(...dashboardStats.value.topBeverages.map(b => b.totalMovements))
-})
+// Animation counters
+const animatedBeverages = ref(0)
+const animatedStock = ref(0)
+const animatedMovements = ref(0)
+const animatedUsers = ref(0)
+const animatedValue = ref('0 FCFA')
 
-// Methods
+// Animate numbers
+const animateNumber = (target: number, current: any, duration: number = 2000) => {
+  const start = performance.now()
+  const startValue = typeof current.value === 'string' ? 0 : current.value
+
+  const animate = (now: number) => {
+    const elapsed = now - start
+    const progress = Math.min(elapsed / duration, 1)
+    const easeOutQuart = 1 - Math.pow(1 - progress, 4)
+
+    const value = Math.floor(startValue + (target - startValue) * easeOutQuart)
+    current.value = value
+
+    if (progress < 1) {
+      requestAnimationFrame(animate)
+    }
+  }
+
+  requestAnimationFrame(animate)
+}
+
+// Animate currency values
+const animateCurrency = (target: number, duration: number = 2000) => {
+  const start = performance.now()
+  const startValue = 0
+
+  const animate = (now: number) => {
+    const elapsed = now - start
+    const progress = Math.min(elapsed / duration, 1)
+    const easeOutQuart = 1 - Math.pow(1 - progress, 4)
+
+    const value = Math.floor(startValue + (target - startValue) * easeOutQuart)
+    animatedValue.value = formatCurrency(value)
+
+    if (progress < 1) {
+      requestAnimationFrame(animate)
+    }
+  }
+
+  requestAnimationFrame(animate)
+}
+
+// Format currency for astronomical values
+const formatCurrency = (amount: number): string => {
+  if (amount >= 1e12) {
+    return (amount / 1e12).toFixed(1) + 'T FCFA'
+  } else if (amount >= 1e9) {
+    return (amount / 1e9).toFixed(1) + 'B FCFA'
+  } else if (amount >= 1e6) {
+    return (amount / 1e6).toFixed(1) + 'M FCFA'
+  } else if (amount >= 1e3) {
+    return (amount / 1e3).toFixed(1) + 'K FCFA'
+  }
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'XOF',
+    minimumFractionDigits: 0
+  }).format(amount)
+}
+
+// Watch for data changes and animate
+watch(dashboardStats, (newStats) => {
+  if (newStats) {
+    animateNumber(newStats.totalBeverages, animatedBeverages)
+    animateNumber(newStats.totalStock, animatedStock)
+    animateNumber(newStats.totalMovements, animatedMovements)
+    animateNumber(newStats.totalUsers, animatedUsers)
+    animateCurrency(newStats.totalValue)
+  }
+}, { immediate: true })
+
 const loadDashboardData = async () => {
   try {
     loading.value = true
     error.value = null
     dashboardStats.value = await StatisticsService.getDashboardStatistics()
+    showToast('Données actualisées avec succès', 'success')
   } catch (err) {
     error.value = 'Impossible de charger les statistiques du tableau de bord'
-    console.error('Error loading dashboard stats:', err)
     showToast('Erreur lors du chargement des statistiques', 'error')
   } finally {
     loading.value = false
@@ -288,209 +306,128 @@ const refreshData = () => {
   loadDashboardData()
 }
 
-// Utility functions
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'XOF',
-    minimumFractionDigits: 0
-  }).format(amount)
-}
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
-
-  if (diffInMinutes < 60) {
-    return `Il y a ${diffInMinutes} min`
-  } else if (diffInMinutes < 1440) {
-    return `Il y a ${Math.floor(diffInMinutes / 60)} h`
-  } else {
-    return date.toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-}
-
-const getMovementTypeClass = (type: string): string => {
-  switch (type.toLowerCase()) {
-    case 'entree': return 'success'
-    case 'sortie': return 'error'
-    case 'ajustement': return 'warning'
-    default: return 'info'
-  }
-}
-
-const getMovementIcon = (type: string): string => {
-  switch (type.toLowerCase()) {
-    case 'entree': return '↗'
-    case 'sortie': return '↘'
-    case 'ajustement': return '⚡'
-    default: return '📦'
-  }
-}
-
-const getMovementDescription = (type: string, quantity: number): string => {
-  switch (type.toLowerCase()) {
-    case 'entree': return `+${quantity} unités ajoutées`
-    case 'sortie': return `-${quantity} unités sorties`
-    case 'ajustement': return `${quantity} unités ajustées`
-    default: return `${quantity} unités`
-  }
-}
-
-const getAlertClass = (level: string): string => {
-  switch (level) {
-    case 'LOW': return 'warning'
-    case 'CRITICAL': return 'error'
-    case 'OUT_OF_STOCK': return 'danger'
-    default: return 'info'
-  }
-}
-
-const getAlertIcon = (level: string): string => {
-  switch (level) {
-    case 'LOW': return '⚠️'
-    case 'CRITICAL': return '🚨'
-    case 'OUT_OF_STOCK': return '❌'
-    default: return 'ℹ️'
-  }
-}
-
-const getAlertText = (level: string): string => {
-  switch (level) {
-    case 'LOW': return 'Stock faible'
-    case 'CRITICAL': return 'Stock critique'
-    case 'OUT_OF_STOCK': return 'Rupture de stock'
-    default: return 'Alerte'
-  }
-}
-
-const getBeverageProgressWidth = (movements: number): string => {
-  if (maxMovements.value === 0) return '0%'
-  return `${(movements / maxMovements.value) * 100}%`
-}
-
-// Lifecycle
 onMounted(() => {
   loadDashboardData()
-
-  // Set up auto-refresh every 30 seconds
-  const interval = setInterval(loadDashboardData, 30000)
-
-  // Cleanup interval on unmount
-  onUnmounted(() => {
-    clearInterval(interval)
-  })
 })
 </script>
 
 <style scoped>
 .dashboard-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
+  background: var(--color-bg-primary);
+  min-height: 100vh;
 }
 
+/* Page Header */
 .page-header {
   background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: var(--space-6) 0;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-4);
 }
 
-.header-text {
-  flex: 1;
-}
-
 .page-title {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: var(--space-2);
+  margin: 0;
 }
 
 .page-subtitle {
-  font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
-}
-
-.header-actions {
-  display: flex;
-  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  margin: var(--space-1) 0 0;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-3) var(--space-4);
-  border: none;
-  border-radius: var(--radius-lg);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: 6px;
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .btn-primary {
-  background: var(--color-primary-500);
-  color: var(--color-text-inverse);
-}
-
-.btn-primary:hover {
   background: var(--color-primary-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary-600);
 }
 
-.btn-outline-primary {
-  background: transparent;
-  border: 1px solid var(--color-primary-500);
-  color: var(--color-primary-500);
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-700);
+  border-color: var(--color-primary-700);
 }
 
-.btn-outline-primary:hover {
-  background: var(--color-primary-50);
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.btn-outline-warning {
-  background: transparent;
-  border: 1px solid var(--color-warning-500);
-  color: var(--color-warning-500);
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
-.btn-outline-warning:hover {
-  background: var(--color-warning-50);
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: var(--space-4);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-border-light);
+  border-top: 4px solid var(--color-primary-600);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-state p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  padding: var(--space-6) 0;
 }
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
 .metric-card {
   background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
   padding: var(--space-6);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .metric-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -501,245 +438,218 @@ onMounted(() => {
 }
 
 .metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: var(--radius-xl);
+  color: white;
   flex-shrink: 0;
 }
 
 .metric-icon.success {
-  background: var(--color-success-50);
-  color: var(--color-success-600);
-}
-
-.metric-icon.warning {
-  background: var(--color-warning-50);
-  color: var(--color-warning-600);
-}
-
-.metric-icon.info {
-  background: var(--color-secondary-100);
-  color: var(--color-secondary-600);
+  background: var(--color-success-600);
 }
 
 .metric-icon.primary {
-  background: var(--color-primary-50);
-  color: var(--color-primary-600);
+  background: var(--color-primary-600);
+}
+
+.metric-icon.warning {
+  background: var(--color-warning-600);
+}
+
+.metric-icon.info {
+  background: var(--color-secondary-600);
 }
 
 .metric-details {
   flex: 1;
-  min-width: 0;
 }
 
 .metric-title {
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: 500;
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-1);
+  margin: 0 0 var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .metric-value {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: var(--space-1);
+  margin: 0;
+  line-height: 1.1;
 }
 
 .metric-change {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin: var(--space-1) 0 0;
 }
 
 .metric-change.positive {
   color: var(--color-success-600);
 }
 
-.metric-change.negative {
-  color: var(--color-error-600);
-}
-
-.metric-change.neutral {
-  color: var(--color-text-tertiary);
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-6);
-}
-
-.dashboard-section {
+/* Performance Section */
+.performance-section {
   background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: var(--space-6);
 }
 
 .section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-6) var(--space-6) var(--space-4) var(--space-6);
-  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: var(--space-6);
 }
 
 .section-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
   color: var(--color-text-primary);
+  margin: 0;
 }
 
-.movements-list, .alerts-list, .beverages-list {
-  padding: var(--space-6);
+.performance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
 }
 
-.empty-state {
-  text-align: center;
-  color: var(--color-text-secondary);
-  padding: var(--space-6);
+.performance-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  padding: var(--space-4);
 }
 
-.movement-item, .alert-item, .beverage-item {
+.performance-header {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-secondary);
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
-.movement-icon {
+.performance-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: var(--color-primary-600);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
 }
 
-.movement-icon.success {
-  background: var(--color-success-50);
-  color: var(--color-success-600);
-}
-
-.movement-icon.error {
-  background: var(--color-error-50);
-  color: var(--color-error-600);
-}
-
-.movement-icon.warning {
-  background: var(--color-warning-50);
-  color: var(--color-warning-600);
-}
-
-.movement-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.movement-title {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-1);
-}
-
-.movement-description {
+.performance-header h3 {
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0;
 }
 
-.movement-meta {
+.performance-content {
   display: flex;
-  gap: var(--space-4);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-}
-
-.alert-icon {
-  color: var(--color-warning-600);
-  flex-shrink: 0;
-}
-
-.alert-item.error .alert-icon {
-  color: var(--color-error-600);
-}
-
-.alert-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.alert-title {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-1);
-}
-
-.alert-description {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.alert-badge {
-  display: inline-block;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-base);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .progress-bar {
-  background: var(--color-bg-muted);
-  border-radius: var(--radius-base);
-  height: 0.5rem;
-  width: 100%;
+  flex: 1;
+  height: 8px;
+  background: var(--color-border-light);
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-fill {
-  background: var(--color-primary-600);
   height: 100%;
-  transition: width var(--transition-fast);
+  background: var(--color-primary-600);
+  border-radius: 4px;
+  transition: width 0.3s ease;
 }
 
-.spinner {
-  border: 4px solid var(--color-border-light);
-  border-top: 4px solid var(--color-primary-600);
-  border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
-  animation: spin 1s linear infinite;
+.progress-text {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  min-width: 3rem;
+  text-align: right;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* No Data & Error States */
+.no-data-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  gap: var(--space-4);
 }
 
+.no-data-icon, .error-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-2);
+}
+
+.no-data-title, .error-state h3 {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0;
+}
+
+.no-data-subtitle, .error-state p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+  max-width: 500px;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
     align-items: stretch;
+    gap: var(--space-4);
   }
 
-  .content-grid {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .performance-grid {
     grid-template-columns: 1fr;
   }
 
-  .action-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  .metric-value {
+    font-size: 1.5rem;
   }
 
   .page-title {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl);
   }
+}
+
+/* Animation for counting numbers */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.counting-animation {
+  animation: countUp 0.5s ease-out;
 }
 </style>

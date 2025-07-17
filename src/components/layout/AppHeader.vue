@@ -51,22 +51,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import {
   Bars3Icon,
   ChevronDownIcon,
   UserIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/vue/24/outline'
-// import { useAuthStore } from '@/stores/auth'
 
+const router = useRouter()
+const authStore = useAuthStore()
 const showUserMenu = ref(false)
-// const authStore = useAuthStore()
 
-// Temporary mock user - replace with actual auth store
-const user = ref({
-  email: 'admin@bevstock.com',
-  role: 'GERANT'
-})
+const user = authStore.user
 
 const emit = defineEmits(['toggle-sidebar'])
 
@@ -85,9 +83,9 @@ const getRoleText = (role: string) => {
   }
 }
 
-const logout = () => {
-  // authStore.logout()
-  console.log('Logout clicked')
+const logout = async () => {
+  authStore.logout()
+  await router.push('/login')
 }
 </script>
 

@@ -30,7 +30,7 @@
                 <span class="nav-text">Boissons</span>
               </router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="isGerant">
               <router-link to="/lots" class="nav-link" active-class="active">
                 <ArchiveBoxIcon class="nav-icon w-5 h-5" />
                 <span class="nav-text">Lots et Batches</span>
@@ -54,18 +54,22 @@
                 <span class="nav-text">Utilisateurs</span>
               </router-link>
             </li>
-
           </ul>
         </div>
 
         <div class="nav-section">
           <h3 class="nav-section-title">Rapports</h3>
           <ul class="nav-list">
-
-            <li class="nav-item">
+            <li class="nav-item" v-if="isGerant">
               <router-link to="/analytics" class="nav-link" active-class="active">
                 <PresentationChartLineIcon class="nav-icon w-5 h-5" />
                 <span class="nav-text">Analyses</span>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/cache" class="nav-link" active-class="active">
+                <ArrowPathIcon class="nav-icon w-5 h-5" />
+                <span class="nav-text">Gestion de Cache</span>
               </router-link>
             </li>
           </ul>
@@ -87,14 +91,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useAuthStore } from '../../stores/auth'
 import {
   HomeIcon,
   ChartBarSquareIcon,
-BeakerIcon,
+  BeakerIcon,
   ArchiveBoxIcon,
   ArrowsUpDownIcon,
   UserGroupIcon,
   PresentationChartLineIcon,
+  ArrowPathIcon,
   TagIcon,
 } from '@heroicons/vue/24/outline'
 
@@ -104,10 +110,8 @@ interface Props {
 
 defineProps<Props>()
 
-
-const user = { role: 'GERANT' }
-
-const isGerant = computed(() => user.role === 'GERANT')
+const authStore = useAuthStore()
+const isGerant = computed(() => authStore.user?.role === 'GERANT')
 </script>
 
 <style scoped>

@@ -119,7 +119,6 @@ const passwordForm = ref({
 })
 
 onMounted(async () => {
-  // Get current user info from localStorage or API
   const storedUser = localStorage.getItem('currentUser')
   if (storedUser) {
     currentUser.value = JSON.parse(storedUser)
@@ -168,7 +167,6 @@ const changePassword = async () => {
         position: POSITION.BOTTOM_RIGHT
       })
 
-      // Clear form
       passwordForm.value = {
         currentPassword: '',
         newPassword: '',

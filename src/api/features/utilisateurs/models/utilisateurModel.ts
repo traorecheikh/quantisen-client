@@ -11,6 +11,7 @@ export interface Utilisateur {
   email: string;
   role: UserRole;
   isActive: boolean;
+  isFirstLogin: boolean;
   createdAt?: string;
 }
 
@@ -30,10 +31,9 @@ export interface LoginRequest {
 // Login response
 export interface LoginResponse {
   token: string;
-  user: Utilisateur;
+  utilisateur: Utilisateur;
 }
 
-// Password change request
 export interface PasswordChangeRequest {
   ancienMotDePasse: string;
   nouveauMotDePasse: string;

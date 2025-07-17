@@ -77,7 +77,7 @@
             v-for="lot in filteredLots"
             :key="lot.id"
             class="lot-card"
-            :class="getExpiryStatusClass(lot.datePeremption, lot.vendable)"
+            :class="getExpiryStatusClass(lot.datePeremption, lot.vendable!)"
         >
           <div class="lot-header">
             <div class="lot-info">
@@ -86,9 +86,9 @@
             </div>
             <div
                 class="lot-status-badge"
-                :class="getExpiryStatusClass(lot.datePeremption, lot.vendable)"
+                :class="getExpiryStatusClass(lot.datePeremption, lot.vendable!)"
             >
-              {{ getStatusText(lot.datePeremption, lot.vendable) }}
+              {{ getStatusText(lot.datePeremption, lot.vendable!) }}
             </div>
           </div>
 
@@ -261,7 +261,6 @@ const getExpiryStatus = (
     expiryDate: string,
     vendable: boolean
 ): 'active' | 'expiring' | 'expired' => {
-  if (!vendable) return 'expired'
 
   const today   = new Date()
   const expiry  = new Date(expiryDate)
@@ -271,6 +270,7 @@ const getExpiryStatus = (
 
   if (diffDays < 0) return 'expired'
   if (diffDays <= 30) return 'expiring'
+  if( !vendable ) return 'not-vendable'
   return 'active'
 }
 
@@ -278,6 +278,7 @@ const getExpiryStatusClass = (expiryDate: string, vendable: boolean) =>
     `status-${getExpiryStatus(expiryDate, vendable)}`
 
 const getStatusText = (expiryDate: string, vendable: boolean) => {
+  if(!vendable) return "NON VENDABLE"
   switch (getExpiryStatus(expiryDate, vendable)) {
     case 'active':
       return 'Actif'
@@ -320,6 +321,7 @@ const loadLots = async () => {
     ])
     lots.value      = lotsData
     beverages.value = beveragesData
+    console.log(lotsData)
   } catch (err) {
     console.error('Error loading lots:', err)
     error.value = 'Erreur lors du chargement des lots'
@@ -632,6 +634,10 @@ onMounted(loadLots)
 .lot-status-badge.status-expired {
   background: var(--color-error-50);
   color: var(--color-error-700);
+}
+.lot-status-badge.status-not-vendable {
+  background: #f5e6e8;
+  color: #333333;
 }
 
 .lot-details {

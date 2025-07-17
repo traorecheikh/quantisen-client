@@ -11,7 +11,7 @@
               <path d="M24 16h16v8H24z" fill="var(--color-primary-200)"/>
             </svg>
           </div>
-          <h1 class="brand-title">BevStock</h1>
+          <h1 class="brand-title">QuantiSen</h1>
           <p class="brand-subtitle">Gestion Professionnelle des Stocks de Boissons</p>
 
           <div class="features-list">
@@ -106,6 +106,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import {
   CheckCircleIcon,
   EnvelopeIcon,
@@ -116,6 +117,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const loginForm = ref({
   email: '',
@@ -131,18 +133,22 @@ const handleLogin = async () => {
   errorMessage.value = ''
 
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    const result = await authStore.login({
+      email: loginForm.value.email,
+      motDePasse: loginForm.value.password
+    })
 
-    // Mock validation
-    if (loginForm.value.email && loginForm.value.password) {
-      // Successful login - redirect to dashboard
-      router.push('/dashboard')
+    if (result.success) {
+      if (result.requiresPasswordChange) {
+        await router.push('/password-change')
+      } else {
+        await router.push('/dashboard')
+      }
     } else {
-      errorMessage.value = 'Veuillez entrer des identifiants valides'
+      errorMessage.value = authStore.error || 'Échec de la connexion'
     }
   } catch (error) {
-    errorMessage.value = 'Échec de la connexion. Veuillez réessayer.'
+    errorMessage.value = 'Une erreur inattendue s\'est produite'
   } finally {
     isLoading.value = false
   }

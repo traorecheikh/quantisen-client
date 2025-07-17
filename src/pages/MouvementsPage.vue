@@ -233,6 +233,24 @@
                   <div class="form-group-enhanced">
                     <label class="form-label-enhanced">
                       <div class="label-content">
+                        <span class="label-text">Fournisseur</span>
+                        <span class="label-required">*</span>
+                      </div>
+                    </label>
+                    <div class="input-wrapper">
+                      <input
+                        v-model="singleMovement.fournisseur"
+                        type="text"
+                        required
+                        class="form-input-enhanced"
+                        placeholder="Ex: Coca-Cola Company"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group-enhanced">
+                    <label class="form-label-enhanced">
+                      <div class="label-content">
                         <span class="label-text">Date de Péremption</span>
                         <span class="label-required">*</span>
                       </div>
@@ -395,9 +413,10 @@
     </div>
 
     <!-- Movement History -->
-    <div v-if="activeTab === 'history'" class="table-section">
-      <div class="filters-section">
-        <div class="filters-container">
+    <div v-if="activeTab === 'history'" class="history-section">
+      <div class="history-header">
+        <h3>Historique des Mouvements</h3>
+        <div class="history-filters">
           <select v-model="historyFilter.type" class="filter-select">
             <option value="">Tous les types</option>
             <option value="ENTREE">Entrées</option>
@@ -434,7 +453,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="operation in filteredLigneOperations" :key="operation.id">
+            <tr v-for="operation in paginatedLigneOperations.data" :key="operation.id">
               <td>{{ formatDate(operation.mouvement?.dateMouvement) }}</td>
               <td>
                 <span class="movement-badge" :class="operation.mouvement?.type?.toLowerCase()">
@@ -450,17 +469,82 @@
               <td>{{ operation.mouvement?.utilisateur.email }}</td>
               <td>
                 <span class="status-badge" :class="getStatusClass('CONFIRME')">
-                  {{'CONFIRME' }}
+                  CONFIRMÉ
                 </span>
               </td>
             </tr>
-            <tr v-if="filteredLigneOperations.length === 0">
+            <tr v-if="paginatedLigneOperations.data.length === 0">
               <td colspan="7" class="text-center text-gray-500 py-8">
                 Aucune ligne d'opération trouvée
               </td>
             </tr>
           </tbody>
         </table>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container" v-if="paginatedLigneOperations.total > 0">
+          <div class="pagination-info">
+            Affichage de {{ ((paginatedLigneOperations.page - 1) * paginatedLigneOperations.size) + 1 }} ����������
+            {{ Math.min(paginatedLigneOperations.page * paginatedLigneOperations.size, paginatedLigneOperations.total) }}
+            sur {{ paginatedLigneOperations.total }} éléments
+          </div>
+
+          <div class="pagination-controls">
+            <button
+              @click="changePage(1)"
+              :disabled="paginatedLigneOperations.page === 1"
+              class="pagination-btn"
+            >
+              Première
+            </button>
+
+            <button
+              @click="changePage(paginatedLigneOperations.page - 1)"
+              :disabled="paginatedLigneOperations.page === 1"
+              class="pagination-btn"
+            >
+              Précédente
+            </button>
+
+            <div class="pagination-pages">
+              <button
+                v-for="pageNum in visiblePages"
+                :key="pageNum"
+                @click="changePage(pageNum)"
+                :class="{ active: pageNum === paginatedLigneOperations.page }"
+                class="pagination-btn page-btn"
+              >
+                {{ pageNum }}
+              </button>
+            </div>
+
+            <button
+              @click="changePage(paginatedLigneOperations.page + 1)"
+              :disabled="paginatedLigneOperations.page === totalPages"
+              class="pagination-btn"
+            >
+              Suivante
+            </button>
+
+            <button
+              @click="changePage(totalPages)"
+              :disabled="paginatedLigneOperations.page === totalPages"
+              class="pagination-btn"
+            >
+              Dernière
+            </button>
+          </div>
+
+          <div class="pagination-size">
+            <label>Éléments par page:</label>
+            <select v-model="pageSize" @change="changePageSize" class="pagination-size-select">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -471,7 +555,8 @@
 
     <!-- Sortie Loading Animation -->
     <SortieLoadingAnimation v-if="isSortieProcessing" />
-    <ProcessingAnimation v-if="isSubmitting" />
+    <!-- Processing Animation - only show when NOT processing a sortie -->
+    <ProcessingAnimation v-if="isSubmitting && !isSortieProcessing" />
   </div>
 </template>
 
@@ -520,6 +605,7 @@ interface SingleMovementForm {
   raison: string
   numeroLot: string
   datePeremption: string
+  fournisseur: string // Added supplier field
 }
 
 interface MovementCSVRow {
@@ -549,7 +635,8 @@ const singleMovement = ref<SingleMovementForm>({
   typeAjustement: '',
   raison: '',
   numeroLot: '',
-  datePeremption: ''
+  datePeremption: '',
+  fournisseur: '' // Add supplier field initialization
 })
 
 
@@ -564,24 +651,30 @@ const historyFilter = ref({
   dateTo: ''
 })
 
+const paginatedLigneOperations = ref({
+  data: [] as LigneOperation[],
+  page: 1,
+  size: 10,
+  total: 0
+})
 
-
+const pageSize = ref(10)
+const currentPage = ref(1)
 
 const loadData = async () => {
   try {
-    const [beveragesData, lotsData, usersData, ligneOperationsData] = await Promise.all([
+    const [beveragesData, lotsData, usersData] = await Promise.all([
       BoissonService.getAllBeverages(),
       InventaireService.getAllLots(),
-      UtilisateurService.getAllUsers(),
-      InventaireService.getAllLigneOperations(),
-
+      UtilisateurService.getAllUsers()
     ])
-    console.log(ligneOperationsData);
 
     boissons.value = beveragesData
     lots.value = lotsData
     utilisateurs.value = usersData
-    ligneOperations.value = ligneOperationsData
+
+    // Load paginated ligne operations for history tab
+    await loadLigneOperations()
 
     const currentUserId = getCurrentUserId()
     if (currentUserId) {
@@ -591,6 +684,58 @@ const loadData = async () => {
     console.error('Error loading data:', error)
     showMessage('Erreur lors du chargement des données', 'error')
   }
+}
+
+// New function to load paginated ligne operations
+const loadLigneOperations = async () => {
+  try {
+    const response = await InventaireService.getAllLigneOperationsPaginated(
+      currentPage.value,
+      pageSize.value
+    )
+    paginatedLigneOperations.value = response
+  } catch (error) {
+    console.error('Error loading ligne operations:', error)
+    showMessage('Erreur lors du chargement de l\'historique', 'error')
+  }
+}
+
+// Computed properties for pagination
+const totalPages = computed(() => {
+  return Math.ceil(paginatedLigneOperations.value.total / paginatedLigneOperations.value.size)
+})
+
+const visiblePages = computed(() => {
+  const total = totalPages.value
+  const current = paginatedLigneOperations.value.page
+  const maxVisible = 5
+
+  if (total <= maxVisible) {
+    return Array.from({ length: total }, (_, i) => i + 1)
+  }
+
+  const half = Math.floor(maxVisible / 2)
+  let start = Math.max(1, current - half)
+  let end = Math.min(total, start + maxVisible - 1)
+
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1)
+  }
+
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+})
+
+// Pagination functions
+const changePage = async (page: number) => {
+  if (page < 1 || page > totalPages.value) return
+
+  currentPage.value = page
+  await loadLigneOperations()
+}
+
+const changePageSize = async () => {
+  currentPage.value = 1
+  await loadLigneOperations()
 }
 
 const getCurrentUserId = (): number => {
@@ -642,11 +787,13 @@ const submitSingleMovement = async () => {
       }
 
       await InventaireService.recordMouvementSortie(sortieRequest)
-      showMessage('Sortie enregistrée avec succès', 'success')
-      handleSubmissionSuccess()
       await loadData()
       resetSingleForm()
     })
+
+    // Show success message and toast only after animation completes
+    showMessage('Sortie enregistrée avec succès', 'success')
+    handleSubmissionSuccess()
   } else {
     try {
       const currentUser = getCurrentUser()
@@ -667,14 +814,21 @@ const submitSingleMovement = async () => {
             numeroLot: singleMovement.value.numeroLot,
             quantiteInitiale: Number(singleMovement.value.quantite),
             datePeremption: singleMovement.value.datePeremption,
+            fournisseur: singleMovement.value.fournisseur, // Add supplier field
             boisson: selectedBoisson
           },
           utilisateur: { id: currentUser.id }
         }
 
         await InventaireService.recordMouvementEntree(lotRequest)
-        showMessage('Entrée enregistrée avec succès', 'success')
-        handleSubmissionSuccess()
+        await loadData()
+        resetSingleForm()
+
+        // Show success message and toast after processing animation completes
+        setTimeout(() => {
+          showMessage('Entrée enregistrée avec succès', 'success')
+          handleSubmissionSuccess()
+        }, 2000) // 2 second delay to let animation finish
       } else if (singleMovement.value.typeMouvement === 'AJUSTEMENT') {
         const delta = singleMovement.value.typeAjustement === 'POSITIF'
           ? Math.abs(Number(singleMovement.value.quantite))
@@ -689,8 +843,14 @@ const submitSingleMovement = async () => {
         }
 
         await InventaireService.recordMouvementAjustement(ajustementRequest)
-        showMessage('Ajustement enregistré avec succès', 'success')
-        handleSubmissionSuccess()
+        await loadData()
+        resetSingleForm()
+
+        // Show success message and toast after processing animation completes
+        setTimeout(() => {
+          showMessage('Ajustement enregistré avec succès', 'success')
+          handleSubmissionSuccess()
+        }, 2000) // 2 second delay to let animation finish
       }
 
       await loadData()
@@ -725,6 +885,10 @@ const validateSingleMovement = (): boolean => {
       showMessage('Veuillez saisir un numéro de lot', 'error')
       return false
     }
+    if (!singleMovement.value.fournisseur.trim()) {
+      showMessage('Veuillez saisir le nom du fournisseur', 'error')
+      return false
+    }
     if (!singleMovement.value.datePeremption) {
       showMessage('Veuillez saisir une date de péremption', 'error')
       return false
@@ -735,7 +899,7 @@ const validateSingleMovement = (): boolean => {
       return false
     }
     if (!singleMovement.value.typeAjustement) {
-      showMessage('Veuillez sélectionner un type d\'ajustement', 'error')
+      showMessage('Veuillez s��lectionner un type d\'ajustement', 'error')
       return false
     }
     if (!singleMovement.value.raison.trim()) {
@@ -756,7 +920,8 @@ const resetSingleForm = () => {
     typeAjustement: '',
     raison: '',
     numeroLot: '',
-    datePeremption: ''
+    datePeremption: '',
+    fournisseur: '' // Reset supplier field
   }
 }
 
@@ -947,18 +1112,16 @@ const getUserName = (user: Utilisateur): string => {
 }
 
 const filteredLigneOperations = computed(() => {
-  let filtered = ligneOperations.value
+  let filtered = paginatedLigneOperations.value.data
 
   if (historyFilter.value.type) {
     filtered = filtered.filter(op => op.mouvement?.type === historyFilter.value.type)
   }
 
-  // Filter by beverage
   if (historyFilter.value.beverage) {
     filtered = filtered.filter(op => op.lot?.boisson?.id === Number(historyFilter.value.beverage))
   }
 
-  // Filter by date range
   if (historyFilter.value.dateFrom) {
     filtered = filtered.filter(op => {
       const opDate = new Date(op.mouvement?.dateMouvement || '')
@@ -982,13 +1145,14 @@ const filteredLigneOperations = computed(() => {
   })
 })
 
-const clearHistoryFilters = () => {
+const clearHistoryFilters = async () => {
   historyFilter.value = {
     type: '',
     beverage: '',
     dateFrom: '',
     dateTo: ''
   }
+  await loadLigneOperations()
 }
 
 const getStatusClass = (status: string | undefined): string => {
@@ -1003,6 +1167,7 @@ const getStatusClass = (status: string | undefined): string => {
       return 'success'
   }
 }
+
 onMounted(() => {
   loadData()
 })
@@ -1915,56 +2080,157 @@ onMounted(() => {
   }
 }
 
+/* Pagination Styles */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-bg-secondary);
+}
+
+.pagination-info {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-700);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-tertiary);
+}
+
+.pagination-btn.active {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  color: var(--color-text-inverse);
+}
+
+.pagination-btn.active:hover {
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+}
+
+.pagination-pages {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.pagination-size {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.pagination-size-select {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.pagination-size-select:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
+}
+
+.history-section {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.history-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.history-header h3 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.history-filters {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Responsive pagination */
 @media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header-actions {
-    flex-direction: column;
-  }
-
-  .filters-container {
-    flex-direction: column;
-  }
-
-  .filters {
-    flex-direction: column;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .full-width {
-    grid-column: span 1;
-  }
-
-  .batch-header {
+  .pagination-container {
     flex-direction: column;
     gap: var(--space-3);
     align-items: stretch;
   }
 
-  .movement-form-grid {
-    grid-template-columns: 1fr;
+  .pagination-controls {
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
-  .quick-buttons {
+  .pagination-info {
+    text-align: center;
+  }
+
+  .pagination-size {
+    justify-content: center;
+  }
+
+  .history-filters {
     flex-direction: column;
   }
+}
 
-  .csv-actions {
-    flex-direction: column;
+@media (max-width: 480px) {
+  .pagination-pages {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  .tabs-container {
-    flex-direction: column;
-  }
-
-  .tab-button {
-    flex: none;
+  .pagination-btn {
+    min-width: 2rem;
+    padding: var(--space-1) var(--space-2);
   }
 }
 </style>

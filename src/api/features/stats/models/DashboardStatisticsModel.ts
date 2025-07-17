@@ -6,12 +6,9 @@ export interface DashboardStatistics {
   totalMovements: number;
   totalUsers: number;
   totalValue: number;
-  recentMovements: RecentMovement[];
-  topBeverages: TopBeverage[];
   stockAlerts: StockAlert[];
 }
 
-// Recent movement for dashboard
 export interface RecentMovement {
   id: number;
   beverageName: string;
@@ -36,4 +33,11 @@ export interface StockAlert {
   currentStock: number;
   threshold: number;
   alertLevel: 'LOW' | 'CRITICAL' | 'OUT_OF_STOCK';
+}
+
+export interface Stock{
+  alertSecurityLevel: 'LOW' | 'CRITICAL' | 'OUT_OF_STOCK'| 'OK';
+  beverageName: string;
+  currentStockLevel: number;
+  threshold: number;
 }

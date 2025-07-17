@@ -253,43 +253,13 @@
 import {onMounted, ref} from 'vue'
 import { PlusIcon, PencilIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import {type Boisson, BoissonService} from "../api";
+import {showToast} from "../utils/toast.ts";
 
 const showAddModal = ref(false)
 const showEditModal = ref(false)
 const editingBeverage = ref<Boisson | null>(null)
 
-const beverages = ref<Boisson[]>([
-  {
-    id: 1,
-    nom: 'Coca-Cola Classique',
-    description: 'Soda classique au goût de cola',
-    prix: 300,
-    volume: 330,
-    unite: 'ml',
-    seuil: 50,
-    isActive: true
-  },
-  {
-    id: 2,
-    nom: 'Fanta Orange',
-    description: 'Soda à l’orange pétillant',
-    prix: 350,
-    volume: 330,
-    unite: 'ml',
-    seuil: 40,
-    isActive: true
-  },
-  {
-    id: 3,
-    nom: 'Sprite',
-    description: 'Soda citron-lime rafraîchissant',
-    prix: 320,
-    volume: 330,
-    unite: 'ml',
-    seuil: 30,
-    isActive: true
-  }
-])
+const beverages = ref<Boisson[]>([])
 
 const addForm = ref({
   nom: '',
@@ -344,15 +314,18 @@ const addBeverage = () => {
     ...addForm.value
   }
   beverages.value.push(newBeverage)
+  showToast(`Boisson "${newBeverage.nom}" ajoutée avec succès!`, 'success')
   closeAddModal()
 }
 
-const updateBeverage = () => {
+const updateBeverage = async () =>{
   if (editingBeverage.value) {
     const index = beverages.value.findIndex(b => b.id === editingBeverage.value!.id)
     if (index !== -1) {
       beverages.value[index] = { ...editForm.value, id: editingBeverage.value.id , isActive:true}
     }
+    await BoissonService.updateBoisson(editingBeverage.value!.id, editForm.value)
+    showToast(`Boisson "${editForm.value.nom}" mise à jour avec succès!`, 'success')
   }
   closeEditModal()
 }

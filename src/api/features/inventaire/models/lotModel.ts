@@ -5,6 +5,7 @@ export interface Lot {
   id?: number;
   numeroLot: string;
   quantiteInitiale: number;
+  fournisseur?: string;
   quantiteActuelle?: number;
   mouvementEntree?: Mouvement;
   dateEntree?: string; // Format: YYYY-MM-DD
