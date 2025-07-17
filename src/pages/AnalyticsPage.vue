@@ -18,21 +18,43 @@
           </div>
           <button @click="exportStatistics" class="btn btn-outline-primary">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
-              <path d="M14 2v6h6"/>
-              <path d="M16 13H8"/>
-              <path d="M16 17H8"/>
-              <path d="M10 9H8"/>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
+              <path d="M14 2v6h6" />
+              <path d="M16 13H8" />
+              <path d="M16 17H8" />
+              <path d="M10 9H8" />
             </svg>
             Exporter
           </button>
           <button @click="refreshData" class="btn btn-primary" :disabled="loading">
-            <svg v-if="loading" class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
-              <path d="m12 2 0 4 m0 12 0 4" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            <svg
+              v-if="loading"
+              class="animate-spin"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+                opacity="0.25"
+              />
+              <path
+                d="m12 2 0 4 m0 12 0 4"
+                stroke="currentColor"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
             </svg>
             <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              <path
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
             </svg>
             {{ loading ? 'Actualisation...' : 'Actualiser' }}
           </button>
@@ -104,7 +126,11 @@
               <p class="empty-subtitle">Les statistiques de performance apparaîtront ici</p>
             </div>
             <div v-else>
-              <div v-for="beverage in beveragePerformance" :key="beverage.id" class="performance-item">
+              <div
+                v-for="beverage in beveragePerformance"
+                :key="beverage.id"
+                class="performance-item"
+              >
                 <div class="performance-rank">{{ beverage.rank }}</div>
                 <div class="performance-details">
                   <h4 class="performance-name">{{ beverage.name }}</h4>
@@ -122,7 +148,10 @@
                 </div>
                 <div class="performance-progress">
                   <div class="progress-bar">
-                    <div class="progress-fill" :style="{ width: getPerformanceProgressWidth(beverage.totalMovements) }"></div>
+                    <div
+                      class="progress-fill"
+                      :style="{ width: getPerformanceProgressWidth(beverage.totalMovements) }"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -140,12 +169,19 @@
           </div>
           <div class="inventory-content">
             <!-- Stock Distribution Chart -->
-            <div v-if="inventoryViewType === 'chart' && inventoryAnalytics" class="distribution-chart">
+            <div
+              v-if="inventoryViewType === 'chart' && inventoryAnalytics"
+              class="distribution-chart"
+            >
               <canvas ref="distributionCanvas" id="distributionChart"></canvas>
             </div>
             <!-- Stock Distribution List -->
             <div v-else-if="inventoryAnalytics" class="distribution-list">
-              <div v-for="item in inventoryAnalytics.stockDistribution" :key="item.category" class="distribution-item">
+              <div
+                v-for="item in inventoryAnalytics.stockDistribution"
+                :key="item.category"
+                class="distribution-item"
+              >
                 <div class="distribution-color" :style="{ backgroundColor: item.color }"></div>
                 <div class="distribution-details">
                   <h4 class="distribution-category">{{ item.category }}</h4>
@@ -158,8 +194,6 @@
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
 
@@ -168,9 +202,7 @@
       <div class="error-icon">⚠️</div>
       <h3>Erreur de chargement</h3>
       <p>{{ error }}</p>
-      <button @click="refreshData" class="btn btn-primary">
-        Réessayer
-      </button>
+      <button @click="refreshData" class="btn btn-primary">Réessayer</button>
     </div>
 
     <!-- Export Modal -->
@@ -185,23 +217,32 @@
             <div class="export-option">
               <h4>Format</h4>
               <div class="radio-group">
-                <label><input type="radio" v-model="exportFormat" value="pdf"> PDF</label>
-                <label><input type="radio" v-model="exportFormat" value="excel"> Excel</label>
+                <label><input type="radio" v-model="exportFormat" value="pdf" /> PDF</label>
+                <label><input type="radio" v-model="exportFormat" value="excel" /> Excel</label>
               </div>
             </div>
             <div class="export-option">
               <h4>Type de données</h4>
               <div class="radio-group">
-                <label><input type="radio" v-model="exportType" value="analytics"> Analyses complètes</label>
-                <label><input type="radio" v-model="exportType" value="movements"> Mouvements seulement</label>
-                <label><input type="radio" v-model="exportType" value="inventory"> Inventaire seulement</label>
+                <label
+                  ><input type="radio" v-model="exportType" value="analytics" /> Analyses
+                  complètes</label
+                >
+                <label
+                  ><input type="radio" v-model="exportType" value="movements" /> Mouvements
+                  seulement</label
+                >
+                <label
+                  ><input type="radio" v-model="exportType" value="inventory" /> Inventaire
+                  seulement</label
+                >
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button @click="closeExportModal" class="btn btn-outline-secondary">Annuler</button>
-          <button @click="performExport" class="btn btn-primary" :disabled="exportLoading">
+          <button @click="" class="btn btn-primary" :disabled="exportLoading">
             {{ exportLoading ? 'Export en cours...' : 'Exporter' }}
           </button>
         </div>
@@ -214,8 +255,14 @@
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { Chart, registerables } from 'chart.js'
 import { StatisticsService } from '../api/features/stats/services/statService'
-import type { WeeklyStockMovement, MovementTrend } from '../api/features/stats/models/WeeklyStockMovementModel'
-import type { BeveragePerformance, InventoryAnalytics } from '../api/features/stats/models/AnalyticsModel'
+import type {
+  WeeklyStockMovement,
+  MovementTrend,
+} from '../api/features/stats/models/WeeklyStockMovementModel'
+import type {
+  BeveragePerformance,
+  InventoryAnalytics,
+} from '../api/features/stats/models/AnalyticsModel'
 import { showToast } from '../utils/toast'
 
 Chart.register(...registerables)
@@ -229,7 +276,6 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const selectedPeriod = ref<'weekly' | 'monthly' | 'yearly'>('weekly')
 const inventoryViewType = ref<'chart' | 'list'>('chart')
-const analysisTab = ref<'active' | 'inactive'>('active')
 
 // Export modal state
 const showExportModal = ref(false)
@@ -246,54 +292,55 @@ let distributionChart: Chart | null = null
 // Computed properties
 const maxPerformance = computed(() => {
   if (!beveragePerformance.value.length) return 1
-  return Math.max(...beveragePerformance.value.map(b => b.totalMovements))
+  return Math.max(...beveragePerformance.value.map((b) => b.totalMovements))
 })
 
 // Methods
 const loadAnalyticsData = async () => {
   try {
-    console.log('🚀 [AnalyticsPage] Starting analytics data load...');
+    console.log('🚀 [AnalyticsPage] Starting analytics data load...')
     loading.value = true
     error.value = null
 
-    console.log('📡 [AnalyticsPage] Making parallel API calls...');
+    console.log('📡 [AnalyticsPage] Making parallel API calls...')
     // Load all analytics data
-    const [weeklyResponse, trendsResponse, performanceResponse, inventoryResponse] = await Promise.all([
-      StatisticsService.getWeeklyStockMovement(),
-      StatisticsService.getMovementTrends(selectedPeriod.value),
-      StatisticsService.getBeveragePerformance(),
-      StatisticsService.getInventoryAnalytics()
-    ])
+    const [weeklyResponse, trendsResponse, performanceResponse, inventoryResponse] =
+      await Promise.all([
+        StatisticsService.getWeeklyStockMovement(),
+        StatisticsService.getMovementTrends(selectedPeriod.value),
+        StatisticsService.getBeveragePerformance(),
+        StatisticsService.getInventoryAnalytics(),
+      ])
 
-    console.log('✅ [AnalyticsPage] All API calls completed successfully');
-    console.log('📊 [AnalyticsPage] Weekly data received:', weeklyResponse);
-    console.log('📈 [AnalyticsPage] Trends data received:', trendsResponse);
-    console.log('🏆 [AnalyticsPage] Performance data received:', performanceResponse);
-    console.log('📦 [AnalyticsPage] Inventory data received:', inventoryResponse);
+    console.log('✅ [AnalyticsPage] All API calls completed successfully')
+    console.log('📊 [AnalyticsPage] Weekly data received:', weeklyResponse)
+    console.log('📈 [AnalyticsPage] Trends data received:', trendsResponse)
+    console.log('🏆 [AnalyticsPage] Performance data received:', performanceResponse)
+    console.log('📦 [AnalyticsPage] Inventory data received:', inventoryResponse)
 
     weeklyData.value = weeklyResponse
     movementTrends.value = trendsResponse
     beveragePerformance.value = performanceResponse
     inventoryAnalytics.value = inventoryResponse
 
-    console.log('💾 [AnalyticsPage] Data assigned to reactive variables');
-    console.log('🎯 [AnalyticsPage] weeklyData.value:', weeklyData.value);
-    console.log('🎯 [AnalyticsPage] movementTrends.value:', movementTrends.value);
-    console.log('🎯 [AnalyticsPage] beveragePerformance.value:', beveragePerformance.value);
-    console.log('🎯 [AnalyticsPage] inventoryAnalytics.value:', inventoryAnalytics.value);
+    console.log('💾 [AnalyticsPage] Data assigned to reactive variables')
+    console.log('🎯 [AnalyticsPage] weeklyData.value:', weeklyData.value)
+    console.log('🎯 [AnalyticsPage] movementTrends.value:', movementTrends.value)
+    console.log('🎯 [AnalyticsPage] beveragePerformance.value:', beveragePerformance.value)
+    console.log('🎯 [AnalyticsPage] inventoryAnalytics.value:', inventoryAnalytics.value)
 
     // Initialize charts after data is loaded
-    console.log('🔧 [AnalyticsPage] Initializing charts...');
+    console.log('🔧 [AnalyticsPage] Initializing charts...')
     await nextTick()
     initializeCharts()
-    console.log('✅ [AnalyticsPage] Charts initialized successfully');
+    console.log('✅ [AnalyticsPage] Charts initialized successfully')
   } catch (err) {
-    console.error('❌ [AnalyticsPage] Error loading analytics data:', err);
-    error.value = 'Impossible de charger les données d\'analyse'
+    console.error('❌ [AnalyticsPage] Error loading analytics data:', err)
+    error.value = "Impossible de charger les données d'analyse"
     showToast('Erreur lors du chargement des analyses', 'error')
   } finally {
     loading.value = false
-    console.log('🏁 [AnalyticsPage] Analytics data load completed');
+    console.log('🏁 [AnalyticsPage] Analytics data load completed')
   }
 }
 
@@ -318,49 +365,49 @@ const initMovementChart = () => {
     type: 'line',
     data: {
       labels: weeklyData.value.weekDates,
-      datasets: weeklyData.value.datasets.map(dataset => ({
+      datasets: weeklyData.value.datasets.map((dataset) => ({
         label: dataset.label,
         data: dataset.data,
         borderColor: dataset.color,
         backgroundColor: dataset.color + '20',
         tension: 0.4,
-        fill: true
-      }))
+        fill: true,
+      })),
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false
+          display: false,
         },
         tooltip: {
           mode: 'index',
           intersect: false,
-        }
+        },
       },
       scales: {
         x: {
           display: true,
           title: {
             display: true,
-            text: 'Période'
-          }
+            text: 'Période',
+          },
         },
         y: {
           display: true,
           title: {
             display: true,
-            text: 'Quantité'
-          }
-        }
+            text: 'Quantité',
+          },
+        },
       },
       interaction: {
         mode: 'nearest',
         axis: 'x',
-        intersect: false
-      }
-    }
+        intersect: false,
+      },
+    },
   })
 }
 
@@ -375,13 +422,15 @@ const initDistributionChart = () => {
   distributionChart = new Chart(ctx, {
     type: 'pie',
     data: {
-      labels: inventoryAnalytics.value.stockDistribution.map(item => item.category),
-      datasets: [{
-        data: inventoryAnalytics.value.stockDistribution.map(item => item.percentage),
-        backgroundColor: inventoryAnalytics.value.stockDistribution.map(item => item.color),
-        borderWidth: 2,
-        borderColor: '#fff'
-      }]
+      labels: inventoryAnalytics.value.stockDistribution.map((item) => item.category),
+      datasets: [
+        {
+          data: inventoryAnalytics.value.stockDistribution.map((item) => item.percentage),
+          backgroundColor: inventoryAnalytics.value.stockDistribution.map((item) => item.color),
+          borderWidth: 2,
+          borderColor: '#fff',
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -391,11 +440,11 @@ const initDistributionChart = () => {
           position: 'bottom',
           labels: {
             usePointStyle: true,
-            padding: 20
-          }
-        }
-      }
-    }
+            padding: 20,
+          },
+        },
+      },
+    },
   })
 }
 
@@ -418,62 +467,43 @@ const closeExportModal = () => {
   showExportModal.value = false
 }
 
-const performExport = async () => {
-  try {
-    exportLoading.value = true
-    let blob: Blob
 
-    if (exportFormat.value === 'pdf') {
-      blob = await StatisticsService.exportStatisticsPDF(exportType.value as any)
-    } else if (exportFormat.value === 'excel') {
-      blob = await StatisticsService.exportStatisticsExcel(exportType.value as any)
-    }
-
-    // Create download link
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `statistics_${exportType.value}_${new Date().toISOString().split('T')[0]}.${exportFormat.value}`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    window.URL.revokeObjectURL(url)
-
-    showToast('Export terminé avec succès', 'success')
-    closeExportModal()
-  } catch (err) {
-    console.error('Export error:', err)
-    showToast('Erreur lors de l\'export', 'error')
-  } finally {
-    exportLoading.value = false
-  }
-}
-
-// Utility functions
 const getPeriodLabel = (period: string): string => {
   switch (period) {
-    case 'weekly': return 'Cette Semaine'
-    case 'monthly': return 'Ce Mois'
-    case 'yearly': return 'Cette Année'
-    default: return 'Période'
+    case 'weekly':
+      return 'Cette Semaine'
+    case 'monthly':
+      return 'Ce Mois'
+    case 'yearly':
+      return 'Cette Année'
+    default:
+      return 'Période'
   }
 }
 
 const getTrendClass = (trend: string): string => {
   switch (trend) {
-    case 'UP': return 'success'
-    case 'DOWN': return 'error'
-    case 'STABLE': return 'warning'
-    default: return 'info'
+    case 'UP':
+      return 'success'
+    case 'DOWN':
+      return 'error'
+    case 'STABLE':
+      return 'warning'
+    default:
+      return 'info'
   }
 }
 
 const getTrendIcon = (trend: string): string => {
   switch (trend) {
-    case 'UP': return '↗️'
-    case 'DOWN': return '↘️'
-    case 'STABLE': return '➡️'
-    default: return '📊'
+    case 'UP':
+      return '↗️'
+    case 'DOWN':
+      return '↘️'
+    case 'STABLE':
+      return '➡️'
+    default:
+      return '📊'
   }
 }
 
@@ -486,10 +516,9 @@ const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'XOF',
-    minimumFractionDigits: 0
+    minimumFractionDigits: 0,
   }).format(amount)
 }
-
 
 // Lifecycle
 onMounted(() => {
@@ -576,7 +605,9 @@ onUnmounted(() => {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: background var(--transition-fast), transform var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .btn-primary {
@@ -769,8 +800,12 @@ onUnmounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-state {

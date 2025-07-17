@@ -1,4 +1,4 @@
-import {POSITION, useToast} from 'vue-toastification'
+import { POSITION, useToast } from 'vue-toastification'
 
 const toast = useToast()
 
@@ -13,7 +13,10 @@ export function showApiError(message: string) {
   })
 }
 
-export function showToast(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') {
+export function showToast(
+  message: string,
+  type: 'success' | 'error' | 'warning' | 'info' = 'info'
+) {
   const options = {
     timeout: 3000,
     position: POSITION.BOTTOM_RIGHT,

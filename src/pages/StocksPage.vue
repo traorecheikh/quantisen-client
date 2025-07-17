@@ -5,7 +5,9 @@
       <div class="header-content">
         <div class="header-text">
           <h1 class="page-title">Vue d'ensemble des stocks</h1>
-          <p class="page-subtitle">Surveillance des niveaux de stock actuels pour toutes les boissons</p>
+          <p class="page-subtitle">
+            Surveillance des niveaux de stock actuels pour toutes les boissons
+          </p>
         </div>
         <div class="header-actions">
           <div class="filter-group">
@@ -61,7 +63,9 @@
           <div class="summary-icon normal">📦</div>
           <div class="summary-content">
             <h4>Stock Normal</h4>
-            <p>{{ stocks.reduce((total, m) => total + (+m.currentStockLevel || 0), 0) }} produits</p>
+            <p>
+              {{ stocks.reduce((total, m) => total + (+m.currentStockLevel || 0), 0) }} produits
+            </p>
           </div>
         </div>
 
@@ -71,11 +75,13 @@
             <h4>Stock Faible</h4>
             <p>
               {{
-                stocks.filter(m =>
+                stocks.filter(
+                  (m) =>
                     (+m.currentStockLevel || 0) > 0 &&
-                    (+m.currentStockLevel || 0) <= (+m.thresholdLevel || 0)
+                    (+m.currentStockLevel || 0) <= (+m.threshold || 0)
                 ).length
-              }} produits
+              }}
+              produits
             </p>
           </div>
         </div>
@@ -84,47 +90,32 @@
           <div class="summary-icon critical">🚨</div>
           <div class="summary-content">
             <h4>Stock Critique</h4>
-            <p>
-              {{
-                stocks.filter(m => (+m.currentStockLevel || 0) <= 0).length
-              }} produits
-            </p>
+            <p>{{ stocks.filter((m) => (+m.currentStockLevel || 0) <= 0).length }} produits</p>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted} from 'vue'
-import {StatisticsService, type Stock, type StockAlert} from "../api";
+import { ref,onMounted } from 'vue'
+import { StatisticsService, type Stock } from '../api'
 
 const statusFilter = ref('all')
 
 const stocks = ref<Stock[]>([])
 
-
 const getStockStatusClass = (stock: Stock) => {
   return `status-${stock.alertSecurityLevel}`
-}
-
-const getStatusText = (status: string) => {
-  switch (status) {
-    case 'normal': return 'Normal'
-    case 'low': return 'Faible'
-    case 'critical': return 'Critique'
-    default: return 'Normal'
-  }
 }
 
 const getThresholdPercentage = (stock: Stock) => {
   const maxQuantity = Math.max(stock.currentStockLevel, stock.threshold * 2)
   return Math.min((stock.currentStockLevel / maxQuantity) * 100, 100)
 }
-async function loadStocks(){
-  stocks.value = await StatisticsService.getStocks();
+async function loadStocks() {
+  stocks.value = await StatisticsService.getStocks()
 }
 onMounted(() => {
   loadStocks()

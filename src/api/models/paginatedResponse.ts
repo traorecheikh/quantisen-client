@@ -5,4 +5,3 @@ export interface PaginatedResponse<T> {
   size: number
   total: number
 }
-

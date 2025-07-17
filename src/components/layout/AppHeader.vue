@@ -7,7 +7,6 @@
           <img src="/logo.png" alt="Boisson Stock Logo" width="32" height="32" />
         </div>
 
-
         <div class="brand-text">
           <h1 class="brand-title">QuantiSen</h1>
           <p class="brand-subtitle">Gestion des Stocks de Boissons</p>
@@ -57,7 +56,7 @@ import {
   Bars3Icon,
   ChevronDownIcon,
   UserIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/vue/24/outline'
 
 const router = useRouter()

@@ -23,7 +23,7 @@ class CacheManager {
    */
   get<T>(key: string): T | null {
     const entry = this.cache.get(key)
-    
+
     if (!entry) {
       return null
     }
@@ -44,9 +44,9 @@ class CacheManager {
     const entry: CacheEntry<T> = {
       data,
       timestamp: Date.now(),
-      ttl
+      ttl,
     }
-    
+
     this.cache.set(key, entry)
   }
 
@@ -69,7 +69,7 @@ class CacheManager {
    */
   clearExpired(): void {
     const now = Date.now()
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (now - entry.timestamp > entry.ttl) {
         this.cache.delete(key)
@@ -84,7 +84,7 @@ class CacheManager {
     return {
       size: this.cache.size,
       keys: Array.from(this.cache.keys()),
-      totalMemory: this.calculateMemoryUsage()
+      totalMemory: this.calculateMemoryUsage(),
     }
   }
 
@@ -93,12 +93,12 @@ class CacheManager {
    */
   private calculateMemoryUsage(): string {
     let totalSize = 0
-    
+
     for (const [key, entry] of this.cache.entries()) {
       totalSize += key.length * 2 // String characters are 2 bytes each
       totalSize += JSON.stringify(entry).length * 2
     }
-    
+
     return `${(totalSize / 1024).toFixed(2)} KB`
   }
 
@@ -107,33 +107,36 @@ class CacheManager {
    */
   createKey(url: string, params?: any): string {
     const baseKey = url.replace(/^\/+|\/+$/g, '').replace(/\/+/g, '_')
-    
+
     if (params) {
       const paramString = JSON.stringify(params)
       return `${baseKey}_${btoa(paramString)}`
     }
-    
+
     return baseKey
   }
 }
 
 // Cache TTL configurations for different data types
 export const CACHE_TTL = {
-  DASHBOARD_STATS: 2 * 60 * 1000,     // 2 minutes
-  BEVERAGES: 10 * 60 * 1000,          // 10 minutes
-  STOCKS: 30 * 1000,                  // 30 seconds
-  MOVEMENTS: 1 * 60 * 1000,           // 1 minute
-  USERS: 15 * 60 * 1000,              // 15 minutes
-  LOTS: 5 * 60 * 1000,                // 5 minutes
-  ANALYTICS: 5 * 60 * 1000,           // 5 minutes
-  PROFILE: 30 * 60 * 1000,            // 30 minutes
+  DASHBOARD_STATS: 2 * 60 * 1000, // 2 minutes
+  BEVERAGES: 10 * 60 * 1000, // 10 minutes
+  STOCKS: 30 * 1000, // 30 seconds
+  MOVEMENTS: 1 * 60 * 1000, // 1 minute
+  USERS: 15 * 60 * 1000, // 15 minutes
+  LOTS: 5 * 60 * 1000, // 5 minutes
+  ANALYTICS: 5 * 60 * 1000, // 5 minutes
+  PROFILE: 30 * 60 * 1000, // 30 minutes
 } as const
 
 export const cacheManager = new CacheManager()
 
-setInterval(() => {
-  cacheManager.clearExpired()
-}, 5 * 60 * 1000)
+setInterval(
+  () => {
+    cacheManager.clearExpired()
+  },
+  5 * 60 * 1000
+)
 
 /**
  * Decorator for caching API responses
@@ -152,7 +155,7 @@ export function withCache<T>(
     return Promise.resolve(cachedData)
   }
 
-  return apiCall().then(data => {
+  return apiCall().then((data) => {
     cacheManager.set(key, data, ttl)
     return data
   })
@@ -163,8 +166,8 @@ export function withCache<T>(
  */
 export function invalidateCache(pattern: string): void {
   const keys = cacheManager.getStats().keys
-  
-  keys.forEach(key => {
+
+  keys.forEach((key) => {
     if (key.includes(pattern)) {
       cacheManager.delete(key)
     }
@@ -201,5 +204,5 @@ export const cacheInvalidation = {
 
   clearAll: () => {
     cacheManager.clear()
-  }
+  },
 }

@@ -8,7 +8,7 @@
             v-for="(lot, index) in animationLots"
             :key="index"
             class="lot-box"
-            :class="{ 'processing': lot.processing, 'processed': lot.processed }"
+            :class="{ processing: lot.processing, processed: lot.processed }"
             :style="{ animationDelay: `${index * 0.2}s` }"
           >
             <div class="lot-content">
@@ -41,7 +41,7 @@
 
       <!-- Background particles -->
       <div class="particles">
-        <div v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)"></div>
+        <div v-for="i in 20" :key="i" class="particle" :style="getParticleStyle()"></div>
       </div>
     </div>
   </div>
@@ -57,9 +57,10 @@ const animationLots = ref([
   { number: 'LOT004', date: '2025-04-05', processing: false, processed: false },
 ])
 
-let animationInterval: NodeJS.Timeout | null = null
+let animationInterval: ReturnType<typeof setInterval> | null = null;
 
-const getParticleStyle = (index: number) => {
+
+const getParticleStyle = () => {
   const delay = Math.random() * 2
   const duration = 2 + Math.random() * 3
   const left = Math.random() * 100
@@ -91,7 +92,7 @@ const startAnimation = () => {
     } else {
       // Reset animation
       currentLot = 0
-      animationLots.value.forEach(lot => {
+      animationLots.value.forEach((lot) => {
         lot.processing = false
         lot.processed = false
       })
@@ -127,8 +128,12 @@ onUnmounted(() => {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .loading-container {
@@ -235,8 +240,13 @@ onUnmounted(() => {
 }
 
 @keyframes arrowPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .processing-indicator {
@@ -254,8 +264,12 @@ onUnmounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .processing-text h3 {
@@ -285,13 +299,27 @@ onUnmounted(() => {
   animation: dotPulse 1.4s infinite ease-in-out;
 }
 
-.progress-dots span:nth-child(1) { animation-delay: -0.32s; }
-.progress-dots span:nth-child(2) { animation-delay: -0.16s; }
-.progress-dots span:nth-child(3) { animation-delay: 0s; }
+.progress-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.progress-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+.progress-dots span:nth-child(3) {
+  animation-delay: 0s;
+}
 
 @keyframes dotPulse {
-  0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
-  40% { transform: scale(1); opacity: 1; }
+  0%,
+  80%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .particles {

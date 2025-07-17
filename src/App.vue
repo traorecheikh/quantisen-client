@@ -5,10 +5,13 @@
       <AppSidebar :is-collapsed="sidebarCollapsed" />
     </template>
 
-    <main class="app-main" :class="{
-      'sidebar-collapsed': sidebarCollapsed && shouldShowLayout,
-      'no-layout': !shouldShowLayout
-    }">
+    <main
+      class="app-main"
+      :class="{
+        'sidebar-collapsed': sidebarCollapsed && shouldShowLayout,
+        'no-layout': !shouldShowLayout,
+      }"
+    >
       <div class="main-content">
         <router-view />
       </div>

@@ -9,12 +9,34 @@
         </div>
         <div class="header-actions">
           <button @click="refreshData" class="btn btn-primary" :disabled="loading">
-            <svg v-if="loading" class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.25"/>
-              <path d="m12 2 0 4 m0 12 0 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <svg
+              v-if="loading"
+              class="animate-spin"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                opacity="0.25"
+              />
+              <path
+                d="m12 2 0 4 m0 12 0 4"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
             <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              <path
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
             </svg>
             {{ loading ? 'Actualisation...' : 'Actualiser' }}
           </button>
@@ -37,7 +59,9 @@
           <div class="metric-header">
             <div class="metric-icon success">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M5 12V7a1 1 0 011-1h12a1 1 0 011 1v5M5 12l2 6h10l2-6M5 12h14M12 6V2m-4 8v6m8-6v6"/>
+                <path
+                  d="M5 12V7a1 1 0 011-1h12a1 1 0 011 1v5M5 12l2 6h10l2-6M5 12h14M12 6V2m-4 8v6m8-6v6"
+                />
               </svg>
             </div>
             <div class="metric-details">
@@ -55,7 +79,7 @@
           <div class="metric-header">
             <div class="metric-icon primary">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 3h18v4H3V3zm0 6h18v2H3V9zm0 4h18v2H3v-2zm0 4h18v4H3v-4z"/>
+                <path d="M3 3h18v4H3V3zm0 6h18v2H3V9zm0 4h18v2H3v-2zm0 4h18v4H3v-4z" />
               </svg>
             </div>
             <div class="metric-details">
@@ -71,7 +95,9 @@
           <div class="metric-header">
             <div class="metric-icon warning">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                />
               </svg>
             </div>
             <div class="metric-details">
@@ -87,7 +113,7 @@
           <div class="metric-header">
             <div class="metric-icon info">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             <div class="metric-details">
@@ -103,7 +129,9 @@
           <div class="metric-header">
             <div class="metric-icon success">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"
+                />
               </svg>
             </div>
             <div class="metric-details">
@@ -126,7 +154,7 @@
             <div class="performance-header">
               <div class="performance-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
               </div>
               <h3>Efficacité</h3>
@@ -143,7 +171,7 @@
             <div class="performance-header">
               <div class="performance-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zm-8-2h2v-4h-2v4zm0-6h2V7h-2v4z"/>
+                  <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zm-8-2h2v-4h-2v4zm0-6h2V7h-2v4z" />
                 </svg>
               </div>
               <h3>Productivité</h3>
@@ -160,7 +188,9 @@
             <div class="performance-header">
               <div class="performance-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                  />
                 </svg>
               </div>
               <h3>Qualité</h3>
@@ -181,11 +211,10 @@
       <div class="no-data-icon">📈</div>
       <h3 class="no-data-title">Aucune donnée disponible</h3>
       <p class="no-data-subtitle">
-        Les statistiques du tableau de bord apparaîtront ici une fois que des données seront disponibles.
+        Les statistiques du tableau de bord apparaîtront ici une fois que des données seront
+        disponibles.
       </p>
-      <button @click="refreshData" class="btn btn-primary">
-        Actualiser les données
-      </button>
+      <button @click="refreshData" class="btn btn-primary">Actualiser les données</button>
     </div>
 
     <!-- Error State -->
@@ -193,9 +222,7 @@
       <div class="error-icon">⚠️</div>
       <h3>Erreur de chargement</h3>
       <p>{{ error }}</p>
-      <button @click="refreshData" class="btn btn-primary">
-        Réessayer
-      </button>
+      <button @click="refreshData" class="btn btn-primary">Réessayer</button>
     </div>
   </div>
 </template>
@@ -273,20 +300,24 @@ const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'XOF',
-    minimumFractionDigits: 0
+    minimumFractionDigits: 0,
   }).format(amount)
 }
 
 // Watch for data changes and animate
-watch(dashboardStats, (newStats) => {
-  if (newStats) {
-    animateNumber(newStats.totalBeverages, animatedBeverages)
-    animateNumber(newStats.totalStock, animatedStock)
-    animateNumber(newStats.totalMovements, animatedMovements)
-    animateNumber(newStats.totalUsers, animatedUsers)
-    animateCurrency(newStats.totalValue)
-  }
-}, { immediate: true })
+watch(
+  dashboardStats,
+  (newStats) => {
+    if (newStats) {
+      animateNumber(newStats.totalBeverages, animatedBeverages)
+      animateNumber(newStats.totalStock, animatedStock)
+      animateNumber(newStats.totalMovements, animatedMovements)
+      animateNumber(newStats.totalUsers, animatedUsers)
+      animateCurrency(newStats.totalValue)
+    }
+  },
+  { immediate: true }
+)
 
 const loadDashboardData = async () => {
   try {
@@ -378,8 +409,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Loading State */
@@ -582,7 +617,8 @@ onMounted(() => {
 }
 
 /* No Data & Error States */
-.no-data-state, .error-state {
+.no-data-state,
+.error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -592,19 +628,22 @@ onMounted(() => {
   gap: var(--space-4);
 }
 
-.no-data-icon, .error-icon {
+.no-data-icon,
+.error-icon {
   font-size: 3rem;
   margin-bottom: var(--space-2);
 }
 
-.no-data-title, .error-state h3 {
+.no-data-title,
+.error-state h3 {
   color: var(--color-text-primary);
   font-size: var(--font-size-lg);
   font-weight: 600;
   margin: 0;
 }
 
-.no-data-subtitle, .error-state p {
+.no-data-subtitle,
+.error-state p {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   margin: 0;

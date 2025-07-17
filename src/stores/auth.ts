@@ -22,15 +22,17 @@ export const useAuthStore = defineStore('auth', () => {
   const isFirstLogin = computed(() => user.value?.isFirstLogin || false)
   const isActive = computed(() => user.value?.isActive || false)
 
-  const login = async (credentials: LoginRequest): Promise<{ success: boolean; requiresPasswordChange: boolean }> => {
+  const login = async (
+    credentials: LoginRequest
+  ): Promise<{ success: boolean; requiresPasswordChange: boolean }> => {
     isLoading.value = true
     error.value = null
 
     try {
       const response: LoginResponse = await UtilisateurService.login(credentials)
-console.log(response.utilisateur)
+      console.log(response.utilisateur)
       if (!response.utilisateur.isActive) {
-        error.value = 'Votre compte est désactivé. Contactez l\'administrateur.'
+        error.value = "Votre compte est désactivé. Contactez l'administrateur."
         return { success: false, requiresPasswordChange: false }
       }
 
@@ -41,8 +43,8 @@ console.log(response.utilisateur)
       localStorage.setItem('user', JSON.stringify(response.utilisateur))
 
       return {
-        success: true, 
-        requiresPasswordChange: response.utilisateur.isFirstLogin
+        success: true,
+        requiresPasswordChange: response.utilisateur.isFirstLogin,
       }
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Erreur de connexion. Vérifiez vos identifiants.'
@@ -76,6 +78,6 @@ console.log(response.utilisateur)
     isActive,
     login,
     logout,
-    updateUserAfterPasswordChange
+    updateUserAfterPasswordChange,
   }
 })

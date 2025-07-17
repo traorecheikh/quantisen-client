@@ -5,10 +5,16 @@
       <div class="login-brand">
         <div class="brand-content">
           <div class="brand-logo">
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="64" height="64" rx="16" fill="var(--color-primary-600)"/>
-              <path d="M16 24h32v24a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V24z" fill="white"/>
-              <path d="M24 16h16v8H24z" fill="var(--color-primary-200)"/>
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 64 64"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="64" height="64" rx="16" fill="var(--color-primary-600)" />
+              <path d="M16 24h32v24a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V24z" fill="white" />
+              <path d="M24 16h16v8H24z" fill="var(--color-primary-200)" />
             </svg>
           </div>
           <h1 class="brand-title">QuantiSen</h1>
@@ -66,11 +72,7 @@
                   placeholder="Entrez votre mot de passe"
                   required
                 />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  @click="showPassword = !showPassword"
-                >
+                <button type="button" class="password-toggle" @click="showPassword = !showPassword">
                   <EyeIcon v-if="!showPassword" class="w-5 h-5" />
                   <EyeSlashIcon v-else class="w-5 h-5" />
                 </button>
@@ -94,7 +96,8 @@
 
           <div class="form-footer">
             <p class="help-text">
-              Besoin d'un accès ? Contactez votre administrateur système pour obtenir vos identifiants de connexion.
+              Besoin d'un accès ? Contactez votre administrateur système pour obtenir vos
+              identifiants de connexion.
             </p>
           </div>
         </div>
@@ -113,7 +116,7 @@ import {
   EyeIcon,
   EyeSlashIcon,
   ArrowPathIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
@@ -121,7 +124,7 @@ const authStore = useAuthStore()
 
 const loginForm = ref({
   email: '',
-  password: ''
+  password: '',
 })
 
 const showPassword = ref(false)
@@ -135,7 +138,7 @@ const handleLogin = async () => {
   try {
     const result = await authStore.login({
       email: loginForm.value.email,
-      motDePasse: loginForm.value.password
+      motDePasse: loginForm.value.password,
     })
 
     if (result.success) {
@@ -148,7 +151,7 @@ const handleLogin = async () => {
       errorMessage.value = authStore.error || 'Échec de la connexion'
     }
   } catch (error) {
-    errorMessage.value = 'Une erreur inattendue s\'est produite'
+    errorMessage.value = "Une erreur inattendue s'est produite"
   } finally {
     isLoading.value = false
   }
@@ -372,8 +375,12 @@ const handleLogin = async () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-message {

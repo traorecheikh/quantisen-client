@@ -8,24 +8,15 @@
           <p class="page-subtitle">Gérer toutes les entrées et sorties de stock</p>
         </div>
         <div class="header-actions">
-          <button
-              class="add-btn success"
-              @click="openAddModal('ENTREE')"
-          >
+          <button class="add-btn success" @click="openAddModal('ENTREE')">
             <ArrowDownIcon class="w-4 h-4" />
             Entrée de Stock
           </button>
-          <button
-              class="add-btn error"
-              @click="openAddModal('SORTIE')"
-          >
+          <button class="add-btn error" @click="openAddModal('SORTIE')">
             <ArrowUpIcon class="w-4 h-4" />
             Sortie de Stock
           </button>
-          <button
-              class="add-btn warning"
-              @click="openAddModal('AJUSTEMENT')"
-          >
+          <button class="add-btn warning" @click="openAddModal('AJUSTEMENT')">
             <PencilIcon class="w-4 h-4" />
             Ajustement
           </button>
@@ -37,18 +28,19 @@
     <div class="tabs-section">
       <div class="tabs-container">
         <button
-            class="tab-button"
-            :class="{ active: activeTab === 'single' }"
-            @click="activeTab = 'single'">
+          class="tab-button"
+          :class="{ active: activeTab === 'single' }"
+          @click="activeTab = 'single'"
+        >
           <div class="tab-content">
             <PlusIcon class="tab-icon" />
             <span>Mouvement Simple</span>
           </div>
         </button>
         <button
-            class="tab-button"
-            :class="{ active: activeTab === 'csv' }"
-            @click="activeTab = 'csv'"
+          class="tab-button"
+          :class="{ active: activeTab === 'csv' }"
+          @click="activeTab = 'csv'"
         >
           <div class="tab-content">
             <ArrowUpOnSquareIcon class="tab-icon" />
@@ -56,9 +48,10 @@
           </div>
         </button>
         <button
-            class="tab-button"
-            :class="{ active: activeTab === 'history' }"
-            @click="activeTab = 'history'">
+          class="tab-button"
+          :class="{ active: activeTab === 'history' }"
+          @click="activeTab = 'history'"
+        >
           <div class="tab-content">
             <ClockIcon class="tab-icon" />
             <span>Historique</span>
@@ -142,12 +135,19 @@
               <div class="step-header">
                 <div class="step-number">2</div>
                 <div class="step-title">
-                  {{ singleMovement.typeMouvement === 'AJUSTEMENT' ? 'Sélection du Lot' : 'Sélection du Produit' }}
+                  {{
+                    singleMovement.typeMouvement === 'AJUSTEMENT'
+                      ? 'Sélection du Lot'
+                      : 'Sélection du Produit'
+                  }}
                 </div>
               </div>
               <div class="form-card">
                 <div class="form-grid-enhanced">
-                  <div class="form-group-enhanced" v-if="singleMovement.typeMouvement !== 'AJUSTEMENT'">
+                  <div
+                    class="form-group-enhanced"
+                    v-if="singleMovement.typeMouvement !== 'AJUSTEMENT'"
+                  >
                     <label class="form-label-enhanced">
                       <div class="label-content">
                         <span class="label-text">Boisson</span>
@@ -155,16 +155,27 @@
                       </div>
                     </label>
                     <div class="select-wrapper">
-                      <select v-model="singleMovement.boissonId" required class="form-select-enhanced">
+                      <select
+                        v-model="singleMovement.boissonId"
+                        required
+                        class="form-select-enhanced"
+                      >
                         <option value="">Sélectionner une boisson</option>
-                        <option v-for="beverage in boissons" :key="beverage.id" :value="beverage.id">
+                        <option
+                          v-for="beverage in boissons"
+                          :key="beverage.id"
+                          :value="beverage.id"
+                        >
                           {{ beverage.nom }} - {{ beverage.prix }} FCFA
                         </option>
                       </select>
                     </div>
                   </div>
 
-                  <div class="form-group-enhanced" v-if="singleMovement.typeMouvement === 'AJUSTEMENT'">
+                  <div
+                    class="form-group-enhanced"
+                    v-if="singleMovement.typeMouvement === 'AJUSTEMENT'"
+                  >
                     <label class="form-label-enhanced">
                       <div class="label-content">
                         <span class="label-text">Lot</span>
@@ -175,7 +186,10 @@
                       <select v-model="singleMovement.lotId" required class="form-select-enhanced">
                         <option value="">Sélectionner un lot</option>
                         <option v-for="lot in lots" :key="lot.id" :value="lot.id">
-                          {{ lot.numeroLot }} - {{ lot.boisson.nom }} ({{ lot.quantiteActuelle }} disponible)
+                          {{ lot.numeroLot }} - {{ lot.boisson.nom }} ({{
+                            lot.quantiteActuelle
+                          }}
+                          disponible)
                         </option>
                       </select>
                     </div>
@@ -267,7 +281,10 @@
                 </div>
 
                 <!-- AJUSTEMENT specific fields -->
-                <div v-if="singleMovement.typeMouvement === 'AJUSTEMENT'" class="adjustment-section">
+                <div
+                  v-if="singleMovement.typeMouvement === 'AJUSTEMENT'"
+                  class="adjustment-section"
+                >
                   <div class="form-group-enhanced">
                     <label class="form-label-enhanced">
                       <div class="label-content">
@@ -358,9 +375,11 @@
         <div class="upload-help">
           <p><strong>Format accepté:</strong> .csv</p>
           <p><strong>Exemple de format:</strong></p>
-          <code>Nom Boisson,Numéro Lot,Quantité,Date Péremption<br>
-          Coca Cola,LOT-001,100,2024-12-31<br>
-          Pepsi,LOT-002,50,2024-11-30</code>
+          <code
+            >Nom Boisson,Numéro Lot,Quantité,Date Péremption<br />
+            Coca Cola,LOT-001,100,2024-12-31<br />
+            Pepsi,LOT-002,50,2024-11-30</code
+          >
         </div>
 
         <div v-if="csvData.length > 0" class="csv-preview">
@@ -429,12 +448,20 @@
               {{ beverage.nom }}
             </option>
           </select>
-          <input v-model="historyFilter.dateFrom" type="date" class="filter-select" placeholder="Date de début" />
-          <input v-model="historyFilter.dateTo" type="date" class="filter-select" placeholder="Date de fin" />
+          <input
+            v-model="historyFilter.dateFrom"
+            type="date"
+            class="filter-select"
+            placeholder="Date de début"
+          />
+          <input
+            v-model="historyFilter.dateTo"
+            type="date"
+            class="filter-select"
+            placeholder="Date de fin"
+          />
           <div class="filter-actions">
-            <button @click="clearHistoryFilters" class="filter-btn secondary">
-              Effacer
-            </button>
+            <button @click="clearHistoryFilters" class="filter-btn secondary">Effacer</button>
           </div>
         </div>
       </div>
@@ -457,9 +484,18 @@
               <td>{{ formatDate(operation.mouvement?.dateMouvement) }}</td>
               <td>
                 <span class="movement-badge" :class="operation.mouvement?.type?.toLowerCase()">
-                  <ArrowDownIcon v-if="operation.mouvement?.type === 'ENTREE'" class="w-3 h-3 inline mr-1" />
-                  <ArrowUpIcon v-if="operation.mouvement?.type === 'SORTIE'" class="w-3 h-3 inline mr-1" />
-                  <PencilIcon v-if="operation.mouvement?.type === 'AJUSTEMENT'" class="w-3 h-3 inline mr-1" />
+                  <ArrowDownIcon
+                    v-if="operation.mouvement?.type === 'ENTREE'"
+                    class="w-3 h-3 inline mr-1"
+                  />
+                  <ArrowUpIcon
+                    v-if="operation.mouvement?.type === 'SORTIE'"
+                    class="w-3 h-3 inline mr-1"
+                  />
+                  <PencilIcon
+                    v-if="operation.mouvement?.type === 'AJUSTEMENT'"
+                    class="w-3 h-3 inline mr-1"
+                  />
                   {{ getMovementTypeLabel(operation.mouvement?.type || '') }}
                 </span>
               </td>
@@ -468,9 +504,7 @@
               <td>{{ operation.quantite }}</td>
               <td>{{ operation.mouvement?.utilisateur.email }}</td>
               <td>
-                <span class="status-badge" :class="getStatusClass('CONFIRME')">
-                  CONFIRMÉ
-                </span>
+                <span class="status-badge" :class="getStatusClass('CONFIRME')"> CONFIRMÉ </span>
               </td>
             </tr>
             <tr v-if="paginatedLigneOperations.data.length === 0">
@@ -484,8 +518,14 @@
         <!-- Pagination Controls -->
         <div class="pagination-container" v-if="paginatedLigneOperations.total > 0">
           <div class="pagination-info">
-            Affichage de {{ ((paginatedLigneOperations.page - 1) * paginatedLigneOperations.size) + 1 }} ����������
-            {{ Math.min(paginatedLigneOperations.page * paginatedLigneOperations.size, paginatedLigneOperations.total) }}
+            Affichage de
+            {{ (paginatedLigneOperations.page - 1) * paginatedLigneOperations.size + 1 }} ����������
+            {{
+              Math.min(
+                paginatedLigneOperations.page * paginatedLigneOperations.size,
+                paginatedLigneOperations.total
+              )
+            }}
             sur {{ paginatedLigneOperations.total }} éléments
           </div>
 
@@ -569,7 +609,7 @@ import {
   XMarkIcon,
   PlusIcon,
   ArrowUpOnSquareIcon,
-  ClockIcon
+  ClockIcon,
 } from '@heroicons/vue/24/outline'
 import { showToast } from './../utils/toast'
 
@@ -625,7 +665,6 @@ const boissons = ref<Boisson[]>([])
 const lots = ref<Lot[]>([])
 const utilisateurs = ref<Utilisateur[]>([])
 const mouvements = ref<Mouvement[]>([])
-const ligneOperations = ref<LigneOperation[]>([])
 
 const singleMovement = ref<SingleMovementForm>({
   typeMouvement: '',
@@ -636,9 +675,8 @@ const singleMovement = ref<SingleMovementForm>({
   raison: '',
   numeroLot: '',
   datePeremption: '',
-  fournisseur: '' // Add supplier field initialization
+  fournisseur: '', // Add supplier field initialization
 })
-
 
 const csvData = ref<MovementCSVRow[]>([])
 const csvFileInput = ref<HTMLInputElement>()
@@ -648,14 +686,14 @@ const historyFilter = ref({
   type: '',
   beverage: '',
   dateFrom: '',
-  dateTo: ''
+  dateTo: '',
 })
 
 const paginatedLigneOperations = ref({
   data: [] as LigneOperation[],
   page: 1,
   size: 10,
-  total: 0
+  total: 0,
 })
 
 const pageSize = ref(10)
@@ -666,7 +704,7 @@ const loadData = async () => {
     const [beveragesData, lotsData, usersData] = await Promise.all([
       BoissonService.getAllBeverages(),
       InventaireService.getAllLots(),
-      UtilisateurService.getAllUsers()
+      UtilisateurService.getAllUsers(),
     ])
 
     boissons.value = beveragesData
@@ -696,7 +734,7 @@ const loadLigneOperations = async () => {
     paginatedLigneOperations.value = response
   } catch (error) {
     console.error('Error loading ligne operations:', error)
-    showMessage('Erreur lors du chargement de l\'historique', 'error')
+    showMessage("Erreur lors du chargement de l'historique", 'error')
   }
 }
 
@@ -744,7 +782,7 @@ const getCurrentUserId = (): number => {
 }
 
 const getCurrentUser = (): Utilisateur | undefined => {
-  return utilisateurs.value.find(u => u.id === getCurrentUserId())
+  return utilisateurs.value.find((u) => u.id === getCurrentUserId())
 }
 
 const ensureSortieAnimationDuration = async (callback: () => Promise<void>) => {
@@ -757,7 +795,7 @@ const ensureSortieAnimationDuration = async (callback: () => Promise<void>) => {
     const remainingTime = Math.max(0, 3000 - elapsedTime)
 
     if (remainingTime > 0) {
-      await new Promise(resolve => setTimeout(resolve, remainingTime))
+      await new Promise((resolve) => setTimeout(resolve, remainingTime))
     }
 
     isSortieProcessing.value = false
@@ -783,7 +821,7 @@ const submitSingleMovement = async () => {
       const sortieRequest: CreateMouvementSortieRequest = {
         boissonId: Number(singleMovement.value.boissonId),
         quantiteDemandee: Number(singleMovement.value.quantite),
-        utilisateur: currentUser
+        utilisateur: currentUser,
       }
 
       await InventaireService.recordMouvementSortie(sortieRequest)
@@ -803,7 +841,7 @@ const submitSingleMovement = async () => {
       }
 
       if (singleMovement.value.typeMouvement === 'ENTREE') {
-        const selectedBoisson = boissons.value.find(b => b.id === singleMovement.value.boissonId)
+        const selectedBoisson = boissons.value.find((b) => b.id === singleMovement.value.boissonId)
         if (!selectedBoisson) {
           showMessage('Boisson non trouvée', 'error')
           return
@@ -815,9 +853,9 @@ const submitSingleMovement = async () => {
             quantiteInitiale: Number(singleMovement.value.quantite),
             datePeremption: singleMovement.value.datePeremption,
             fournisseur: singleMovement.value.fournisseur, // Add supplier field
-            boisson: selectedBoisson
+            boisson: selectedBoisson,
           },
-          utilisateur: { id: currentUser.id }
+          utilisateur: { id: currentUser.id },
         }
 
         await InventaireService.recordMouvementEntree(lotRequest)
@@ -830,16 +868,17 @@ const submitSingleMovement = async () => {
           handleSubmissionSuccess()
         }, 2000) // 2 second delay to let animation finish
       } else if (singleMovement.value.typeMouvement === 'AJUSTEMENT') {
-        const delta = singleMovement.value.typeAjustement === 'POSITIF'
-          ? Math.abs(Number(singleMovement.value.quantite))
-          : -Math.abs(Number(singleMovement.value.quantite))
+        const delta =
+          singleMovement.value.typeAjustement === 'POSITIF'
+            ? Math.abs(Number(singleMovement.value.quantite))
+            : -Math.abs(Number(singleMovement.value.quantite))
 
         const ajustementRequest: CreateMouvementAjustementRequest = {
           lotId: Number(singleMovement.value.lotId),
           delta,
           typeAjustement: singleMovement.value.typeAjustement as 'POSITIF' | 'NEGATIF',
           raison: singleMovement.value.raison,
-          utilisateur: currentUser
+          utilisateur: currentUser,
         }
 
         await InventaireService.recordMouvementAjustement(ajustementRequest)
@@ -857,7 +896,7 @@ const submitSingleMovement = async () => {
       resetSingleForm()
     } catch (error) {
       console.error('Error submitting movement:', error)
-      showMessage('Erreur lors de l\'enregistrement du mouvement', 'error')
+      showMessage("Erreur lors de l'enregistrement du mouvement", 'error')
     }
   }
 
@@ -899,11 +938,11 @@ const validateSingleMovement = (): boolean => {
       return false
     }
     if (!singleMovement.value.typeAjustement) {
-      showMessage('Veuillez s��lectionner un type d\'ajustement', 'error')
+      showMessage("Veuillez s��lectionner un type d'ajustement", 'error')
       return false
     }
     if (!singleMovement.value.raison.trim()) {
-      showMessage('Veuillez saisir une raison pour l\'ajustement', 'error')
+      showMessage("Veuillez saisir une raison pour l'ajustement", 'error')
       return false
     }
   }
@@ -921,10 +960,9 @@ const resetSingleForm = () => {
     raison: '',
     numeroLot: '',
     datePeremption: '',
-    fournisseur: '' // Reset supplier field
+    fournisseur: '', // Reset supplier field
   }
 }
-
 
 const handleCsvUpload = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0]
@@ -946,17 +984,17 @@ const processCsvFile = (file: File) => {
   reader.onload = (e) => {
     const csvContent = e.target?.result as string
     try {
-      const rows = csvContent.split('\n').filter(row => row.trim())
+      const rows = csvContent.split('\n').filter((row) => row.trim())
       const csvRows: MovementCSVRow[] = []
 
       for (let i = 1; i < rows.length; i++) {
-        const columns = rows[i].split(',').map(col => col.trim())
+        const columns = rows[i].split(',').map((col) => col.trim())
         if (columns.length >= 4) {
           csvRows.push({
             beverageName: columns[0],
             lotNumber: columns[1],
             quantity: Number(columns[2]),
-            expiryDate: columns[3]
+            expiryDate: columns[3],
           })
         }
       }
@@ -998,7 +1036,7 @@ const processCsvImport = async () => {
 
     // Create beverage name map
     const beverageMap = new Map<string, Boisson>()
-    boissons.value.forEach(b => beverageMap.set(b.nom.toLowerCase(), b))
+    boissons.value.forEach((b) => beverageMap.set(b.nom.toLowerCase(), b))
 
     // Process CSV data - create lots array for batch processing
     const validLots: Lot[] = []
@@ -1010,7 +1048,7 @@ const processCsvImport = async () => {
           quantiteInitiale: row.quantity,
           quantiteActuelle: row.quantity,
           datePeremption: row.expiryDate,
-          boisson: boisson
+          boisson: boisson,
         })
       }
     }
@@ -1023,7 +1061,7 @@ const processCsvImport = async () => {
     // Create batch request using the CreateLotBatchRequest interface
     const batchRequest: CreateLotBatchRequest = {
       lots: validLots,
-      utilisateur: currentUser
+      utilisateur: currentUser,
     }
 
     await InventaireService.recordMouvementEntreeBatch(batchRequest)
@@ -1033,14 +1071,14 @@ const processCsvImport = async () => {
     showMessage(`${validLots.length} lots créés avec succès en une seule opération`, 'success')
   } catch (error) {
     console.error('Error processing CSV import:', error)
-    showMessage('Erreur lors de l\'import CSV', 'error')
+    showMessage("Erreur lors de l'import CSV", 'error')
   } finally {
     // Ensure the animation lasts at least 5 seconds
     const elapsedTime = Date.now() - startTime
     const remainingTime = Math.max(0, 5000 - elapsedTime)
 
     if (remainingTime > 0) {
-      await new Promise(resolve => setTimeout(resolve, remainingTime))
+      await new Promise((resolve) => setTimeout(resolve, remainingTime))
     }
 
     isProcessing.value = false
@@ -1049,7 +1087,9 @@ const processCsvImport = async () => {
 }
 
 const validateCsvRow = (row: MovementCSVRow): boolean => {
-  const beverage = boissons.value.find(b => b.nom.toLowerCase() === row.beverageName.toLowerCase())
+  const beverage = boissons.value.find(
+    (b) => b.nom.toLowerCase() === row.beverageName.toLowerCase()
+  )
   return !!(
     beverage &&
     row.lotNumber &&
@@ -1060,7 +1100,7 @@ const validateCsvRow = (row: MovementCSVRow): boolean => {
 }
 
 const hasValidCsvRows = computed(() => {
-  return csvData.value.length > 0 && csvData.value.some(row => validateCsvRow(row))
+  return csvData.value.length > 0 && csvData.value.some((row) => validateCsvRow(row))
 })
 
 const triggerCsvUpload = () => {
@@ -1081,7 +1121,7 @@ const showMessage = (text: string, type: 'success' | 'error') => {
 }
 
 const handleSubmissionSuccess = () => {
-  showToast('Submission successful!', 'success');
+  showToast('Submission successful!', 'success')
 }
 
 const formatDate = (dateStr: string | undefined) => {
@@ -1091,66 +1131,30 @@ const formatDate = (dateStr: string | undefined) => {
     month: '2-digit',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
 const getMovementTypeLabel = (type: string) => {
   switch (type) {
-    case 'ENTREE': return 'Entrée'
-    case 'SORTIE': return 'Sortie'
-    case 'AJUSTEMENT': return 'Ajustement'
-    default: return type
+    case 'ENTREE':
+      return 'Entrée'
+    case 'SORTIE':
+      return 'Sortie'
+    case 'AJUSTEMENT':
+      return 'Ajustement'
+    default:
+      return type
   }
 }
 
-
-
-
-const getUserName = (user: Utilisateur): string => {
-  return `${user.firstName} ${user.lastName}`
-}
-
-const filteredLigneOperations = computed(() => {
-  let filtered = paginatedLigneOperations.value.data
-
-  if (historyFilter.value.type) {
-    filtered = filtered.filter(op => op.mouvement?.type === historyFilter.value.type)
-  }
-
-  if (historyFilter.value.beverage) {
-    filtered = filtered.filter(op => op.lot?.boisson?.id === Number(historyFilter.value.beverage))
-  }
-
-  if (historyFilter.value.dateFrom) {
-    filtered = filtered.filter(op => {
-      const opDate = new Date(op.mouvement?.dateMouvement || '')
-      const fromDate = new Date(historyFilter.value.dateFrom)
-      return opDate >= fromDate
-    })
-  }
-
-  if (historyFilter.value.dateTo) {
-    filtered = filtered.filter(op => {
-      const opDate = new Date(op.mouvement?.dateMouvement || '')
-      const toDate = new Date(historyFilter.value.dateTo)
-      return opDate <= toDate
-    })
-  }
-
-  return filtered.sort((a, b) => {
-    const dateA = new Date(a.mouvement?.dateMouvement || '')
-    const dateB = new Date(b.mouvement?.dateMouvement || '')
-    return dateB.getTime() - dateA.getTime()
-  })
-})
 
 const clearHistoryFilters = async () => {
   historyFilter.value = {
     type: '',
     beverage: '',
     dateFrom: '',
-    dateTo: ''
+    dateTo: '',
   }
   await loadLigneOperations()
 }
@@ -1209,7 +1213,6 @@ onMounted(() => {
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
 }
-
 
 .header-actions {
   display: flex;

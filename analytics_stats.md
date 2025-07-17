@@ -5,6 +5,7 @@ This document provides detailed specifications for the Analytics Page statistics
 ## Analytics Page Overview
 
 The Analytics Page is a comprehensive statistics dashboard that displays:
+
 - Movement trends summary cards
 - Interactive stock movement charts
 - Top performing beverages ranking
@@ -16,11 +17,13 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 ## Required Backend Endpoints
 
 ### 1. Weekly Stock Movement Data
+
 **Endpoint**: `GET /statistics/weekly-stock-movement`
 
 **Purpose**: Provides data for the main interactive chart showing stock movements over time.
 
 **Response Model**:
+
 ```json
 {
   "weekDates": ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
@@ -32,7 +35,7 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
       "color": "#10b981"
     },
     {
-      "label": "Sorties", 
+      "label": "Sorties",
       "data": [85, 110, 95, 125, 90, 75, 105],
       "movementType": "SORTIE",
       "color": "#ef4444"
@@ -40,7 +43,7 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
     {
       "label": "Ajustements",
       "data": [10, 5, 15, 8, 12, 6, 9],
-      "movementType": "AJUSTEMENT", 
+      "movementType": "AJUSTEMENT",
       "color": "#f59e0b"
     }
   ],
@@ -51,6 +54,7 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 ```
 
 **Requirements**:
+
 - `weekDates`: Array of 7 strings (day names in French)
 - `datasets`: Array of exactly 3 objects (ENTREE, SORTIE, AJUSTEMENT)
 - `data`: Array of 7 numbers matching the weekDates length
@@ -58,14 +62,17 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 - Totals must match sum of respective data arrays
 
 ### 2. Movement Trends Analysis
+
 **Endpoint**: `GET /statistics/movement-trends?period={period}`
 
-**Parameters**: 
+**Parameters**:
+
 - `period`: "weekly" | "monthly" | "yearly"
 
 **Purpose**: Displays trend cards showing movement statistics with percentage changes.
 
 **Response Model**:
+
 ```json
 [
   {
@@ -75,7 +82,7 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
     "trend": "UP"
   },
   {
-    "period": "Ce mois", 
+    "period": "Ce mois",
     "totalMovements": 6250,
     "percentageChange": -3.2,
     "trend": "DOWN"
@@ -90,17 +97,20 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 ```
 
 **Requirements**:
+
 - `period`: French text describing the time period
 - `totalMovements`: Positive integer
 - `percentageChange`: Number (can be negative for decreases)
 - `trend`: Must be exactly "UP", "DOWN", or "STABLE"
 
 ### 3. Beverage Performance Ranking
+
 **Endpoint**: `GET /statistics/beverage-performance`
 
 **Purpose**: Shows top performing beverages with ranking and progress indicators.
 
 **Response Model**:
+
 ```json
 [
   {
@@ -113,7 +123,7 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
   },
   {
     "id": 2,
-    "name": "Pepsi 330ml", 
+    "name": "Pepsi 330ml",
     "totalMovements": 32,
     "totalQuantity": 320,
     "revenueImpact": 160000,
@@ -123,20 +133,23 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 ```
 
 **Requirements**:
+
 - Array sorted by rank (1 = best performing)
 - `id`: Unique beverage identifier
 - `name`: Display name for the beverage
 - `totalMovements`: Non-negative integer
-- `totalQuantity`: Non-negative integer  
+- `totalQuantity`: Non-negative integer
 - `revenueImpact`: Optional positive number (in XOF currency)
 - `rank`: Sequential ranking starting from 1
 
 ### 4. Inventory Analytics
+
 **Endpoint**: `GET /statistics/inventory-analytics`
 
 **Purpose**: Comprehensive inventory analysis including distribution, expiration tracking, and movement analysis.
 
 **Response Model**:
+
 ```json
 {
   "stockDistribution": [
@@ -148,7 +161,7 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
     },
     {
       "category": "Pepsi",
-      "percentage": 25, 
+      "percentage": 25,
       "value": 625000,
       "color": "#3b82f6"
     }
@@ -182,7 +195,7 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
       {
         "id": 10,
         "name": "Boisson Énergisante 250ml",
-        "movementCount": 2, 
+        "movementCount": 2,
         "lastMovementDate": "2025-07-01",
         "activityScore": 15
       }
@@ -200,7 +213,8 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 ```
 
 **Requirements**:
-- **stockDistribution**: 
+
+- **stockDistribution**:
   - `percentage`: Numbers that should sum to 100
   - `value`: Positive numbers in XOF currency
   - `color`: Valid hex color codes
@@ -216,17 +230,21 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 ## Export Endpoints
 
 ### PDF Export
+
 **Endpoint**: `GET /statistics/export/pdf?type={type}`
 
 **Parameters**:
+
 - `type`: "dashboard" | "analytics" | "inventory"
 
 **Response**: Binary PDF file
 
-### Excel Export  
+### Excel Export
+
 **Endpoint**: `GET /statistics/export/excel?type={type}`
 
 **Parameters**:
+
 - `type`: "movements" | "inventory" | "performance"
 
 **Response**: Binary Excel file (.xlsx)
@@ -234,6 +252,7 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 ## Data Validation Requirements
 
 ### Critical Validations
+
 1. **Array Lengths**: weekDates and data arrays must have same length
 2. **Color Codes**: Must be valid hex colors (#rrggbb format)
 3. **Trend Values**: Must be exactly "UP", "DOWN", or "STABLE"
@@ -242,14 +261,18 @@ The Analytics Page is a comprehensive statistics dashboard that displays:
 6. **Non-negative Numbers**: Quantities, movements, values must be ≥ 0
 
 ### Error Handling
+
 If backend returns invalid data, frontend will:
+
 1. Log detailed error information
 2. Show French error message to user
 3. Fall back to realistic mock data
 4. Allow user to retry the request
 
 ### Empty Data Scenarios
+
 Backend should handle these cases gracefully:
+
 - **No movements**: Return empty arrays with totals = 0
 - **No beverages**: Return empty performance array
 - **No expiring lots**: Return empty lotsSoonToExpire array
@@ -258,12 +281,14 @@ Backend should handle these cases gracefully:
 ## Frontend Chart Integration
 
 ### Chart.js Requirements
+
 - Line charts need `labels` and `datasets` arrays
 - Pie charts need `labels` and single dataset with `data` array
 - Colors must be valid CSS hex codes
 - Data arrays must contain only numbers
 
 ### Responsive Behavior
+
 - Charts resize automatically on window resize
 - Mobile breakpoints hide complex tooltips
 - Legend positions adjust based on screen size
@@ -271,12 +296,14 @@ Backend should handle these cases gracefully:
 ## Performance Considerations
 
 ### Caching Recommendations
+
 - Cache dashboard data for 1 minute
-- Cache analytics data for 5 minutes  
+- Cache analytics data for 5 minutes
 - Cache export data for 10 minutes
 - Use ETags for conditional requests
 
 ### Data Size Limits
+
 - Maximum 100 beverages in performance ranking
 - Maximum 50 expiring lots to display
 - Limit seasonal trends to last 12 periods
@@ -285,11 +312,13 @@ Backend should handle these cases gracefully:
 ## Testing Scenarios
 
 ### Valid Data Tests
+
 1. Full dataset with all fields populated
 2. Minimum viable data (empty arrays where allowed)
 3. Edge cases (zero values, same dates)
 
-### Invalid Data Tests  
+### Invalid Data Tests
+
 1. Missing required fields
 2. Invalid date formats
 3. Negative quantities
@@ -297,8 +326,9 @@ Backend should handle these cases gracefully:
 5. Malformed color codes
 
 ### Network Error Tests
+
 1. 500 server errors
-2. Timeout scenarios  
+2. Timeout scenarios
 3. Network connectivity issues
 4. Partial response data
 

@@ -7,6 +7,7 @@ Based on the frontend logs, the backend is returning data that doesn't match the
 ## 1. Weekly Stock Movement Data (`GET /statistics/weekly-stock-movement`)
 
 ### Current Backend Response (INCORRECT):
+
 ```json
 {
   "datasets": [
@@ -26,11 +27,20 @@ Based on the frontend logs, the backend is returning data that doesn't match the
   "totalAdjustments": 0,
   "totalEntries": 0,
   "totalExits": 0,
-  "weekDates": ["2025-07-06", "2025-07-07", "2025-07-08", "2025-07-09", "2025-07-10", "2025-07-11", "2025-07-12"]
+  "weekDates": [
+    "2025-07-06",
+    "2025-07-07",
+    "2025-07-08",
+    "2025-07-09",
+    "2025-07-10",
+    "2025-07-11",
+    "2025-07-12"
+  ]
 }
 ```
 
 ### Required Backend Response (CORRECT):
+
 ```json
 {
   "weekDates": ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
@@ -61,6 +71,7 @@ Based on the frontend logs, the backend is returning data that doesn't match the
 ```
 
 ### Backend Changes Required:
+
 1. **Fix weekDates**: Return day names in French, not ISO dates
 2. **Add missing fields**: Each dataset needs `movementType` and `color` fields
 3. **Fix labels**: Use French labels ("Entrées", "Sorties", "Ajustements")
@@ -69,11 +80,13 @@ Based on the frontend logs, the backend is returning data that doesn't match the
 ## 2. Inventory Analytics Data (`GET /statistics/inventory-analytics`)
 
 ### Current Backend Response (INCORRECT):
+
 ```json
 ""
 ```
 
 ### Required Backend Response (CORRECT):
+
 ```json
 {
   "stockDistribution": [
@@ -137,6 +150,7 @@ Based on the frontend logs, the backend is returning data that doesn't match the
 ```
 
 ### Backend Changes Required:
+
 1. **Return proper JSON object**: Currently returning empty string
 2. **Implement all required sections**: stockDistribution, expirationTracking, movementAnalysis
 3. **Calculate percentages**: stockDistribution percentages should sum to ~100
@@ -145,6 +159,7 @@ Based on the frontend logs, the backend is returning data that doesn't match the
 ## 3. Backend Implementation Steps
 
 ### Step 1: Fix Weekly Stock Movement Endpoint
+
 ```python
 # Example for Python/Django - adapt to your framework
 def get_weekly_stock_movement(request):
@@ -152,7 +167,7 @@ def get_weekly_stock_movement(request):
     movements = Movement.objects.filter(
         date__gte=timezone.now() - timedelta(days=7)
     )
-    
+
     # Group by day and movement type
     daily_data = {}
     for i in range(7):
@@ -160,15 +175,15 @@ def get_weekly_stock_movement(request):
         day_name = get_french_day_name(date.weekday())  # "Lundi", "Mardi", etc.
         daily_data[day_name] = {
             'ENTREE': 0,
-            'SORTIE': 0, 
+            'SORTIE': 0,
             'AJUSTEMENT': 0
         }
-    
+
     # Aggregate movement data
     for movement in movements:
         day_name = get_french_day_name(movement.date.weekday())
         daily_data[day_name][movement.movement_type] += movement.quantity
-    
+
     # Build response
     return JsonResponse({
         "weekDates": ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
@@ -182,7 +197,7 @@ def get_weekly_stock_movement(request):
             {
                 "label": "Sorties",
                 "data": [daily_data[day]['SORTIE'] for day in daily_data.keys()],
-                "movementType": "SORTIE", 
+                "movementType": "SORTIE",
                 "color": "#ef4444"
             },
             {
@@ -199,20 +214,21 @@ def get_weekly_stock_movement(request):
 ```
 
 ### Step 2: Fix Inventory Analytics Endpoint
+
 ```python
 def get_inventory_analytics(request):
     # Calculate stock distribution
     stock_distribution = []
     total_value = 0
-    
+
     # Group by beverage category
     categories = Beverage.objects.values('category').annotate(
         total_value=Sum('stock__quantity') * F('price')
     )
-    
+
     for category in categories:
         total_value += category['total_value']
-    
+
     colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6']
     for i, category in enumerate(categories):
         percentage = (category['total_value'] / total_value) * 100 if total_value > 0 else 0
@@ -222,12 +238,12 @@ def get_inventory_analytics(request):
             'value': category['total_value'],
             'color': colors[i % len(colors)]
         })
-    
+
     # Calculate expiration tracking
     lots_soon_to_expire = []
     expired_lots = []
     total_expiring_value = 0
-    
+
     for lot in Lot.objects.filter(expiration_date__gte=timezone.now()):
         days_until_expiration = (lot.expiration_date - timezone.now().date()).days
         if days_until_expiration <= 30:  # Soon to expire
@@ -241,7 +257,7 @@ def get_inventory_analytics(request):
                 'value': lot.quantity * lot.beverage.price
             })
             total_expiring_value += lot.quantity * lot.beverage.price
-    
+
     # Build complete response
     return JsonResponse({
         'stockDistribution': stock_distribution,
@@ -263,6 +279,7 @@ def get_inventory_analytics(request):
 Before deploying, ensure your backend responses meet these requirements:
 
 ### Weekly Stock Movement:
+
 - [ ] `weekDates` array has exactly 7 French day names
 - [ ] `datasets` array has exactly 3 objects
 - [ ] Each dataset has `label`, `data`, `movementType`, and `color` fields
@@ -271,6 +288,7 @@ Before deploying, ensure your backend responses meet these requirements:
 - [ ] Totals match the sum of respective data arrays
 
 ### Inventory Analytics:
+
 - [ ] Returns proper JSON object (not empty string)
 - [ ] `stockDistribution` percentages sum to ~100
 - [ ] All colors are valid hex codes
@@ -279,6 +297,7 @@ Before deploying, ensure your backend responses meet these requirements:
 - [ ] All numeric values are non-negative
 
 ### Movement Trends:
+
 - [ ] `trend` values are exactly "UP", "DOWN", or "STABLE"
 - [ ] `totalMovements` are non-negative integers
 - [ ] `percentageChange` can be negative for decreases
@@ -304,6 +323,7 @@ curl -X GET "http://your-backend/statistics/movement-trends?period=weekly" \
 ## 6. Priority Order
 
 Fix in this order:
+
 1. **Inventory Analytics** (currently returning empty string)
 2. **Weekly Stock Movement** (missing required fields)
 3. **Movement Trends** (mostly working, minor validation)

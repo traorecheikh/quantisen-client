@@ -8,10 +8,7 @@
           <p class="page-subtitle">Gérer tous les comptes utilisateurs et leurs rôles</p>
         </div>
         <div class="header-actions">
-          <button
-            class="add-btn primary"
-            @click="openAddModal"
-          >
+          <button class="add-btn primary" @click="openAddModal">
             <UserPlusIcon class="w-4 h-4" />
             Ajouter Utilisateur
           </button>
@@ -23,9 +20,7 @@
     <div class="filters-section">
       <div class="filters-container">
         <select v-model="roleFilter" class="filter-select">
-          <option value="all">
-            <UserIcon class="w-4 h-4 inline mr-1" /> Tous les rôles
-          </option>
+          <option value="all"><UserIcon class="w-4 h-4 inline mr-1" /> Tous les rôles</option>
           <option value="GERANT">
             <ShieldCheckIcon class="w-4 h-4 inline mr-1" /> Gérants uniquement
           </option>
@@ -95,16 +90,50 @@
                   <template v-if="user.role !== 'GERANT'">
                     <span v-if="user.isActive">
                       <!-- Ban icon (Heroicons outline) for active user -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636A9 9 0 105.636 18.364 9 9 0 0018.364 5.636z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.343 6.343l11.314 11.314" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 text-red-500"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M18.364 5.636A9 9 0 105.636 18.364 9 9 0 0018.364 5.636z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M6.343 6.343l11.314 11.314"
+                        />
                       </svg>
                     </span>
                     <span v-else>
                       <!-- Check circle icon (Heroicons outline) for inactive user -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
-                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 text-green-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12l2 2 4-4"
+                        />
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="9"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          fill="none"
+                        />
                       </svg>
                     </span>
                   </template>
@@ -125,8 +154,17 @@
               <td colspan="5" class="empty-state-cell">
                 <div class="empty-state">
                   <div class="empty-state-icon">
-                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 4V3C15 2.4 14.6 2 14 2H10C9.4 2 9 2.4 9 3V4L3 7V9H4L5 15H7L6 9H9V15C9 15.6 9.4 16 10 16H14C14.6 16 15 15.6 15 15V9H18L17 15H19L20 9H21ZM11 10V14H13V10H11Z" fill="currentColor"/>
+                    <svg
+                      width="80"
+                      height="80"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 4V3C15 2.4 14.6 2 14 2H10C9.4 2 9 2.4 9 3V4L3 7V9H4L5 15H7L6 9H9V15C9 15.6 9.4 16 10 16H14C14.6 16 15 15.6 15 15V9H18L17 15H19L20 9H21ZM11 10V14H13V10H11Z"
+                        fill="currentColor"
+                      />
                     </svg>
                   </div>
                   <div class="empty-state-content">
@@ -219,16 +257,14 @@
               placeholder="Mot de passe temporaire"
               required
             />
-            <span class="field-note">L'utilisateur devra changer ce mot de passe lors de sa première connexion</span>
+            <span class="field-note"
+              >L'utilisateur devra changer ce mot de passe lors de sa première connexion</span
+            >
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="closeAddModal">
-              Annuler
-            </button>
-            <button type="submit" class="submit-btn primary">
-              Créer Utilisateur
-            </button>
+            <button type="button" class="cancel-btn" @click="closeAddModal">Annuler</button>
+            <button type="submit" class="submit-btn primary">Créer Utilisateur</button>
           </div>
         </form>
       </div>
@@ -245,17 +281,16 @@
         </div>
 
         <div class="modal-content">
-          <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{{ userToDelete?.email }}</strong> ?</p>
+          <p>
+            Êtes-vous sûr de vouloir supprimer l'utilisateur
+            <strong>{{ userToDelete?.email }}</strong> ?
+          </p>
           <p class="warning-text">Cette action est irréversible.</p>
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="cancel-btn" @click="closeDeleteModal">
-            Annuler
-          </button>
-          <button type="button" class="submit-btn danger" @click="deleteUser">
-            Supprimer
-          </button>
+          <button type="button" class="cancel-btn" @click="closeDeleteModal">Annuler</button>
+          <button type="button" class="submit-btn danger" @click="deleteUser">Supprimer</button>
         </div>
       </div>
     </div>
@@ -270,11 +305,10 @@ import {
   XMarkIcon,
   ShieldCheckIcon,
   UserIcon,
-  PowerIcon
 } from '@heroicons/vue/24/outline'
-import {type Utilisateur, UtilisateurService} from "../api";
-import {UserRole} from "../api/enums/userRole.ts";
-import {POSITION, useToast} from 'vue-toastification'
+import { type Utilisateur, UtilisateurService } from '../api'
+import { UserRole } from '../api/enums/userRole.ts'
+import { POSITION, useToast } from 'vue-toastification'
 
 const showAddModal = ref(false)
 const showDeleteModal = ref(false)
@@ -288,80 +322,74 @@ onMounted(async () => {
   users.value = await UtilisateurService.getAllUsers()
 })
 
-// Forms
 const addForm = ref({
   firstName: '',
   lastName: '',
   email: '',
   role: UserRole.EMPLOYE as UserRole,
-  password: ''
+  password: '',
 })
 
 const filteredUsers = computed(() => {
-  let filtered = users.value;
+  let filtered = users.value
 
   if (roleFilter.value !== 'all') {
-    filtered = filtered.filter(utilisateur => utilisateur.role === roleFilter.value);
+    filtered = filtered.filter((utilisateur) => utilisateur.role === roleFilter.value)
   }
 
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(user =>
-      user.email.toLowerCase().includes(query)
-    );
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter((user) => user.email.toLowerCase().includes(query))
   }
 
   return filtered.sort((a, b) => {
-    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return dateB - dateA;
-  });
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
+    return dateB - dateA
+  })
 })
 
-// Dynamic empty state messages
 const emptyStateContent = computed(() => {
   if (searchQuery.value) {
-    // When searching by email
     return {
       title: 'Aucun utilisateur trouvé',
       description: `Aucun utilisateur ne correspond à la recherche "${searchQuery.value}". Essayez avec un autre email.`,
       buttonText: 'Ajouter un utilisateur',
-      showButton: true
+      showButton: true,
     }
   } else if (roleFilter.value !== 'all') {
     // When filtering by role
-    const roleText = getRoleText(roleFilter.value);
+    const roleText = getRoleText(roleFilter.value)
     return {
       title: `Aucun ${roleText.toLowerCase()} trouvé`,
       description: `Vous n'avez pas encore d'utilisateur avec le rôle "${roleText}". Ajoutez votre premier ${roleText.toLowerCase()} pour commencer.`,
       buttonText: `Ajouter un ${roleText.toLowerCase()}`,
-      showButton: true
+      showButton: true,
     }
   } else {
-    // When no filters are applied
     return {
       title: 'Aucun utilisateur trouvé',
-      description: 'Commencez à construire votre équipe en ajoutant votre premier utilisateur. Vous pourrez gérer leurs rôles et permissions facilement.',
+      description:
+        'Commencez à construire votre équipe en ajoutant votre premier utilisateur. Vous pourrez gérer leurs rôles et permissions facilement.',
       buttonText: 'Ajouter votre premier utilisateur',
-      showButton: true
+      showButton: true,
     }
   }
 })
 
-// Function to open modal with pre-selected role if filtering
 const openAddModalWithRole = () => {
   addForm.value = {
     firstName: '',
     lastName: '',
     email: '',
-    role: roleFilter.value !== 'all' ? roleFilter.value as UserRole : UserRole.EMPLOYE,
-    password: ''
+    role: roleFilter.value !== 'all' ? (roleFilter.value as UserRole) : UserRole.EMPLOYE,
+    password: '',
   }
   showAddModal.value = true
 }
 
-const gerantCount = computed(() =>
-  users.value.filter(user => user.role === UserRole.GERANT).length
+const gerantCount = computed(
+  () => users.value.filter((user) => user.role === UserRole.GERANT).length
 )
 
 const toast = useToast()
@@ -372,7 +400,7 @@ const openAddModal = () => {
     lastName: '',
     email: '',
     role: UserRole.EMPLOYE,
-    password: ''
+    password: '',
   }
   showAddModal.value = true
 }
@@ -411,7 +439,7 @@ const addUser = async () => {
 
 const deleteUser = () => {
   if (userToDelete.value) {
-    const index = users.value.findIndex(u => u.id === userToDelete.value!.id)
+    const index = users.value.findIndex((u) => u.id === userToDelete.value!.id)
     if (index !== -1) {
       users.value.splice(index, 1)
     }
@@ -420,21 +448,23 @@ const deleteUser = () => {
 }
 
 const toggleActive = async (utilisateur: Utilisateur) => {
-  if (utilisateur.role === UserRole.GERANT) return;
+  if (utilisateur.role === UserRole.GERANT) return
   try {
-    await UtilisateurService.changeStatus(utilisateur.id, !utilisateur.isActive);
+    await UtilisateurService.changeStatus(utilisateur.id, !utilisateur.isActive)
 
-    utilisateur.isActive = !utilisateur.isActive;
+    utilisateur.isActive = !utilisateur.isActive
 
     toast.success(
-      utilisateur.isActive ? 'Utilisateur activé avec succès !' : 'Utilisateur bloqué avec succès !',
+      utilisateur.isActive
+        ? 'Utilisateur activé avec succès !'
+        : 'Utilisateur bloqué avec succès !',
       { timeout: 2000, position: POSITION.BOTTOM_RIGHT }
-    );
+    )
   } catch (error) {
-    toast.error(
-      'Erreur lors de la modification du statut de l\'utilisateur',
-      { timeout: 2000, position: POSITION.BOTTOM_RIGHT }
-    );
+    toast.error("Erreur lors de la modification du statut de l'utilisateur", {
+      timeout: 2000,
+      position: POSITION.BOTTOM_RIGHT,
+    })
   }
 }
 
@@ -699,7 +729,6 @@ const formatDate = (dateStr?: string) => {
   --color-error-100: #fee2e2;
   --color-error-700: #b91c1c;
 }
-
 
 .delete-btn:disabled {
   opacity: 0.5;

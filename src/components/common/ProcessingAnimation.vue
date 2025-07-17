@@ -22,19 +22,18 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const messages = [
-  'Traitement de l\'univers des données...',
+  "Traitement de l'univers des données...",
   'Démantèlement des structures...',
   'Analyse des boissons...',
   'Validation des lots...',
   'Création des entrées...',
-  'Finalisation du processus...'
+  'Finalisation du processus...',
 ]
 
 const currentMessageIndex = ref(-1)
-let messageInterval: NodeJS.Timeout | null = null
+let messageInterval: ReturnType<typeof setInterval> | null = null;
 
 onMounted(() => {
-  // Start showing messages with a delay
   messageInterval = setInterval(() => {
     if (currentMessageIndex.value < messages.length - 1) {
       currentMessageIndex.value++
@@ -112,7 +111,11 @@ onUnmounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

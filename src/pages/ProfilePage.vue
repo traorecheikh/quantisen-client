@@ -8,10 +8,7 @@
           <p class="page-subtitle">Gérer votre compte et vos préférences</p>
         </div>
         <div class="header-actions">
-          <button
-            class="action-btn secondary"
-            @click="logout"
-          >
+          <button class="action-btn secondary" @click="logout">
             <ArrowRightOnRectangleIcon class="w-4 h-4" />
             Déconnexion
           </button>
@@ -103,9 +100,9 @@ import {
   ArrowRightOnRectangleIcon,
   KeyIcon,
   ShieldCheckIcon,
-  UserIcon
+  UserIcon,
 } from '@heroicons/vue/24/outline'
-import { type Utilisateur, UtilisateurService } from "../api"
+import { type Utilisateur, UtilisateurService } from '../api'
 import { POSITION, useToast } from 'vue-toastification'
 
 const router = useRouter()
@@ -115,7 +112,7 @@ const currentUser = ref<Utilisateur | null>(null)
 const passwordForm = ref({
   currentPassword: '',
   newPassword: '',
-  confirmPassword: ''
+  confirmPassword: '',
 })
 
 onMounted(async () => {
@@ -142,7 +139,7 @@ const changePassword = async () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
     toast.error('Les mots de passe ne correspondent pas', {
       timeout: 3000,
-      position: POSITION.BOTTOM_RIGHT
+      position: POSITION.BOTTOM_RIGHT,
     })
     return
   }
@@ -150,7 +147,7 @@ const changePassword = async () => {
   if (passwordForm.value.newPassword.length < 6) {
     toast.error('Le mot de passe doit contenir au moins 6 caractères', {
       timeout: 3000,
-      position: POSITION.BOTTOM_RIGHT
+      position: POSITION.BOTTOM_RIGHT,
     })
     return
   }
@@ -159,24 +156,24 @@ const changePassword = async () => {
     if (currentUser.value?.id) {
       await UtilisateurService.changePassword(currentUser.value.id, {
         ancienMotDePasse: passwordForm.value.currentPassword,
-        nouveauMotDePasse: passwordForm.value.newPassword
+        nouveauMotDePasse: passwordForm.value.newPassword,
       })
 
       toast.success('Mot de passe modifié avec succès !', {
         timeout: 3000,
-        position: POSITION.BOTTOM_RIGHT
+        position: POSITION.BOTTOM_RIGHT,
       })
 
       passwordForm.value = {
         currentPassword: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
       }
     }
   } catch (error) {
     toast.error('Erreur lors de la modification du mot de passe', {
       timeout: 3000,
-      position: POSITION.BOTTOM_RIGHT
+      position: POSITION.BOTTOM_RIGHT,
     })
   }
 }
@@ -187,7 +184,7 @@ const logout = () => {
   router.push('/login')
   toast.success('Déconnexion réussie', {
     timeout: 2000,
-    position: POSITION.BOTTOM_RIGHT
+    position: POSITION.BOTTOM_RIGHT,
   })
 }
 </script>

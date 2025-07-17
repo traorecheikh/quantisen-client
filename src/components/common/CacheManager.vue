@@ -1,7 +1,5 @@
-/**
- * Cache Management Component for Dashboard
- * Provides cache statistics and manual cache control
- */
+/** * Cache Management Component for Dashboard * Provides cache statistics and manual cache control
+*/
 
 <template>
   <div class="cache-manager">
@@ -10,13 +8,17 @@
       <div class="cache-actions">
         <button @click="refreshStats" class="btn btn-secondary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            <path
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
           Actualiser
         </button>
         <button @click="clearAllCache" class="btn btn-warning">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            <path
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
           </svg>
           Tout Vider
         </button>
@@ -61,8 +63,8 @@
             <span class="group-name">{{ entry.category }}</span>
             <span class="group-count">{{ entry.keys.length }} entrées</span>
             <button
-                @click="clearCategory(entry.category.toLowerCase())"
-                class="btn btn-sm btn-danger"
+              @click="clearCategory(entry.category.toLowerCase())"
+              class="btn btn-sm btn-danger"
             >
               Vider
             </button>
@@ -71,12 +73,7 @@
           <div class="group-keys">
             <div v-for="key in entry.keys" :key="key" class="cache-key">
               <span class="key-name">{{ key }}</span>
-              <button
-                  @click="clearKey(key)"
-                  class="btn btn-xs btn-danger"
-              >
-                ×
-              </button>
+              <button @click="clearKey(key)" class="btn btn-xs btn-danger">×</button>
             </div>
           </div>
         </div>
@@ -88,13 +85,10 @@
         {{ showDetails ? 'Cacher les détails' : 'Afficher les détails' }}
       </button>
 
-      <button @click="clearExpired" class="btn btn-secondary">
-        Supprimer expirés
-      </button>
+      <button @click="clearExpired" class="btn btn-secondary">Supprimer expirés</button>
     </div>
   </div>
 </template>
-
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
@@ -104,7 +98,7 @@ import { showToast } from '../../utils/toast'
 const stats = ref({
   size: 0,
   keys: [] as string[],
-  totalMemory: '0 KB'
+  totalMemory: '0 KB',
 })
 
 const showDetails = ref(false)
@@ -113,7 +107,7 @@ const hitRate = ref(0)
 const groupedEntries = computed(() => {
   const groups: { [key: string]: string[] } = {}
 
-  stats.value.keys.forEach(key => {
+  stats.value.keys.forEach((key) => {
     const category = key.split('_')[0] || 'Other'
     const categoryName = category.charAt(0).toUpperCase() + category.slice(1)
 
@@ -125,7 +119,7 @@ const groupedEntries = computed(() => {
 
   return Object.entries(groups).map(([category, keys]) => ({
     category,
-    keys: keys.sort()
+    keys: keys.sort(),
   }))
 })
 
@@ -134,9 +128,7 @@ const refreshStats = () => {
 
   // Calculate hit rate (simplified - you might want to implement proper metrics)
   const totalRequests = stats.value.size * 1.5 // Simulated
-  hitRate.value = totalRequests > 0
-      ? Math.round((stats.value.size / totalRequests) * 100)
-      : 0
+  hitRate.value = totalRequests > 0 ? Math.round((stats.value.size / totalRequests) * 100) : 0
 }
 
 const clearAllCache = () => {
@@ -153,7 +145,7 @@ const clearExpired = () => {
 
 const clearCategory = (category: string) => {
   const keys = cacheManager.getStats().keys
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (key.toLowerCase().includes(category)) {
       cacheManager.delete(key)
     }

@@ -5,7 +5,9 @@ This document compiles all the statistical data display features found in the Ge
 ## Dashboard Statistics
 
 ### Overview Cards
+
 The dashboard displays key metrics in card format:
+
 - **Total Beverages**: Count of all active beverages in the system
 - **Total Stock**: Sum of all available quantities across all beverages
 - **Low Stock Alerts**: Number of beverages below their threshold
@@ -14,6 +16,7 @@ The dashboard displays key metrics in card format:
 - **Total Value**: Monetary value of current inventory
 
 ### Recent Activities
+
 - **Recent Movements**: List of latest 10 stock movements with:
   - Beverage name
   - Movement type (ENTREE/SORTIE/AJUSTEMENT)
@@ -22,6 +25,7 @@ The dashboard displays key metrics in card format:
   - User who performed the action
 
 ### Stock Alerts
+
 - **Low Stock Items**: Beverages with quantity below threshold
 - **Critical Stock Items**: Beverages with very low quantities
 - **Out of Stock Items**: Beverages with zero quantity
@@ -34,8 +38,9 @@ The dashboard displays key metrics in card format:
 ## Analytics Page Statistics
 
 ### Weekly Stock Movement Chart
+
 - **Chart Type**: Line/Bar chart showing movement trends
-- **Data Points**: 
+- **Data Points**:
   - Daily entries (ENTREE movements)
   - Daily exits (SORTIE movements)
   - Daily adjustments (AJUSTEMENT movements)
@@ -46,17 +51,19 @@ The dashboard displays key metrics in card format:
   - Date range selector
 
 ### Movement Trends
+
 - **Period Analysis**: Weekly, Monthly, Yearly trends
 - **Metrics**:
   - Total movements per period
   - Percentage change from previous period
   - Trend direction (UP/DOWN/STABLE)
-- **Visual Indicators**: 
+- **Visual Indicators**:
   - Green arrows for positive trends
   - Red arrows for negative trends
   - Flat indicators for stable trends
 
 ### Top Performing Beverages
+
 - **Ranking**: Beverages by movement frequency
 - **Metrics**:
   - Total number of movements
@@ -65,7 +72,8 @@ The dashboard displays key metrics in card format:
 - **Display**: Top 10 beverages list with progress bars
 
 ### Inventory Analytics
-- **Stock Distribution**: 
+
+- **Stock Distribution**:
   - Pie chart showing stock levels by beverage category
   - Percentage breakdown of inventory value
 - **Expiration Tracking**:
@@ -81,6 +89,7 @@ The dashboard displays key metrics in card format:
 Based on the frontend requirements, the backend should provide:
 
 ### Core Statistics Endpoints
+
 1. `GET /statistics/dashboard` - Dashboard overview statistics
 2. `GET /statistics/weekly-stock-movement` - Weekly movement data for charts
 3. `GET /statistics/movement-trends?period={period}` - Trend analysis
@@ -89,6 +98,7 @@ Based on the frontend requirements, the backend should provide:
 6. `GET /statistics/inventory-analytics` - Inventory distribution and analysis
 
 ### Additional Analytics Endpoints
+
 1. `GET /statistics/stock-alerts` - Low stock and critical alerts
 2. `GET /statistics/expiration-alerts` - Lots expiring soon
 3. `GET /statistics/user-activity` - User activity statistics
@@ -97,6 +107,7 @@ Based on the frontend requirements, the backend should provide:
 ## Data Models Required
 
 ### DashboardStatistics
+
 ```typescript
 {
   totalBeverages: number;
@@ -112,6 +123,7 @@ Based on the frontend requirements, the backend should provide:
 ```
 
 ### WeeklyStockMovement
+
 ```typescript
 {
   weekDates: string[];
@@ -123,18 +135,20 @@ Based on the frontend requirements, the backend should provide:
 ```
 
 ### MovementTrend
+
 ```typescript
 {
-  period: string;
-  totalMovements: number;
-  percentageChange: number;
-  trend: 'UP' | 'DOWN' | 'STABLE';
+  period: string
+  totalMovements: number
+  percentageChange: number
+  trend: 'UP' | 'DOWN' | 'STABLE'
 }
 ```
 
 ## Chart Libraries and Visualization
 
 The frontend uses:
+
 - **Chart.js** or **ApexCharts** for interactive charts
 - **Vue components** for data visualization
 - **Responsive design** for mobile compatibility
@@ -142,6 +156,7 @@ The frontend uses:
 ## Real-time Updates
 
 Some statistics may need real-time updates:
+
 - **Dashboard cards**: Update every 30 seconds
 - **Recent movements**: Real-time updates via WebSocket (optional)
 - **Stock alerts**: Immediate updates when stock changes
@@ -149,6 +164,7 @@ Some statistics may need real-time updates:
 ## Export Features
 
 Statistics can be exported in multiple formats:
+
 - **PDF reports**: Dashboard summaries
 - **Excel files**: Detailed movement data
 - **CSV files**: Raw data for external analysis

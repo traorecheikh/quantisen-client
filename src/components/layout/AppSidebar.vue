@@ -1,5 +1,5 @@
 <template>
-  <aside class="app-sidebar" :class="{ 'collapsed': isCollapsed }">
+  <aside class="app-sidebar" :class="{ collapsed: isCollapsed }">
     <div class="sidebar-content">
       <!-- Navigation Menu -->
       <nav class="sidebar-nav">
@@ -84,7 +84,7 @@
           <TagIcon class="w-4 h-4 version-icon" />
           <span class="version-text">v1.0.5</span>
         </div>
-         </div>
+      </div>
     </div>
   </aside>
 </template>

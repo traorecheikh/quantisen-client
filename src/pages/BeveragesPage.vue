@@ -8,10 +8,7 @@
           <p class="page-subtitle">Gérer tous les produits de boisson de votre inventaire</p>
         </div>
         <div class="header-actions">
-          <button
-            class="add-btn primary"
-            @click="openAddModal"
-          >
+          <button class="add-btn primary" @click="openAddModal">
             <PlusIcon class="w-4 h-4" />
             Ajouter Boisson
           </button>
@@ -37,15 +34,11 @@
             <tr v-for="beverage in beverages" :key="beverage.id">
               <td class="name-cell">{{ beverage.nom }}</td>
               <td class="description-cell">{{ beverage.description }}</td>
-              <td class="price-cell">{{ beverage.prix.toFixed(2) }} FCFA </td>
+              <td class="price-cell">{{ beverage.prix.toFixed(2) }} FCFA</td>
               <td class="volume-cell">{{ beverage.volume }}{{ beverage.unite }}</td>
               <td class="threshold-cell">{{ beverage.seuil }}</td>
               <td class="actions-cell">
-                <button
-                  class="edit-btn"
-                  @click="openEditModal(beverage)"
-                  title="Modifier"
-                >
+                <button class="edit-btn" @click="openEditModal(beverage)" title="Modifier">
                   <PencilIcon class="w-4 h-4" />
                 </button>
               </td>
@@ -141,12 +134,8 @@
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="closeAddModal">
-              Annuler
-            </button>
-            <button type="submit" class="submit-btn primary">
-              Ajouter
-            </button>
+            <button type="button" class="cancel-btn" @click="closeAddModal">Annuler</button>
+            <button type="submit" class="submit-btn primary">Ajouter</button>
           </div>
         </form>
       </div>
@@ -236,12 +225,8 @@
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="closeEditModal">
-              Annuler
-            </button>
-            <button type="submit" class="submit-btn primary">
-              Enregistrer
-            </button>
+            <button type="button" class="cancel-btn" @click="closeEditModal">Annuler</button>
+            <button type="submit" class="submit-btn primary">Enregistrer</button>
           </div>
         </form>
       </div>
@@ -250,10 +235,10 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import { onMounted, ref } from 'vue'
 import { PlusIcon, PencilIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-import {type Boisson, BoissonService} from "../api";
-import {showToast} from "../utils/toast.ts";
+import { type Boisson, BoissonService } from '../api'
+import { showToast } from '../utils/toast.ts'
 
 const showAddModal = ref(false)
 const showEditModal = ref(false)
@@ -267,7 +252,7 @@ const addForm = ref({
   prix: 0,
   volume: 0,
   unite: 'ml',
-  seuil: 0
+  seuil: 0,
 })
 
 const editForm = ref({
@@ -277,7 +262,7 @@ const editForm = ref({
   volume: 0,
   unite: 'ml',
   seuil: 0,
-  isActive: true
+  isActive: true,
 })
 
 const openAddModal = () => {
@@ -298,7 +283,7 @@ const closeAddModal = () => {
 
 const openEditModal = (beverage: Boisson) => {
   editingBeverage.value = beverage
-  editForm.value = { ...beverage, }
+  editForm.value = { ...beverage }
   showEditModal.value = true
 }
 
@@ -311,18 +296,18 @@ const addBeverage = () => {
   const newBeverage: Boisson = {
     id: Date.now(),
     isActive: false,
-    ...addForm.value
+    ...addForm.value,
   }
   beverages.value.push(newBeverage)
   showToast(`Boisson "${newBeverage.nom}" ajoutée avec succès!`, 'success')
   closeAddModal()
 }
 
-const updateBeverage = async () =>{
+const updateBeverage = async () => {
   if (editingBeverage.value) {
-    const index = beverages.value.findIndex(b => b.id === editingBeverage.value!.id)
+    const index = beverages.value.findIndex((b) => b.id === editingBeverage.value!.id)
     if (index !== -1) {
-      beverages.value[index] = { ...editForm.value, id: editingBeverage.value.id , isActive:true}
+      beverages.value[index] = { ...editForm.value, id: editingBeverage.value.id, isActive: true }
     }
     await BoissonService.updateBoisson(editingBeverage.value!.id, editForm.value)
     showToast(`Boisson "${editForm.value.nom}" mise à jour avec succès!`, 'success')
@@ -331,7 +316,7 @@ const updateBeverage = async () =>{
 }
 
 async function loadLots() {
-  beverages.value = await BoissonService.getAllBeverages();
+  beverages.value = await BoissonService.getAllBeverages()
 }
 
 onMounted(loadLots)

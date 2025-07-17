@@ -4,10 +4,16 @@
       <!-- Header -->
       <div class="header-section">
         <div class="brand-logo">
-          <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="64" height="64" rx="16" fill="var(--color-primary-600)"/>
-            <path d="M16 24h32v24a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V24z" fill="white"/>
-            <path d="M24 16h16v8H24z" fill="var(--color-primary-200)"/>
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="64" height="64" rx="16" fill="var(--color-primary-600)" />
+            <path d="M16 24h32v24a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V24z" fill="white" />
+            <path d="M24 16h16v8H24z" fill="var(--color-primary-200)" />
           </svg>
         </div>
         <h1 class="welcome-title">Bienvenue sur QuantiSen !</h1>
@@ -19,7 +25,9 @@
         <div class="form-container">
           <div class="form-header">
             <h2 class="form-title">Changement de mot de passe requis</h2>
-            <p class="form-subtitle">Pour votre sécurité, veuillez changer votre mot de passe temporaire</p>
+            <p class="form-subtitle">
+              Pour votre sécurité, veuillez changer votre mot de passe temporaire
+            </p>
           </div>
 
           <form class="password-form" @submit.prevent="handlePasswordChange">
@@ -68,7 +76,9 @@
             </div>
 
             <div class="form-group">
-              <label for="confirm-password" class="form-label">Confirmer le nouveau mot de passe</label>
+              <label for="confirm-password" class="form-label"
+                >Confirmer le nouveau mot de passe</label
+              >
               <div class="input-container">
                 <input
                   id="confirm-password"
@@ -93,22 +103,22 @@
             <div class="password-requirements">
               <h4>Votre mot de passe doit contenir :</h4>
               <ul class="requirements-list">
-                <li :class="{ 'valid': hasMinLength }">
+                <li :class="{ valid: hasMinLength }">
                   <CheckCircleIcon v-if="hasMinLength" class="w-4 h-4 text-green-500" />
                   <XCircleIcon v-else class="w-4 h-4 text-gray-400" />
                   Au moins 8 caractères
                 </li>
-                <li :class="{ 'valid': hasUpperCase }">
+                <li :class="{ valid: hasUpperCase }">
                   <CheckCircleIcon v-if="hasUpperCase" class="w-4 h-4 text-green-500" />
                   <XCircleIcon v-else class="w-4 h-4 text-gray-400" />
                   Une lettre majuscule
                 </li>
-                <li :class="{ 'valid': hasLowerCase }">
+                <li :class="{ valid: hasLowerCase }">
                   <CheckCircleIcon v-if="hasLowerCase" class="w-4 h-4 text-green-500" />
                   <XCircleIcon v-else class="w-4 h-4 text-gray-400" />
                   Une lettre minuscule
                 </li>
-                <li :class="{ 'valid': hasNumber }">
+                <li :class="{ valid: hasNumber }">
                   <CheckCircleIcon v-if="hasNumber" class="w-4 h-4 text-green-500" />
                   <XCircleIcon v-else class="w-4 h-4 text-gray-400" />
                   Un chiffre
@@ -145,7 +155,12 @@
             <div class="feature-card">
               <div class="feature-icon">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
                 </svg>
               </div>
               <h4>Suivi des stocks</h4>
@@ -154,7 +169,12 @@
             <div class="feature-card">
               <div class="feature-icon">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <h4>Gestion des lots</h4>
@@ -163,7 +183,12 @@
             <div class="feature-card">
               <div class="feature-icon">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
                 </svg>
               </div>
               <h4>Analyses avancées</h4>
@@ -187,7 +212,7 @@ import {
   ArrowPathIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  XCircleIcon
+  XCircleIcon,
 } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
@@ -195,7 +220,7 @@ const authStore = useAuthStore()
 
 const passwordForm = ref({
   ancienMotDePasse: '',
-  nouveauMotDePasse: ''
+  nouveauMotDePasse: '',
 })
 
 const confirmPassword = ref('')
@@ -210,15 +235,19 @@ const hasMinLength = computed(() => passwordForm.value.nouveauMotDePasse.length 
 const hasUpperCase = computed(() => /[A-Z]/.test(passwordForm.value.nouveauMotDePasse))
 const hasLowerCase = computed(() => /[a-z]/.test(passwordForm.value.nouveauMotDePasse))
 const hasNumber = computed(() => /\d/.test(passwordForm.value.nouveauMotDePasse))
-const passwordsMatch = computed(() => passwordForm.value.nouveauMotDePasse === confirmPassword.value)
+const passwordsMatch = computed(
+  () => passwordForm.value.nouveauMotDePasse === confirmPassword.value
+)
 
 const isFormValid = computed(() => {
-  return hasMinLength.value &&
-         hasUpperCase.value &&
-         hasLowerCase.value &&
-         hasNumber.value &&
-         passwordsMatch.value &&
-         passwordForm.value.ancienMotDePasse.length > 0
+  return (
+    hasMinLength.value &&
+    hasUpperCase.value &&
+    hasLowerCase.value &&
+    hasNumber.value &&
+    passwordsMatch.value &&
+    passwordForm.value.ancienMotDePasse.length > 0
+  )
 })
 
 const handlePasswordChange = async () => {
@@ -235,7 +264,8 @@ const handlePasswordChange = async () => {
     authStore.updateUserAfterPasswordChange()
     await router.push('/dashboard')
   } catch (error: any) {
-    errorMessage.value = error.response?.data?.message || 'Erreur lors du changement de mot de passe'
+    errorMessage.value =
+      error.response?.data?.message || 'Erreur lors du changement de mot de passe'
   } finally {
     isLoading.value = false
   }
@@ -420,8 +450,12 @@ const handlePasswordChange = async () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-message {

@@ -10,15 +10,8 @@
           </p>
         </div>
         <div class="header-actions">
-          <button
-              @click="loadLots"
-              class="add-btn secondary"
-              :disabled="loading"
-          >
-            <ArrowPathIcon
-                class="w-4 h-4"
-                :class="{ 'animate-spin': loading }"
-            />
+          <button @click="loadLots" class="add-btn secondary" :disabled="loading">
+            <ArrowPathIcon class="w-4 h-4" :class="{ 'animate-spin': loading }" />
             Actualiser
           </button>
         </div>
@@ -53,11 +46,7 @@
 
           <select v-model="beverageFilter" class="filter-select">
             <option value="all">Toutes les boissons</option>
-            <option
-                v-for="beverage in availableBeverages"
-                :key="beverage"
-                :value="beverage"
-            >
+            <option v-for="beverage in availableBeverages" :key="beverage" :value="beverage">
               {{ beverage }}
             </option>
           </select>
@@ -74,10 +63,10 @@
       <!-- Lots Cards Grid -->
       <div v-else class="lots-grid">
         <div
-            v-for="lot in filteredLots"
-            :key="lot.id"
-            class="lot-card"
-            :class="getExpiryStatusClass(lot.datePeremption, lot.vendable!)"
+          v-for="lot in filteredLots"
+          :key="lot.id"
+          class="lot-card"
+          :class="getExpiryStatusClass(lot.datePeremption, lot.vendable!)"
         >
           <div class="lot-header">
             <div class="lot-info">
@@ -85,8 +74,8 @@
               <p class="lot-beverage">{{ lot.boisson.nom }}</p>
             </div>
             <div
-                class="lot-status-badge"
-                :class="getExpiryStatusClass(lot.datePeremption, lot.vendable!)"
+              class="lot-status-badge"
+              :class="getExpiryStatusClass(lot.datePeremption, lot.vendable!)"
             >
               {{ getStatusText(lot.datePeremption, lot.vendable!) }}
             </div>
@@ -113,8 +102,8 @@
             <div class="detail-row">
               <span class="detail-label">Date d'expiration:</span>
               <span
-                  class="detail-value expiry"
-                  :class="getExpiryStatusClass(lot.datePeremption, lot.vendable)"
+                class="detail-value expiry"
+                :class="getExpiryStatusClass(lot.datePeremption, lot.vendable!)"
               >
                 {{ formatDate(lot.datePeremption) }}
               </span>
@@ -123,8 +112,8 @@
             <div class="detail-row">
               <span class="detail-label">Jours restants:</span>
               <span
-                  class="detail-value"
-                  :class="getExpiryStatusClass(lot.datePeremption, lot.vendable)"
+                class="detail-value"
+                :class="getExpiryStatusClass(lot.datePeremption, lot.vendable!)"
               >
                 {{ getDaysRemaining(lot.datePeremption) }}
               </span>
@@ -133,9 +122,9 @@
 
           <div class="lot-actions">
             <router-link
-                :to="`/movements?lot=${lot.numeroLot}`"
-                class="action-link"
-                title="Voir les mouvements de ce lot"
+              :to="`/movements?lot=${lot.numeroLot}`"
+              class="action-link"
+              title="Voir les mouvements de ce lot"
             >
               <EyeIcon class="w-4 h-4" />
               Voir Mouvements
@@ -188,68 +177,59 @@ import { showToast } from './../utils/toast'
 /*  STATE                                                             */
 /* ------------------------------------------------------------------ */
 
-const lots        = ref<Lot[]>([])
-const beverages   = ref<Boisson[]>([])
-const loading     = ref(false)
-const error       = ref('')
+const lots = ref<Lot[]>([])
+const beverages = ref<Boisson[]>([])
+const loading = ref(false)
+const error = ref('')
 
-const statusFilter   = ref<'all' | 'active' | 'expiring' | 'expired'>('all')
+const statusFilter = ref<'all' | 'active' | 'expiring' | 'expired'>('all')
 const beverageFilter = ref<string>('all')
 
 /* ------------------------------------------------------------------ */
 /*  COMPUTED                                                          */
 /* ------------------------------------------------------------------ */
 
-const availableBeverages = computed(() =>
-    [...new Set(lots.value.map(lot => lot.boisson.nom))]
-)
+const availableBeverages = computed(() => [...new Set(lots.value.map((lot) => lot.boisson.nom))])
 
 const filteredLots = computed(() => {
   let result = lots.value
 
   /* Filtre boisson */
   if (beverageFilter.value !== 'all') {
-    result = result.filter(lot => lot.boisson.nom === beverageFilter.value)
+    result = result.filter((lot) => lot.boisson.nom === beverageFilter.value)
   }
 
   /* Filtre statut */
   if (statusFilter.value !== 'all') {
-    result = result.filter(lot =>
-        getExpiryStatus(lot.datePeremption, lot.vendable) === statusFilter.value
+    result = result.filter(
+      (lot) => getExpiryStatus(lot.datePeremption, lot.vendable!) === statusFilter.value
     )
   }
 
   /* Tri par date d’expiration croissante */
   return result.sort(
-      (a, b) =>
-          new Date(a.datePeremption).getTime() -
-          new Date(b.datePeremption).getTime()
+    (a, b) => new Date(a.datePeremption).getTime() - new Date(b.datePeremption).getTime()
   )
 })
 
 const activeLotCount = computed(
-    () =>
-        lots.value.filter(
-            lot =>
-                lot.vendable &&
-                getExpiryStatus(lot.datePeremption, lot.vendable) === 'active'
-        ).length
+  () =>
+    lots.value.filter(
+      (lot) => lot.vendable && getExpiryStatus(lot.datePeremption, lot.vendable) === 'active'
+    ).length
 )
 
 const expiringLotCount = computed(
-    () =>
-        lots.value.filter(
-            lot =>
-                lot.vendable &&
-                getExpiryStatus(lot.datePeremption, lot.vendable) === 'expiring'
-        ).length
+  () =>
+    lots.value.filter(
+      (lot) => lot.vendable && getExpiryStatus(lot.datePeremption, lot.vendable) === 'expiring'
+    ).length
 )
 
 const expiredLotCount = computed(
-    () =>
-        lots.value.filter(
-            lot => getExpiryStatus(lot.datePeremption, lot.vendable) === 'expired'
-        ).length
+  () =>
+    lots.value.filter((lot) => getExpiryStatus(lot.datePeremption, lot.vendable!) === 'expired')
+      .length
 )
 
 /* ------------------------------------------------------------------ */
@@ -258,27 +238,24 @@ const expiredLotCount = computed(
 
 /** Renvoie 'expired' si le lot n’est pas vendable */
 const getExpiryStatus = (
-    expiryDate: string,
-    vendable: boolean
-): 'active' | 'expiring' | 'expired' => {
-
-  const today   = new Date()
-  const expiry  = new Date(expiryDate)
-  const diffDays = Math.ceil(
-      (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-  )
+  expiryDate: string,
+  vendable: boolean
+): 'active' |'not-vendable'| 'expiring' | 'expired' => {
+  const today = new Date()
+  const expiry = new Date(expiryDate)
+  const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
   if (diffDays < 0) return 'expired'
   if (diffDays <= 30) return 'expiring'
-  if( !vendable ) return 'not-vendable'
+  if (!vendable) return 'not-vendable'
   return 'active'
 }
 
 const getExpiryStatusClass = (expiryDate: string, vendable: boolean) =>
-    `status-${getExpiryStatus(expiryDate, vendable)}`
+  `status-${getExpiryStatus(expiryDate, vendable)}`
 
 const getStatusText = (expiryDate: string, vendable: boolean) => {
-  if(!vendable) return "NON VENDABLE"
+  if (!vendable) return 'NON VENDABLE'
   switch (getExpiryStatus(expiryDate, vendable)) {
     case 'active':
       return 'Actif'
@@ -292,20 +269,17 @@ const getStatusText = (expiryDate: string, vendable: boolean) => {
 }
 
 const getDaysRemaining = (expiryDate: string) => {
-  const today   = new Date()
-  const expiry  = new Date(expiryDate)
-  const diffDays = Math.ceil(
-      (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-  )
+  const today = new Date()
+  const expiry = new Date(expiryDate)
+  const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
-  if (diffDays < 0)  return `Expiré depuis ${Math.abs(diffDays)} jours`
+  if (diffDays < 0) return `Expiré depuis ${Math.abs(diffDays)} jours`
   if (diffDays === 0) return 'Expire aujourd’hui'
   if (diffDays === 1) return 'Expire demain'
   return `${diffDays} jours`
 }
 
-const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('fr-FR')
+const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString('fr-FR')
 
 /* ------------------------------------------------------------------ */
 /*  DATA FETCH                                                        */
@@ -313,13 +287,13 @@ const formatDate = (dateStr: string) =>
 
 const loadLots = async () => {
   loading.value = true
-  error.value   = ''
+  error.value = ''
   try {
     const [lotsData, beveragesData] = await Promise.all([
       InventaireService.getAllLots(),
-      BoissonService.getAllBeverages()
+      BoissonService.getAllBeverages(),
     ])
-    lots.value      = lotsData
+    lots.value = lotsData
     beverages.value = beveragesData
     console.log(lotsData)
   } catch (err) {
