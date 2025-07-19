@@ -47,41 +47,41 @@ jobs:
 #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-dockerize:
-  runs-on: ubuntu-latest
-  needs: build-and-test
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  dockerize:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Download WAR artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: app-war
-        path: target
+      - name: Download WAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-war
+          path: target
 
-    - name: Log in to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/quantisenapp:latest
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/quantisenapp:latest
 
-    - name: Save Docker image tag
-      run: echo "${{ secrets.DOCKERHUB_USERNAME }}/quantisenapp:latest" > image_tag.txt
+      - name: Save Docker image tag
+        run: echo "${{ secrets.DOCKERHUB_USERNAME }}/quantisenapp:latest" > image_tag.txt
 
-    - name: Upload Docker image tag artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: image-tag
-        path: image_tag.txt
+      - name: Upload Docker image tag artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tag
+          path: image_tag.txt
 
   deploy:
     runs-on: ubuntu-latest
