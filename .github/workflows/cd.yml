@@ -117,7 +117,7 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: terraform import azurerm_resource_group.main /subscriptions/efd35740-0bd8-4c81-a598-a653bfec71b2/resourceGroups/quantisen-rg || true && terraform apply -auto-approve tfplan
         working-directory: ./infra
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
