@@ -107,6 +107,15 @@ jobs:
         run: terraform init
         working-directory: ./infra
 
+      - name: Terraform Import Resource Group
+        run: terraform import azurerm_resource_group.main /subscriptions/efd35740-0bd8-4c81-a598-a653bfec71b2/resourceGroups/quantisen-rg || true
+        working-directory: ./infra
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan -var="docker_image=traorecheikh/quantisenapp"
         working-directory: ./infra
@@ -117,7 +126,7 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Terraform Apply
-        run: terraform import azurerm_resource_group.main /subscriptions/efd35740-0bd8-4c81-a598-a653bfec71b2/resourceGroups/quantisen-rg || true && terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan
         working-directory: ./infra
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
