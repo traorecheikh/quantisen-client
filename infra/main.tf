@@ -1,123 +1,64 @@
-provider "azurerm" {
-  features {}
-}
-
 terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~>3.0"
+      version = "~> 3.0"
     }
   }
+  required_version = ">= 1.0.0"
 }
 
-# Variables
-variable "docker_image" {
-  description = "Docker image to deploy"
-  type        = string
+provider "azurerm" {
+  features {}
 }
 
-variable "location" {
-  description = "Azure region"
-  type        = string
-  default     = "East US"
-}
-
-variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "production"
-}
-
-# Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "rg-gestion-boisson-${var.environment}"
-  location = var.location
-
-  tags = {
-    Environment = var.environment
-    Application = "gestion-boisson"
-  }
+  name     = "quantisen-app-rg"
+  location = "East US"
 }
 
-# App Service Plan
 resource "azurerm_service_plan" "main" {
-  name                = "asp-gestion-boisson-${var.environment}"
-  resource_group_name = azurerm_resource_group.main.name
+  name                = "gestionboisson-plan"
   location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
   os_type             = "Linux"
-  sku_name            = "F1"  # Free tier for student account
-
-  tags = {
-    Environment = var.environment
-    Application = "gestion-boisson"
-  }
+  sku_name            = "F1"
 }
 
-# Container Registry (optional, can use Docker Hub instead)
-resource "azurerm_container_registry" "main" {
-  name                = "acrgestionboisson${var.environment}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  sku                 = "Basic"
-  admin_enabled       = true
-
-  tags = {
-    Environment = var.environment
-    Application = "gestion-boisson"
-  }
-}
-
-# Web App
 resource "azurerm_linux_web_app" "main" {
-  name                = "app-gestion-boisson-${var.environment}"
-  resource_group_name = azurerm_resource_group.main.name
+  name                = "quantisen-app-${random_integer.suffix.result}"
   location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
   service_plan_id     = azurerm_service_plan.main.id
 
   site_config {
-    always_on = false  # Free tier doesn't support always_on
-
     application_stack {
       docker_image     = var.docker_image
       docker_image_tag = "latest"
     }
+    always_on = false
   }
 
-  app_settings = {
-    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io/v1/"
-    "WEBSITES_PORT"                       = "80"
-  }
-
-  tags = {
-    Environment = var.environment
-    Application = "gestion-boisson"
-  }
+  app_settings = var.environment_variables
 }
 
-# Application Insights
-resource "azurerm_application_insights" "main" {
-  name                = "appi-gestion-boisson-${var.environment}"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-  application_type    = "web"
-
-  tags = {
-    Environment = var.environment
-    Application = "gestion-boisson"
-  }
+resource "random_integer" "suffix" {
+  min = 10000
+  max = 99999
 }
 
-# Outputs
-output "web_app_url" {
-  value = "https://${azurerm_linux_web_app.main.default_hostname}"
+variable "docker_image" {
+  description = "Docker image to deploy"
+  type        = string
+  default     = "traorecheikh/quantisenapp:latest"
 }
 
-output "resource_group_name" {
-  value = azurerm_resource_group.main.name
+variable "environment_variables" {
+  description = "Environment variables for the container"
+  type        = map(string)
+  default     = {}
 }
 
-output "container_registry_login_server" {
-  value = azurerm_container_registry.main.login_server
+output "fqdn" {
+  value = azurerm_linux_web_app.main.default_hostname
 }

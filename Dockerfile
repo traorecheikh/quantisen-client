@@ -1,5 +1,5 @@
-# Multi-stage build for Vue.js application
-FROM node:18-alpine AS build
+# Build stage
+FROM node:22-alpine AS build
 
 # Set working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source code
 COPY . .

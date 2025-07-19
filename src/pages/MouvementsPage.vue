@@ -647,7 +647,6 @@ interface MovementCSVRow {
   expiryDate: string
 }
 
-const activeTab = ref<'single' | 'batch' | 'csv' | 'history'>('single')
 const isSubmitting = ref(false)
 const isSortieProcessing = ref(false)
 const message = ref('')
@@ -1136,10 +1135,7 @@ const triggerCsvUpload = () => {
   csvFileInput.value?.click()
 }
 
-const openAddModal = (type: MovementType) => {
-  activeTab.value = 'single'
-  singleMovement.value.typeMouvement = type
-}
+
 
 const showMessage = (text: string, type: 'success' | 'error') => {
   message.value = text
@@ -1188,18 +1184,6 @@ const clearHistoryFilters = async () => {
   await loadLigneOperations()
 }
 
-const getStatusClass = (status: string | undefined): string => {
-  switch (status) {
-    case 'CONFIRME':
-      return 'success'
-    case 'EN_ATTENTE':
-      return 'warning'
-    case 'ANNULE':
-      return 'error'
-    default:
-      return 'success'
-  }
-}
 
 const currentView = ref<'selection' | 'entree' | 'sortie' | 'ajustement' | 'historique'>('selection')
 const entreeMethod = ref<'single' | 'csv'>('single')
@@ -1211,10 +1195,7 @@ const changePage = async (page: number) => {
   await loadLigneOperations()
 }
 
-const changePageSize = async () => {
-  currentPage.value = 1
-  await loadLigneOperations()
-}
+
 
 const getCurrentUserId = (): number => {
   const user = JSON.parse(localStorage.getItem('user') || '{}')
