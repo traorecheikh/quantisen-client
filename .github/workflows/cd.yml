@@ -116,6 +116,15 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
+      - name: Terraform Import Service Plan
+        run: terraform import azurerm_service_plan.main /subscriptions/efd35740-0bd8-4c81-a598-a653bfec71b2/resourceGroups/quantisen-rg/providers/Microsoft.Web/serverFarms/gestionboisson-plan || true
+        working-directory: ./infra
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan -var="docker_image=traorecheikh/quantisenapp"
         working-directory: ./infra
