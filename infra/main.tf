@@ -13,7 +13,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "main" {
-  name     = "quantisen-app-rg"
+  name     = "quantisen-rg"
   location = "East US"
 }
 
