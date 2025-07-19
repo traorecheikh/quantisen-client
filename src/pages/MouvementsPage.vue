@@ -54,7 +54,7 @@
             <p class="action-description">Enregistrer la vente ou consommation</p>
             <div class="action-features">
               <span class="feature">• Gestion automatique</span>
-              <span class="feature">• FIFO intégré</span>
+              <span class="feature">• FEFO/FIFO intégré</span>
               <span class="feature">• Traçabilité complète</span>
             </div>
           </div>
@@ -623,6 +623,7 @@ import type {
 import type {CreateMouvementSortieRequest} from '../api/features/inventaire/requests/createMouvementSortieRequest'
 import type {CreateLotRequest} from '../api/features/inventaire/requests/createLotRequest'
 import type {CreateLotBatchRequest} from '../api/features/inventaire/requests/createLotBatchRequest'
+import {useMouvementsStore} from "../stores/inventaire/mouvements.ts";
 
 type MovementType = 'ENTREE' | 'SORTIE' | 'AJUSTEMENT'
 type AjustementType = 'POSITIF' | 'NEGATIF'
@@ -656,7 +657,7 @@ const boissons = ref<Boisson[]>([])
 const lots = ref<Lot[]>([])
 const utilisateurs = ref<Utilisateur[]>([])
 const mouvements = ref<Mouvement[]>([])
-
+const mouvementStore = useMouvementsStore()
 const singleMovement = ref<SingleMovementForm>({
   typeMouvement: '',
   boissonId: '',
@@ -716,10 +717,7 @@ const loadData = async () => {
 
 const loadLigneOperations = async () => {
   try {
-    paginatedLigneOperations.value = await InventaireService.getAllLigneOperationsPaginated(
-        currentPage.value,
-        pageSize.value
-    )
+    paginatedLigneOperations.value = await mouvementStore.loadLigneOperations(currentPage.value, pageSize.value)
   } catch (error) {
     console.error('Error loading ligne operations:', error)
     showMessage("Erreur lors du chargement de l'historique", 'error')

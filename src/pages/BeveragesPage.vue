@@ -7,6 +7,12 @@
           <h1 class="page-title">Boissons</h1>
           <p class="page-subtitle">Gérer tous les produits de boisson de votre inventaire</p>
         </div>
+        <div class="header-actions">
+          <button @click="forceLoad" class="add-btn secondary" :disabled="loading">
+            <ArrowPathIcon class="w-4 h-4" :class="{ 'animate-spin': loading }" />
+            Actualiser
+          </button>
+        </div>
         <div class="header-actions" v-if="isGerant">
           <button class="add-btn primary" @click="openAddModal">
             <PlusIcon class="w-4 h-4" />
@@ -253,12 +259,14 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
-import { PlusIcon, PencilIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import {PlusIcon, PencilIcon, XMarkIcon, ArrowPathIcon} from '@heroicons/vue/24/outline'
 import { type Boisson, BoissonService } from '../api'
 import { showToast } from '../utils/toast.ts'
 import { useAuthStore } from '../stores/auth'
-
+import {useBoissonStore} from "../stores/boisson.ts";
+let loading = ref(false)
 const authStore = useAuthStore()
+const boissonStore = useBoissonStore()
 
 const showAddModal = ref(false)
 const showEditModal = ref(false)
@@ -315,13 +323,21 @@ const closeEditModal = () => {
   editingBeverage.value = null
 }
 
-const addBeverage = () => {
+const addBeverage = async () => {
   const newBeverage: Boisson = {
     id: Date.now(),
     isActive: false,
     ...addForm.value,
   }
-  beverages.value.push(newBeverage)
+  try{
+    await BoissonService.createBoisson(newBeverage)
+    beverages.value.push(newBeverage)
+    beverages.value = await boissonStore.fetchBoissons(true) || [];
+  } catch (error) {
+    console.error('Error adding beverage:', error)
+    showToast('Erreur lors de l\'ajout de la boisson', 'error')
+    return
+  }
   showToast(`Boisson "${newBeverage.nom}" ajoutée avec succès!`, 'success')
   closeAddModal()
 }
@@ -332,7 +348,14 @@ const updateBeverage = async () => {
     if (index !== -1) {
       beverages.value[index] = { ...editForm.value, id: editingBeverage.value.id, isActive: true }
     }
-    await BoissonService.updateBoisson(editingBeverage.value!.id, editForm.value)
+    try{
+      await BoissonService.updateBoisson(editingBeverage.value!.id, editForm.value)
+      beverages.value = await boissonStore.fetchBoissons(true) || [];
+    } catch (error) {
+      console.error('Error updating beverage:', error)
+      showToast('Erreur lors de la mise à jour de la boisson', 'error')
+      return
+    }
     showToast(`Boisson "${editForm.value.nom}" mise à jour avec succès!`, 'success')
   }
   closeEditModal()
@@ -340,15 +363,22 @@ const updateBeverage = async () => {
 
 const toggleStatus = async (beverage: Boisson) => {
   try {
-    await BoissonService.toggleBoissonStatus(beverage.id)
 
-    // Update local state
+
     const index = beverages.value.findIndex(b => b.id === beverage.id)
     if (index !== -1) {
       beverages.value[index].isActive = !beverages.value[index].isActive
     }
-
     const statusText = beverage.isActive ? 'désactivée' : 'activée'
+    try{
+      await BoissonService.toggleBoissonStatus(beverage.id)
+
+      beverages.value = await boissonStore.fetchBoissons(true) || [];
+    }catch (error) {
+      console.error('Error toggling beverage status:', error)
+      showToast('Erreur lors de la modification du statut', 'error')
+      return
+    }
     showToast(`Boisson "${beverage.nom}" ${statusText} avec succès!`, 'success')
   } catch (error) {
     console.error('Error toggling beverage status:', error)
@@ -357,7 +387,21 @@ const toggleStatus = async (beverage: Boisson) => {
 }
 
 async function loadLots() {
-  beverages.value = await BoissonService.getAllBeverages()
+  loading.value = true
+  beverages.value = await boissonStore.fetchBoissons() || [];
+  loading.value = false
+}
+
+async function forceLoad(){
+  loading.value = true
+  try {
+    beverages.value = await boissonStore.fetchBoissons(true) || [];
+  } catch (error) {
+    console.error('Error fetching beverages:', error)
+    showToast('Erreur lors du chargement des boissons', 'error')
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(loadLots)
@@ -527,7 +571,43 @@ onMounted(loadLots)
   transition: all var(--transition-fast);
   margin-right: var(--space-2);
 }
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12);
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--color-border-light);
+  border-top: 3px solid var(--color-primary-500);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-4);
+}
+
+.loading-state p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
 .toggle-btn.active {
   background: #ef4444;
   color: white;

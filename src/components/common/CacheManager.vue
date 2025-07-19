@@ -94,7 +94,11 @@
 import { ref, onMounted, computed } from 'vue'
 import { cacheManager } from '../../api/api'
 import { showToast } from '../../utils/toast'
+import {useMouvementsStore} from "../../stores/inventaire/mouvements.ts";
+import {useBoissonStore} from "../../stores/boisson.ts";
 
+const mouvementStore = useMouvementsStore();
+const boissonStore = useBoissonStore();
 const stats = ref({
   size: 0,
   keys: [] as string[],
@@ -126,13 +130,14 @@ const groupedEntries = computed(() => {
 const refreshStats = () => {
   stats.value = cacheManager.getStats()
 
-  // Calculate hit rate (simplified - you might want to implement proper metrics)
   const totalRequests = stats.value.size * 1.5 // Simulated
   hitRate.value = totalRequests > 0 ? Math.round((stats.value.size / totalRequests) * 100) : 0
 }
 
 const clearAllCache = () => {
   cacheManager.clear()
+  boissonStore.clearCache()
+  mouvementStore.clearCache()
   refreshStats()
   showToast('Cache cleared successfully', 'success')
 }
@@ -163,7 +168,6 @@ const clearKey = (key: string) => {
 onMounted(() => {
   refreshStats()
 
-  // Auto-refresh stats every 30 seconds
   setInterval(refreshStats, 30000)
 })
 </script>
