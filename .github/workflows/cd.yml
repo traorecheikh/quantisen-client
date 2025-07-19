@@ -54,11 +54,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download WAR artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-war
-          path: target
 
       - name: Log in to DockerHub
         uses: docker/login-action@v3
@@ -67,7 +62,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
