@@ -1,347 +1,430 @@
 <template>
   <div class="movements-page">
-    <!-- Page Header -->
+    <!-- Main Navigation Header -->
     <div class="page-header">
       <div class="header-content">
-        <div class="header-text">
-          <h1 class="page-title">Mouvements de Stock</h1>
-          <p class="page-subtitle">Gérer toutes les entrées et sorties de stock</p>
+        <div class="header-left">
+          <h1 class="page-title">Gestion des Mouvements</h1>
+          <p class="page-subtitle">Centre de contrôle des stocks</p>
         </div>
-        <div class="header-actions">
-          <button class="add-btn success" @click="openAddModal('ENTREE')">
-            <ArrowDownIcon class="w-4 h-4" />
-            Entrée de Stock
-          </button>
-          <button class="add-btn error" @click="openAddModal('SORTIE')">
-            <ArrowUpIcon class="w-4 h-4" />
-            Sortie de Stock
-          </button>
-          <button class="add-btn warning" @click="openAddModal('AJUSTEMENT')">
-            <PencilIcon class="w-4 h-4" />
-            Ajustement
-          </button>
+        <div class="header-right">
+          <div class="quick-stats">
+            <div class="stat-item">
+              <span class="stat-value">{{ totalMovements }}</span>
+              <span class="stat-label">Total mouvements</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">{{ todayMovements }}</span>
+              <span class="stat-label">Aujourd'hui</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Movement Type Tabs -->
-    <div class="tabs-section">
-      <div class="tabs-container">
-        <button
-          class="tab-button"
-          :class="{ active: activeTab === 'single' }"
-          @click="activeTab = 'single'"
-        >
-          <div class="tab-content">
-            <PlusIcon class="tab-icon" />
-            <span>Mouvement Simple</span>
+    <!-- Action Selection Grid -->
+    <div v-if="currentView === 'selection'" class="action-selection">
+      <div class="actions-grid">
+        <!-- Entrée Action -->
+        <div class="action-card entree" @click="setView('entree')">
+          <div class="action-icon">
+            <ArrowDownIcon class="icon" />
           </div>
-        </button>
-        <button
-          class="tab-button"
-          :class="{ active: activeTab === 'csv' }"
-          @click="activeTab = 'csv'"
-        >
-          <div class="tab-content">
-            <ArrowUpOnSquareIcon class="tab-icon" />
-            <span>Import CSV (Entrées)</span>
+          <div class="action-content">
+            <h3 class="action-title">Entrée de Stock</h3>
+            <p class="action-description">Enregistrer l'arrivée de nouveaux produits</p>
+            <div class="action-features">
+              <span class="feature">• Lot unique</span>
+              <span class="feature">• Import CSV</span>
+              <span class="feature">• Suivi fournisseur</span>
+            </div>
           </div>
-        </button>
-        <button
-          class="tab-button"
-          :class="{ active: activeTab === 'history' }"
-          @click="activeTab = 'history'"
-        >
-          <div class="tab-content">
-            <ClockIcon class="tab-icon" />
-            <span>Historique</span>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <!-- Single Movement Form -->
-    <div v-if="activeTab === 'single'" class="form-section">
-      <div class="form-container">
-        <div class="form-header">
-          <h3>Enregistrer un Mouvement</h3>
-          <div class="form-type-indicator" v-if="singleMovement.typeMouvement">
-            <span class="type-badge" :class="singleMovement.typeMouvement.toLowerCase()">
-              <ArrowDownIcon v-if="singleMovement.typeMouvement === 'ENTREE'" class="w-4 h-4" />
-              <ArrowUpIcon v-if="singleMovement.typeMouvement === 'SORTIE'" class="w-4 h-4" />
-              <PencilIcon v-if="singleMovement.typeMouvement === 'AJUSTEMENT'" class="w-4 h-4" />
-              {{ getMovementTypeLabel(singleMovement.typeMouvement) }}
-            </span>
+          <div class="action-arrow">
+            <ArrowRightIcon class="arrow-icon" />
           </div>
         </div>
 
-        <form @submit.prevent="submitSingleMovement" class="movement-form">
-          <div class="form-steps">
-            <!-- Step 1: Movement Type Selection -->
-            <div class="form-step">
-              <div class="step-header">
-                <div class="step-number">1</div>
-                <div class="step-title">Type de Mouvement</div>
-              </div>
-              <div class="form-card">
-                <div class="movement-type-selector">
-                  <div
-                    class="movement-type-option"
-                    :class="{ active: singleMovement.typeMouvement === 'ENTREE' }"
-                    @click="singleMovement.typeMouvement = 'ENTREE'"
-                  >
-                    <div class="option-icon success">
-                      <ArrowDownIcon class="w-6 h-6" />
-                    </div>
-                    <div class="option-content">
-                      <div class="option-title">Entrée</div>
-                      <div class="option-description">Ajouter de nouveaux produits en stock</div>
-                    </div>
-                  </div>
+        <!-- Sortie Action -->
+        <div class="action-card sortie" @click="setView('sortie')">
+          <div class="action-icon">
+            <ArrowUpIcon class="icon" />
+          </div>
+          <div class="action-content">
+            <h3 class="action-title">Sortie de Stock</h3>
+            <p class="action-description">Enregistrer la vente ou consommation</p>
+            <div class="action-features">
+              <span class="feature">• Gestion automatique</span>
+              <span class="feature">• FIFO intégré</span>
+              <span class="feature">• Traçabilité complète</span>
+            </div>
+          </div>
+          <div class="action-arrow">
+            <ArrowRightIcon class="arrow-icon" />
+          </div>
+        </div>
 
-                  <div
-                    class="movement-type-option"
-                    :class="{ active: singleMovement.typeMouvement === 'SORTIE' }"
-                    @click="singleMovement.typeMouvement = 'SORTIE'"
-                  >
-                    <div class="option-icon error">
-                      <ArrowUpIcon class="w-6 h-6" />
-                    </div>
-                    <div class="option-content">
-                      <div class="option-title">Sortie</div>
-                      <div class="option-description">Retirer des produits du stock</div>
-                    </div>
-                  </div>
+        <!-- Ajustement Action -->
+        <div class="action-card ajustement" @click="setView('ajustement')">
+          <div class="action-icon">
+            <PencilIcon class="icon" />
+          </div>
+          <div class="action-content">
+            <h3 class="action-title">Ajustement</h3>
+            <p class="action-description">Corriger les quantités en stock</p>
+            <div class="action-features">
+              <span class="feature">• Correction d'inventaire</span>
+              <span class="feature">• Justification obligatoire</span>
+              <span class="feature">• Historique complet</span>
+            </div>
+          </div>
+          <div class="action-arrow">
+            <ArrowRightIcon class="arrow-icon" />
+          </div>
+        </div>
 
-                  <div
-                    class="movement-type-option"
-                    :class="{ active: singleMovement.typeMouvement === 'AJUSTEMENT' }"
-                    @click="singleMovement.typeMouvement = 'AJUSTEMENT'"
-                  >
-                    <div class="option-icon warning">
-                      <PencilIcon class="w-6 h-6" />
-                    </div>
-                    <div class="option-content">
-                      <div class="option-title">Ajustement</div>
-                      <div class="option-description">Corriger les quantités en stock</div>
-                    </div>
-                  </div>
+        <!-- Historique Action -->
+        <div class="action-card historique" @click="setView('historique')">
+          <div class="action-icon">
+            <ClockIcon class="icon" />
+          </div>
+          <div class="action-content">
+            <h3 class="action-title">Historique</h3>
+            <p class="action-description">Consulter tous les mouvements</p>
+            <div class="action-features">
+              <span class="feature">• Filtres avancés</span>
+              <span class="feature">• Export données</span>
+              <span class="feature">• Analyses détaillées</span>
+            </div>
+          </div>
+          <div class="action-arrow">
+            <ArrowRightIcon class="arrow-icon" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entrée View -->
+    <div v-if="currentView === 'entree'" class="action-view">
+      <div class="view-header">
+        <button @click="setView('selection')" class="back-btn">
+          <ArrowLeftIcon class="w-5 h-5" />
+          Retour
+        </button>
+        <div class="view-title">
+          <div class="title-icon entree">
+            <ArrowDownIcon class="icon" />
+          </div>
+          <div class="title-content">
+            <h2>Entrée de Stock</h2>
+            <p>Enregistrement de nouveaux produits</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-content">
+        <div class="entry-methods">
+          <div
+            class="method-card"
+            :class="{ active: entreeMethod === 'single' }"
+            @click="entreeMethod = 'single'"
+          >
+            <div class="method-icon">
+              <PlusIcon class="icon" />
+            </div>
+            <h3>Entrée Simple</h3>
+            <p>Un produit à la fois</p>
+          </div>
+
+          <div
+            class="method-card"
+            :class="{ active: entreeMethod === 'csv' }"
+            @click="entreeMethod = 'csv'"
+          >
+            <div class="method-icon">
+              <DocumentArrowUpIcon class="icon" />
+            </div>
+            <h3>Import CSV</h3>
+            <p>Plusieurs produits en lot</p>
+          </div>
+        </div>
+
+        <!-- Single Entry Form -->
+        <div v-if="entreeMethod === 'single'" class="form-container">
+          <form @submit.prevent="submitEntree" class="elegant-form">
+            <div class="form-section">
+              <h4 class="section-title">Informations Produit</h4>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Boisson</label>
+                  <select v-model="singleMovement.boissonId" class="form-input">
+                    <option value="">Sélectionner une boisson</option>
+                    <option v-for="beverage in boissons" :key="beverage.id" :value="beverage.id">
+                      {{ beverage.nom }} - {{ beverage.prix }} FCFA
+                    </option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Quantité</label>
+                  <input
+                    v-model.number="singleMovement.quantite"
+                    type="number"
+                    min="1"
+                    class="form-input"
+                    placeholder="Ex: 100"
+                  />
                 </div>
               </div>
             </div>
 
-            <!-- Step 2: Product Selection -->
-            <div class="form-step" v-if="singleMovement.typeMouvement">
-              <div class="step-header">
-                <div class="step-number">2</div>
-                <div class="step-title">
-                  {{
-                    singleMovement.typeMouvement === 'AJUSTEMENT'
-                      ? 'Sélection du Lot'
-                      : 'Sélection du Produit'
-                  }}
+            <div class="form-section">
+              <h4 class="section-title">Détails du Lot</h4>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Numéro de Lot</label>
+                  <input
+                    v-model="singleMovement.numeroLot"
+                    type="text"
+                    class="form-input"
+                    placeholder="Ex: LOT-2025-001"
+                  />
                 </div>
-              </div>
-              <div class="form-card">
-                <div class="form-grid-enhanced">
-                  <div
-                    class="form-group-enhanced"
-                    v-if="singleMovement.typeMouvement !== 'AJUSTEMENT'"
-                  >
-                    <label class="form-label-enhanced">
-                      <div class="label-content">
-                        <span class="label-text">Boisson</span>
-                        <span class="label-required">*</span>
-                      </div>
-                    </label>
-                    <div class="select-wrapper">
-                      <select
-                        v-model="singleMovement.boissonId"
-                        required
-                        class="form-select-enhanced"
-                      >
-                        <option value="">Sélectionner une boisson</option>
-                        <option
-                          v-for="beverage in boissons"
-                          :key="beverage.id"
-                          :value="beverage.id"
-                        >
-                          {{ beverage.nom }} - {{ beverage.prix }} FCFA
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div
-                    class="form-group-enhanced"
-                    v-if="singleMovement.typeMouvement === 'AJUSTEMENT'"
-                  >
-                    <label class="form-label-enhanced">
-                      <div class="label-content">
-                        <span class="label-text">Lot</span>
-                        <span class="label-required">*</span>
-                      </div>
-                    </label>
-                    <div class="select-wrapper">
-                      <select v-model="singleMovement.lotId" required class="form-select-enhanced">
-                        <option value="">Sélectionner un lot</option>
-                        <option v-for="lot in lots" :key="lot.id" :value="lot.id">
-                          {{ lot.numeroLot }} - {{ lot.boisson.nom }} ({{
-                            lot.quantiteActuelle
-                          }}
-                          disponible)
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="form-group-enhanced">
-                    <label class="form-label-enhanced">
-                      <div class="label-content">
-                        <span class="label-text">Quantité</span>
-                        <span class="label-required">*</span>
-                      </div>
-                    </label>
-                    <div class="input-wrapper">
-                      <input
-                        v-model.number="singleMovement.quantite"
-                        type="number"
-                        min="1"
-                        required
-                        class="form-input-enhanced"
-                        placeholder="Entrez la quantité"
-                      />
-                    </div>
-                  </div>
+                <div class="form-group">
+                  <label class="form-label">Fournisseur</label>
+                  <input
+                    v-model="singleMovement.fournisseur"
+                    type="text"
+                    class="form-input"
+                    placeholder="Ex: Coca-Cola Company"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Date de Péremption</label>
+                  <input
+                    v-model="singleMovement.datePeremption"
+                    type="date"
+                    class="form-input"
+                  />
                 </div>
               </div>
             </div>
 
-            <!-- Step 3: Additional Details -->
-            <div class="form-step" v-if="singleMovement.typeMouvement">
-              <div class="step-header">
-                <div class="step-number">3</div>
-                <div class="step-title">Détails Complémentaires</div>
+            <div class="form-actions">
+              <button type="button" @click="resetEntreeForm" class="btn btn-secondary">
+                Réinitialiser
+              </button>
+              <button type="submit" :disabled="isSubmitting" class="btn btn-primary">
+                <span v-if="!isSubmitting">Enregistrer l'Entrée</span>
+                <span v-else>Enregistrement...</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- CSV Import -->
+        <div v-if="entreeMethod === 'csv'" class="csv-container">
+          <div class="csv-upload-zone" @click="triggerCsvUpload" @drop="handleCsvDrop" @dragover.prevent>
+            <div class="upload-content">
+              <DocumentArrowUpIcon class="upload-icon" />
+              <h3>Importer un fichier CSV</h3>
+              <p>Glissez-déposez votre fichier ici ou cliquez pour le sélectionner</p>
+              <div class="upload-info">
+                <span>Format: .csv | Taille max: 5MB</span>
               </div>
-              <div class="form-card">
-                <!-- ENTREE specific fields -->
-                <div v-if="singleMovement.typeMouvement === 'ENTREE'" class="form-grid-enhanced">
-                  <div class="form-group-enhanced">
-                    <label class="form-label-enhanced">
-                      <div class="label-content">
-                        <span class="label-text">Numéro de Lot</span>
-                        <span class="label-required">*</span>
-                      </div>
-                    </label>
-                    <div class="input-wrapper">
-                      <input
-                        v-model="singleMovement.numeroLot"
-                        type="text"
-                        required
-                        class="form-input-enhanced"
-                        placeholder="Ex: LOT-2024-001"
-                      />
-                    </div>
-                  </div>
+            </div>
+            <input ref="csvFileInput" type="file" accept=".csv" @change="handleCsvUpload" style="display: none" />
+          </div>
 
-                  <div class="form-group-enhanced">
-                    <label class="form-label-enhanced">
-                      <div class="label-content">
-                        <span class="label-text">Fournisseur</span>
-                        <span class="label-required">*</span>
-                      </div>
-                    </label>
-                    <div class="input-wrapper">
-                      <input
-                        v-model="singleMovement.fournisseur"
-                        type="text"
-                        required
-                        class="form-input-enhanced"
-                        placeholder="Ex: Coca-Cola Company"
-                      />
-                    </div>
-                  </div>
+          <div v-if="csvData.length > 0" class="csv-preview-container">
+            <div class="csv-preview-header">
+              <h4>Aperçu des données ({{ csvData.length }} entrées)</h4>
+              <button @click="clearCsvData" class="btn btn-outline">Effacer</button>
+            </div>
+            <div class="csv-table-container">
+              <table class="csv-table">
+                <thead>
+                  <tr>
+                    <th>Boisson</th>
+                    <th>Lot</th>
+                    <th>Quantité</th>
+                    <th>Péremption</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, index) in csvData" :key="index">
+                    <td>{{ row.beverageName }}</td>
+                    <td>{{ row.lotNumber }}</td>
+                    <td>{{ row.quantity }}</td>
+                    <td>{{ row.expiryDate }}</td>
+                    <td>
+                      <span :class="validateCsvRow(row) ? 'status-valid' : 'status-invalid'">
+                        {{ validateCsvRow(row) ? '✓ Valide' : '✗ Invalide' }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="csv-actions">
+              <button @click="processCsvImport" :disabled="!hasValidCsvRows || isProcessing" class="btn btn-success">
+                {{ isProcessing ? 'Traitement...' : 'Importer toutes les entrées' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                  <div class="form-group-enhanced">
-                    <label class="form-label-enhanced">
-                      <div class="label-content">
-                        <span class="label-text">Date de Péremption</span>
-                        <span class="label-required">*</span>
-                      </div>
-                    </label>
-                    <div class="input-wrapper">
-                      <input
-                        v-model="singleMovement.datePeremption"
-                        type="date"
-                        required
-                        class="form-input-enhanced"
-                      />
-                    </div>
-                  </div>
-                </div>
+    <!-- Sortie View -->
+    <div v-if="currentView === 'sortie'" class="action-view">
+      <div class="view-header">
+        <button @click="setView('selection')" class="back-btn">
+          <ArrowLeftIcon class="w-5 h-5" />
+          Retour
+        </button>
+        <div class="view-title">
+          <div class="title-icon sortie">
+            <ArrowUpIcon class="icon" />
+          </div>
+          <div class="title-content">
+            <h2>Sortie de Stock</h2>
+            <p>Enregistrement de ventes ou consommations</p>
+          </div>
+        </div>
+      </div>
 
-                <!-- AJUSTEMENT specific fields -->
-                <div
-                  v-if="singleMovement.typeMouvement === 'AJUSTEMENT'"
-                  class="adjustment-section"
-                >
-                  <div class="form-group-enhanced">
-                    <label class="form-label-enhanced">
-                      <div class="label-content">
-                        <span class="label-text">Type d'Ajustement</span>
-                        <span class="label-required">*</span>
-                      </div>
-                    </label>
-                    <div class="adjustment-type-selector">
-                      <div
-                        class="adjustment-option"
-                        :class="{ active: singleMovement.typeAjustement === 'POSITIF' }"
-                        @click="singleMovement.typeAjustement = 'POSITIF'"
-                      >
-                        <div class="adjustment-icon positive">+</div>
-                        <span>Positif</span>
-                      </div>
-                      <div
-                        class="adjustment-option"
-                        :class="{ active: singleMovement.typeAjustement === 'NEGATIF' }"
-                        @click="singleMovement.typeAjustement = 'NEGATIF'"
-                      >
-                        <div class="adjustment-icon negative">-</div>
-                        <span>Négatif</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-group-enhanced full-width">
-                    <label class="form-label-enhanced">
-                      <div class="label-content">
-                        <span class="label-text">Raison de l'Ajustement</span>
-                        <span class="label-required">*</span>
-                      </div>
-                    </label>
-                    <div class="textarea-wrapper">
-                      <textarea
-                        v-model="singleMovement.raison"
-                        required
-                        class="form-textarea-enhanced"
-                        placeholder="Expliquez la raison de cet ajustement..."
-                        rows="4"
-                      ></textarea>
-                    </div>
-                  </div>
-                </div>
+      <div class="view-content">
+        <form @submit.prevent="submitSortie" class="elegant-form">
+          <div class="form-section">
+            <h4 class="section-title">Détails de la Sortie</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Boisson</label>
+                <select v-model="singleMovement.boissonId" class="form-input">
+                  <option value="">Sélectionner une boisson</option>
+                  <option v-for="beverage in boissons" :key="beverage.id" :value="beverage.id">
+                    {{ beverage.nom }} - Stock disponible: {{ getAvailableStock(beverage.id) }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Quantité</label>
+                <input
+                  v-model.number="singleMovement.quantite"
+                  type="number"
+                  min="1"
+                  class="form-input"
+                  placeholder="Quantité à sortir"
+                />
               </div>
             </div>
           </div>
 
-          <div class="form-actions-enhanced">
-            <button type="button" class="btn btn-secondary-enhanced" @click="resetSingleForm">
-              <XMarkIcon class="w-4 h-4" />
-              Annuler
+          <div class="form-actions">
+            <button type="button" @click="resetSortieForm" class="btn btn-secondary">
+              Réinitialiser
             </button>
-            <button type="submit" class="btn btn-primary-enhanced" :disabled="isSubmitting">
-              <div v-if="isSubmitting" class="loading-spinner"></div>
-              <span v-if="!isSubmitting">Enregistrer le Mouvement</span>
+            <button type="submit" :disabled="isSubmitting || isSortieProcessing" class="btn btn-danger">
+              <span v-if="!isSubmitting && !isSortieProcessing">Enregistrer la Sortie</span>
+              <span v-else>Traitement...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Ajustement View -->
+    <div v-if="currentView === 'ajustement'" class="action-view">
+      <div class="view-header">
+        <button @click="setView('selection')" class="back-btn">
+          <ArrowLeftIcon class="w-5 h-5" />
+          Retour
+        </button>
+        <div class="view-title">
+          <div class="title-icon ajustement">
+            <PencilIcon class="icon" />
+          </div>
+          <div class="title-content">
+            <h2>Ajustement de Stock</h2>
+            <p>Correction des quantités en inventaire</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-content">
+        <form @submit.prevent="submitAjustement" class="elegant-form">
+          <div class="form-section">
+            <h4 class="section-title">Sélection du Lot</h4>
+            <div class="form-group">
+              <label class="form-label">Lot à ajuster</label>
+              <select v-model="singleMovement.lotId" class="form-input">
+                <option value="">Sélectionner un lot</option>
+                <option v-for="lot in lots" :key="lot.id" :value="lot.id">
+                  {{ lot.numeroLot }} - {{ lot.boisson.nom }} ({{ lot.quantiteActuelle }} disponible)
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4 class="section-title">Type d'Ajustement</h4>
+            <div class="adjustment-types">
+              <div
+                class="adjustment-type"
+                :class="{ active: singleMovement.typeAjustement === 'POSITIF' }"
+                @click="singleMovement.typeAjustement = 'POSITIF'"
+              >
+                <div class="adjustment-icon positive">+</div>
+                <div class="adjustment-content">
+                  <h5>Ajustement Positif</h5>
+                  <p>Augmenter la quantité</p>
+                </div>
+              </div>
+              <div
+                class="adjustment-type"
+                :class="{ active: singleMovement.typeAjustement === 'NEGATIF' }"
+                @click="singleMovement.typeAjustement = 'NEGATIF'"
+              >
+                <div class="adjustment-icon negative">-</div>
+                <div class="adjustment-content">
+                  <h5>Ajustement Négatif</h5>
+                  <p>Diminuer la quantité</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4 class="section-title">Détails de l'Ajustement</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Quantité</label>
+                <input
+                  v-model.number="singleMovement.quantite"
+                  type="number"
+                  min="1"
+                  class="form-input"
+                  placeholder="Quantité à ajuster"
+                />
+              </div>
+              <div class="form-group full-width">
+                <label class="form-label">Raison de l'ajustement</label>
+                <textarea
+                  v-model="singleMovement.raison"
+                  class="form-textarea"
+                  rows="4"
+                  placeholder="Expliquez la raison de cet ajustement..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" @click="resetAjustementForm" class="btn btn-secondary">
+              Réinitialiser
+            </button>
+            <button type="submit" :disabled="isSubmitting" class="btn btn-warning">
+              <span v-if="!isSubmitting">Enregistrer l'Ajustement</span>
               <span v-else>Enregistrement...</span>
             </button>
           </div>
@@ -349,289 +432,197 @@
       </div>
     </div>
 
-    <!-- CSV Import -->
-    <div v-if="activeTab === 'csv'" class="form-section">
-      <div class="csv-upload">
-        <h3>Importer des Entrées par CSV</h3>
-        <p class="csv-description">
-          Importez plusieurs entrées de stock en une seule fois. Le CSV doit contenir les colonnes :
-          <strong>Nom Boisson, Numéro Lot, Quantité, Date Péremption</strong>
-        </p>
+    <!-- Historique View -->
+    <div v-if="currentView === 'historique'" class="action-view">
+      <div class="view-header">
+        <button @click="setView('selection')" class="back-btn">
+          <ArrowLeftIcon class="w-5 h-5" />
+          Retour
+        </button>
+        <div class="view-title">
+          <div class="title-icon historique">
+            <ClockIcon class="icon" />
+          </div>
+          <div class="title-content">
+            <h2>Historique des Mouvements</h2>
+            <p>Consultation et analyse des opérations</p>
+          </div>
+        </div>
+      </div>
 
-        <div class="upload-area" @click="triggerCsvUpload" @drop="handleCsvDrop" @dragover.prevent>
-          <div class="upload-content">
-            <ArrowUpOnSquareIcon class="upload-icon" />
-            <p>Cliquez pour sélectionner un fichier CSV ou glissez-déposez ici</p>
-            <input
-              ref="csvFileInput"
-              type="file"
-              accept=".csv"
-              @change="handleCsvUpload"
-              style="display: none"
-            />
+      <div class="view-content">
+        <!-- Filters -->
+        <div class="filters-container">
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label class="filter-label">Type</label>
+              <select v-model="historyFilter.type" class="filter-input">
+                <option value="">Tous les types</option>
+                <option value="ENTREE">Entrées</option>
+                <option value="SORTIE">Sorties</option>
+                <option value="AJUSTEMENT">Ajustements</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Boisson</label>
+              <select v-model="historyFilter.beverage" class="filter-input">
+                <option value="">Toutes les boissons</option>
+                <option v-for="beverage in boissons" :key="beverage.id" :value="beverage.id">
+                  {{ beverage.nom }}
+                </option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Du</label>
+              <input v-model="historyFilter.dateFrom" type="date" class="filter-input" />
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Au</label>
+              <input v-model="historyFilter.dateTo" type="date" class="filter-input" />
+            </div>
+            <div class="filter-actions">
+              <button @click="clearHistoryFilters" class="btn btn-outline">Effacer</button>
+              <button @click="loadLigneOperations" class="btn btn-primary">Filtrer</button>
+            </div>
           </div>
         </div>
 
-        <div class="upload-help">
-          <p><strong>Format accepté:</strong> .csv</p>
-          <p><strong>Exemple de format:</strong></p>
-          <code
-            >Nom Boisson,Numéro Lot,Quantité,Date Péremption<br />
-            Coca Cola,LOT-001,100,2024-12-31<br />
-            Pepsi,LOT-002,50,2024-11-30</code
-          >
-        </div>
+        <!-- Results Table -->
+        <div class="table-container">
+          <div class="table-header">
+            <h4>Résultats ({{ paginatedLigneOperations.total }} mouvements)</h4>
+            <button class="btn btn-outline">
+              <DocumentArrowDownIcon class="w-4 h-4" />
+              Exporter
+            </button>
+          </div>
 
-        <div v-if="csvData.length > 0" class="csv-preview">
-          <h4>Aperçu des Données CSV ({{ csvData.length }} entrées détectées)</h4>
-          <div class="csv-table">
-            <table>
+          <div class="table-wrapper">
+            <table class="data-table">
               <thead>
                 <tr>
-                  <th>Nom Boisson</th>
-                  <th>Numéro de Lot</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Boisson</th>
+                  <th>Lot</th>
                   <th>Quantité</th>
-                  <th>Date de Péremption</th>
+                  <th>Utilisateur</th>
                   <th>Statut</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(row, index) in csvData" :key="index">
-                  <td>{{ row.beverageName }}</td>
-                  <td>{{ row.lotNumber }}</td>
-                  <td>{{ row.quantity }}</td>
-                  <td>{{ row.expiryDate }}</td>
+                <tr v-for="operation in paginatedLigneOperations.data" :key="operation.id">
+                  <td>{{ formatDate(operation.mouvement?.dateMouvement) }}</td>
                   <td>
-                    <span
-                      :class="validateCsvRow(row) ? 'text-green-600' : 'text-red-600'"
-                      class="text-sm font-medium"
-                    >
-                      {{ validateCsvRow(row) ? '✓ Valide' : '✗ Invalide' }}
+                    <span class="movement-badge" :class="operation.mouvement?.type?.toLowerCase()">
+                      {{ getMovementTypeLabel(operation.mouvement?.type || '') }}
                     </span>
+                  </td>
+                  <td>{{ operation.lot?.boisson?.nom || '-' }}</td>
+                  <td>{{ operation.lot?.numeroLot || '-' }}</td>
+                  <td class="quantity-cell">{{ operation.quantite }}</td>
+                  <td>{{ operation.mouvement?.utilisateur.email }}</td>
+                  <td>
+                    <span class="status-badge success">CONFIRMÉ</span>
+                  </td>
+                </tr>
+                <tr v-if="paginatedLigneOperations.data.length === 0">
+                  <td colspan="7" class="empty-state">
+                    <div class="empty-content">
+                      <ClockIcon class="empty-icon" />
+                      <p>Aucun mouvement trouvé</p>
+                      <span>Essayez de modifier vos filtres</span>
+                    </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="csv-actions">
-            <button @click="clearCsvData" class="btn btn-secondary">
-              <XMarkIcon class="w-4 h-4" />
-              Effacer
-            </button>
-            <button
-              @click="processCsvImport"
-              :disabled="!hasValidCsvRows || isProcessing"
-              class="btn btn-primary"
-            >
-              <ArrowDownIcon class="w-4 h-4" />
-              {{ isProcessing ? 'Traitement...' : 'Importer les Entrées' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Movement History -->
-    <div v-if="activeTab === 'history'" class="history-section">
-      <div class="history-header">
-        <h3>Historique des Mouvements</h3>
-        <div class="history-filters">
-          <select v-model="historyFilter.type" class="filter-select">
-            <option value="">Tous les types</option>
-            <option value="ENTREE">Entrées</option>
-            <option value="SORTIE">Sorties</option>
-            <option value="AJUSTEMENT">Ajustements</option>
-          </select>
-          <select v-model="historyFilter.beverage" class="filter-select">
-            <option value="">Toutes les boissons</option>
-            <option v-for="beverage in boissons" :key="beverage.id" :value="beverage.id">
-              {{ beverage.nom }}
-            </option>
-          </select>
-          <input
-            v-model="historyFilter.dateFrom"
-            type="date"
-            class="filter-select"
-            placeholder="Date de début"
-          />
-          <input
-            v-model="historyFilter.dateTo"
-            type="date"
-            class="filter-select"
-            placeholder="Date de fin"
-          />
-          <div class="filter-actions">
-            <button @click="clearHistoryFilters" class="filter-btn secondary">Effacer</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table class="movements-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Boisson</th>
-              <th>Lot</th>
-              <th>Quantité</th>
-              <th>Utilisateur</th>
-              <th>Statut</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="operation in paginatedLigneOperations.data" :key="operation.id">
-              <td>{{ formatDate(operation.mouvement?.dateMouvement) }}</td>
-              <td>
-                <span class="movement-badge" :class="operation.mouvement?.type?.toLowerCase()">
-                  <ArrowDownIcon
-                    v-if="operation.mouvement?.type === 'ENTREE'"
-                    class="w-3 h-3 inline mr-1"
-                  />
-                  <ArrowUpIcon
-                    v-if="operation.mouvement?.type === 'SORTIE'"
-                    class="w-3 h-3 inline mr-1"
-                  />
-                  <PencilIcon
-                    v-if="operation.mouvement?.type === 'AJUSTEMENT'"
-                    class="w-3 h-3 inline mr-1"
-                  />
-                  {{ getMovementTypeLabel(operation.mouvement?.type || '') }}
-                </span>
-              </td>
-              <td>{{ operation.lot?.boisson?.nom || '-' }}</td>
-              <td>{{ operation.lot?.numeroLot || '-' }}</td>
-              <td>{{ operation.quantite }}</td>
-              <td>{{ operation.mouvement?.utilisateur.email }}</td>
-              <td>
-                <span class="status-badge" :class="getStatusClass('CONFIRME')"> CONFIRMÉ </span>
-              </td>
-            </tr>
-            <tr v-if="paginatedLigneOperations.data.length === 0">
-              <td colspan="7" class="text-center text-gray-500 py-8">
-                Aucune ligne d'opération trouvée
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Pagination Controls -->
-        <div class="pagination-container" v-if="paginatedLigneOperations.total > 0">
-          <div class="pagination-info">
-            Affichage de
-            {{ (paginatedLigneOperations.page - 1) * paginatedLigneOperations.size + 1 }} ����������
-            {{
-              Math.min(
-                paginatedLigneOperations.page * paginatedLigneOperations.size,
-                paginatedLigneOperations.total
-              )
-            }}
-            sur {{ paginatedLigneOperations.total }} éléments
-          </div>
-
-          <div class="pagination-controls">
-            <button
-              @click="changePage(1)"
-              :disabled="paginatedLigneOperations.page === 1"
-              class="pagination-btn"
-            >
-              Première
-            </button>
-
-            <button
-              @click="changePage(paginatedLigneOperations.page - 1)"
-              :disabled="paginatedLigneOperations.page === 1"
-              class="pagination-btn"
-            >
-              Précédente
-            </button>
-
-            <div class="pagination-pages">
+          <!-- Pagination -->
+          <div class="pagination" v-if="paginatedLigneOperations.total > 0">
+            <div class="pagination-info">
+              Affichage de {{ (paginatedLigneOperations.page - 1) * paginatedLigneOperations.size + 1 }} à
+              {{ Math.min(paginatedLigneOperations.page * paginatedLigneOperations.size, paginatedLigneOperations.total) }}
+              sur {{ paginatedLigneOperations.total }} éléments
+            </div>
+            <div class="pagination-controls">
               <button
-                v-for="pageNum in visiblePages"
-                :key="pageNum"
-                @click="changePage(pageNum)"
-                :class="{ active: pageNum === paginatedLigneOperations.page }"
-                class="pagination-btn page-btn"
+                @click="changePage(paginatedLigneOperations.page - 1)"
+                :disabled="paginatedLigneOperations.page === 1"
+                class="pagination-btn"
               >
-                {{ pageNum }}
+                Précédent
+              </button>
+              <div class="pagination-numbers">
+                <button
+                  v-for="pageNum in visiblePages"
+                  :key="pageNum"
+                  @click="changePage(pageNum)"
+                  :class="{ active: pageNum === paginatedLigneOperations.page }"
+                  class="pagination-btn"
+                >
+                  {{ pageNum }}
+                </button>
+              </div>
+              <button
+                @click="changePage(paginatedLigneOperations.page + 1)"
+                :disabled="paginatedLigneOperations.page === totalPages"
+                class="pagination-btn"
+              >
+                Suivant
               </button>
             </div>
-
-            <button
-              @click="changePage(paginatedLigneOperations.page + 1)"
-              :disabled="paginatedLigneOperations.page === totalPages"
-              class="pagination-btn"
-            >
-              Suivante
-            </button>
-
-            <button
-              @click="changePage(totalPages)"
-              :disabled="paginatedLigneOperations.page === totalPages"
-              class="pagination-btn"
-            >
-              Dernière
-            </button>
-          </div>
-
-          <div class="pagination-size">
-            <label>Éléments par page:</label>
-            <select v-model="pageSize" @change="changePageSize" class="pagination-size-select">
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Success/Error Messages -->
-    <div v-if="message" class="message" :class="messageType">
+    <!-- Loading Animations -->
+    <SortieLoadingAnimation v-if="isSortieProcessing" />
+    <ProcessingAnimation v-if="isSubmitting && !isSortieProcessing" />
+
+    <!-- Toast Messages -->
+    <div v-if="message" class="toast" :class="messageType">
       {{ message }}
     </div>
-
-    <!-- Sortie Loading Animation -->
-    <SortieLoadingAnimation v-if="isSortieProcessing" />
-    <!-- Processing Animation - only show when NOT processing a sortie -->
-    <ProcessingAnimation v-if="isSubmitting && !isSortieProcessing" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {
   ArrowDownIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
   ArrowUpIcon,
-  PencilIcon,
-  XMarkIcon,
-  PlusIcon,
-  ArrowUpOnSquareIcon,
   ClockIcon,
+  DocumentArrowDownIcon,
+  DocumentArrowUpIcon,
+  PencilIcon,
+  PlusIcon,
 } from '@heroicons/vue/24/outline'
-import { showToast } from './../utils/toast'
+import {showToast} from './../utils/toast'
 
-// Import services and types
-import { InventaireService } from '../api/features/inventaire/services/inventaireService'
-import { BoissonService } from '../api/features/boisson/services/boissonService'
-import { UtilisateurService } from '../api/features/utilisateurs/services/utilisateurService'
+import {InventaireService} from '../api/features/inventaire/services/inventaireService'
+import {BoissonService} from '../api/features/boisson/services/boissonService'
+import {UtilisateurService} from '../api/features/utilisateurs/services/utilisateurService'
 
-// Import components
 import SortieLoadingAnimation from '../components/common/SortieLoadingAnimation.vue'
 import ProcessingAnimation from '../components/common/ProcessingAnimation.vue'
 
-import type { Boisson } from '../api/features/boisson/models/boisson'
-import type { Lot } from '../api/features/inventaire/models/lotModel'
-import type { Mouvement } from '../api/features/inventaire/models/movementModel'
-import type { LigneOperation } from '../api/features/inventaire/models/ligneOperation'
-import type { Utilisateur } from '../api/features/utilisateurs/models/utilisateurModel'
+import type {Boisson} from '../api/features/boisson/models/boisson'
+import type {Lot} from '../api/features/inventaire/models/lotModel'
+import type {Mouvement} from '../api/features/inventaire/models/movementModel'
+import type {LigneOperation} from '../api/features/inventaire/models/ligneOperation'
+import type {Utilisateur} from '../api/features/utilisateurs/models/utilisateurModel'
 
-import type { CreateMouvementAjustementRequest } from '../api/features/inventaire/requests/createMouvementAjustementRequest'
-import type { CreateMouvementSortieRequest } from '../api/features/inventaire/requests/createMouvementSortieRequest'
-import type { CreateLotRequest } from '../api/features/inventaire/requests/createLotRequest'
-import type { CreateLotBatchRequest } from '../api/features/inventaire/requests/createLotBatchRequest'
+import type {
+  CreateMouvementAjustementRequest
+} from '../api/features/inventaire/requests/createMouvementAjustementRequest'
+import type {CreateMouvementSortieRequest} from '../api/features/inventaire/requests/createMouvementSortieRequest'
+import type {CreateLotRequest} from '../api/features/inventaire/requests/createLotRequest'
+import type {CreateLotBatchRequest} from '../api/features/inventaire/requests/createLotBatchRequest'
 
 type MovementType = 'ENTREE' | 'SORTIE' | 'AJUSTEMENT'
 type AjustementType = 'POSITIF' | 'NEGATIF'
@@ -711,7 +702,6 @@ const loadData = async () => {
     lots.value = lotsData
     utilisateurs.value = usersData
 
-    // Load paginated ligne operations for history tab
     await loadLigneOperations()
 
     const currentUserId = getCurrentUserId()
@@ -724,21 +714,26 @@ const loadData = async () => {
   }
 }
 
-// New function to load paginated ligne operations
 const loadLigneOperations = async () => {
   try {
-    const response = await InventaireService.getAllLigneOperationsPaginated(
-      currentPage.value,
-      pageSize.value
+    paginatedLigneOperations.value = await InventaireService.getAllLigneOperationsPaginated(
+        currentPage.value,
+        pageSize.value
     )
-    paginatedLigneOperations.value = response
   } catch (error) {
     console.error('Error loading ligne operations:', error)
     showMessage("Erreur lors du chargement de l'historique", 'error')
   }
 }
 
-// Computed properties for pagination
+const totalMovements = computed(() => paginatedLigneOperations.value.total)
+const todayMovements = computed(() => {
+  const today = new Date().toDateString()
+  return paginatedLigneOperations.value.data.filter(op =>
+    new Date(op.mouvement?.dateMouvement || '').toDateString() === today
+  ).length
+})
+
 const totalPages = computed(() => {
   return Math.ceil(paginatedLigneOperations.value.total / paginatedLigneOperations.value.size)
 })
@@ -763,26 +758,69 @@ const visiblePages = computed(() => {
   return Array.from({ length: end - start + 1 }, (_, i) => start + i)
 })
 
-// Pagination functions
-const changePage = async (page: number) => {
-  if (page < 1 || page > totalPages.value) return
-
-  currentPage.value = page
-  await loadLigneOperations()
+// Navigation methods
+const setView = (view: typeof currentView.value) => {
+  currentView.value = view
+  if (view === 'historique') {
+    loadLigneOperations()
+  }
 }
 
-const changePageSize = async () => {
-  currentPage.value = 1
-  await loadLigneOperations()
+const resetEntreeForm = () => {
+  singleMovement.value = {
+    typeMouvement: 'ENTREE',
+    boissonId: '',
+    lotId: '',
+    quantite: '',
+    typeAjustement: '',
+    raison: '',
+    numeroLot: '',
+    datePeremption: '',
+    fournisseur: '',
+  }
 }
 
-const getCurrentUserId = (): number => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
-  return user.id || 1
+const resetSortieForm = () => {
+  singleMovement.value = {
+    typeMouvement: 'SORTIE',
+    boissonId: '',
+    lotId: '',
+    quantite: '',
+    typeAjustement: '',
+    raison: '',
+    numeroLot: '',
+    datePeremption: '',
+    fournisseur: '',
+  }
 }
 
-const getCurrentUser = (): Utilisateur | undefined => {
-  return utilisateurs.value.find((u) => u.id === getCurrentUserId())
+const resetAjustementForm = () => {
+  singleMovement.value = {
+    typeMouvement: 'AJUSTEMENT',
+    boissonId: '',
+    lotId: '',
+    quantite: '',
+    typeAjustement: '',
+    raison: '',
+    numeroLot: '',
+    datePeremption: '',
+    fournisseur: '',
+  }
+}
+
+const submitEntree = async () => {
+  singleMovement.value.typeMouvement = 'ENTREE'
+  await submitSingleMovement()
+}
+
+const submitSortie = async () => {
+  singleMovement.value.typeMouvement = 'SORTIE'
+  await submitSingleMovement()
+}
+
+const submitAjustement = async () => {
+  singleMovement.value.typeMouvement = 'AJUSTEMENT'
+  await submitSingleMovement()
 }
 
 const ensureSortieAnimationDuration = async (callback: () => Promise<void>) => {
@@ -807,7 +845,6 @@ const submitSingleMovement = async () => {
 
   isSubmitting.value = true
 
-  // Show sortie animation specifically for sortie operations
   if (singleMovement.value.typeMouvement === 'SORTIE') {
     isSortieProcessing.value = true
 
@@ -852,7 +889,7 @@ const submitSingleMovement = async () => {
             numeroLot: singleMovement.value.numeroLot,
             quantiteInitiale: Number(singleMovement.value.quantite),
             datePeremption: singleMovement.value.datePeremption,
-            fournisseur: singleMovement.value.fournisseur, // Add supplier field
+            fournisseur: singleMovement.value.fournisseur,
             boisson: selectedBoisson,
           },
           utilisateur: { id: currentUser.id },
@@ -862,11 +899,10 @@ const submitSingleMovement = async () => {
         await loadData()
         resetSingleForm()
 
-        // Show success message and toast after processing animation completes
         setTimeout(() => {
           showMessage('Entrée enregistrée avec succès', 'success')
           handleSubmissionSuccess()
-        }, 2000) // 2 second delay to let animation finish
+        }, 2000)
       } else if (singleMovement.value.typeMouvement === 'AJUSTEMENT') {
         const delta =
           singleMovement.value.typeAjustement === 'POSITIF'
@@ -885,11 +921,10 @@ const submitSingleMovement = async () => {
         await loadData()
         resetSingleForm()
 
-        // Show success message and toast after processing animation completes
         setTimeout(() => {
           showMessage('Ajustement enregistré avec succès', 'success')
           handleSubmissionSuccess()
-        }, 2000) // 2 second delay to let animation finish
+        }, 2000)
       }
 
       await loadData()
@@ -960,7 +995,7 @@ const resetSingleForm = () => {
     raison: '',
     numeroLot: '',
     datePeremption: '',
-    fournisseur: '', // Reset supplier field
+    fournisseur: '',
   }
 }
 
@@ -1034,11 +1069,9 @@ const processCsvImport = async () => {
       return
     }
 
-    // Create beverage name map
     const beverageMap = new Map<string, Boisson>()
     boissons.value.forEach((b) => beverageMap.set(b.nom.toLowerCase(), b))
 
-    // Process CSV data - create lots array for batch processing
     const validLots: Lot[] = []
     for (const row of csvData.value) {
       const boisson = beverageMap.get(row.beverageName.toLowerCase())
@@ -1058,7 +1091,6 @@ const processCsvImport = async () => {
       return
     }
 
-    // Create batch request using the CreateLotBatchRequest interface
     const batchRequest: CreateLotBatchRequest = {
       lots: validLots,
       utilisateur: currentUser,
@@ -1073,7 +1105,6 @@ const processCsvImport = async () => {
     console.error('Error processing CSV import:', error)
     showMessage("Erreur lors de l'import CSV", 'error')
   } finally {
-    // Ensure the animation lasts at least 5 seconds
     const elapsedTime = Date.now() - startTime
     const remainingTime = Math.max(0, 5000 - elapsedTime)
 
@@ -1172,6 +1203,37 @@ const getStatusClass = (status: string | undefined): string => {
   }
 }
 
+const currentView = ref<'selection' | 'entree' | 'sortie' | 'ajustement' | 'historique'>('selection')
+const entreeMethod = ref<'single' | 'csv'>('single')
+
+const changePage = async (page: number) => {
+  if (page < 1 || page > totalPages.value) return
+
+  currentPage.value = page
+  await loadLigneOperations()
+}
+
+const changePageSize = async () => {
+  currentPage.value = 1
+  await loadLigneOperations()
+}
+
+const getCurrentUserId = (): number => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  return user.id || 1
+}
+
+const getCurrentUser = (): Utilisateur | undefined => {
+  return utilisateurs.value.find((u) => u.id === getCurrentUserId())
+}
+
+// Helper method to get available stock
+const getAvailableStock = (boissonId: number | string): number => {
+  return lots.value
+    .filter(lot => lot.boisson.id === Number(boissonId))
+    .reduce((total, lot) => total + (lot.quantiteActuelle || 0), 0)
+}
+
 onMounted(() => {
   loadData()
 })
@@ -1179,900 +1241,904 @@ onMounted(() => {
 
 <style scoped>
 .movements-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 2rem;
 }
 
+/* Page Header */
 .page-header {
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  box-shadow: var(--shadow-sm);
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-4);
-}
-
-.header-text {
-  flex: 1;
+  align-items: center;
 }
 
 .page-title {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-2);
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
 }
 
 .page-subtitle {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
+  color: #64748b;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
-.header-actions {
+.quick-stats {
   display: flex;
-  gap: var(--space-3);
+  gap: 2rem;
 }
 
-.add-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-3) var(--space-4);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  border-radius: 16px;
+  min-width: 120px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Action Selection Grid */
+.action-selection {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.action-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
   cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.add-btn.success {
-  background: var(--color-success-500);
-  color: var(--color-text-inverse);
-}
-
-.add-btn.success:hover {
-  background: var(--color-success-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.add-btn.error {
-  background: var(--color-error-500);
-  color: var(--color-text-inverse);
-}
-
-.add-btn.error:hover {
-  background: var(--color-error-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.add-btn.warning {
-  background: var(--color-warning-500);
-  color: var(--color-text-inverse);
-}
-
-.add-btn.warning:hover {
-  background: var(--color-warning-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.filters-section {
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-sm);
-}
-
-.filters-container {
-  display: flex;
-  gap: var(--space-4);
-}
-
-.filter-select {
-  flex: 1;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-fast);
-}
-
-.filter-select:focus {
-  outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
-}
-
-.filter-actions {
-  display: flex;
-  gap: var(--space-3);
-}
-
-.filter-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-3) var(--space-4);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.filter-btn.primary {
-  background: var(--color-primary-500);
-  color: var(--color-text-inverse);
-}
-
-.filter-btn.primary:hover {
-  background: var(--color-primary-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.filter-btn.secondary {
-  background: var(--color-bg-secondary);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border-light);
-}
-
-.filter-btn.secondary:hover {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border-color: var(--color-border-medium);
-}
-
-.tabs-section {
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  margin-top: var(--space-4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.tabs-container {
-  display: flex;
-  border-bottom: 1px solid var(--color-border-light);
+.action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  transition: all 0.3s ease;
 }
 
-.tab-button {
-  flex: 1;
-  padding: var(--space-4);
-  border: none;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  border-bottom: 3px solid transparent;
+.action-card.entree::before { background: linear-gradient(90deg, #10b981, #34d399); }
+.action-card.sortie::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+.action-card.ajustement::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.action-card.historique::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+
+.action-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
-.tab-button:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-text-primary);
-}
-
-.tab-button.active {
-  background: var(--color-bg-secondary);
-  color: var(--color-primary-600);
-  border-bottom-color: var(--color-primary-500);
-}
-
-.tab-content {
+.action-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
 }
 
-.tab-icon {
-  height: 1.25rem;
-  width: 1.25rem;
+.action-card.entree .action-icon { background: linear-gradient(135deg, #10b981, #34d399); }
+.action-card.sortie .action-icon { background: linear-gradient(135deg, #ef4444, #f87171); }
+.action-card.ajustement .action-icon { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.action-card.historique .action-icon { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+.action-icon .icon {
+  width: 32px;
+  height: 32px;
+  color: white;
+}
+
+.action-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.action-description {
+  color: #64748b;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.action-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.feature {
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.action-arrow {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.action-card:hover .action-arrow {
+  opacity: 1;
+  transform: translateX(8px);
+}
+
+.arrow-icon {
+  width: 24px;
+  height: 24px;
+  color: #64748b;
+}
+
+/* Action Views */
+.action-view {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.view-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.view-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.title-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-icon.entree { background: linear-gradient(135deg, #10b981, #34d399); }
+.title-icon.sortie { background: linear-gradient(135deg, #ef4444, #f87171); }
+.title-icon.ajustement { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.title-icon.historique { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+.title-icon .icon {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.title-content h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.title-content p {
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+.view-content {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Entry Methods */
+.entry-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.method-card {
+  padding: 1.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.method-card:hover,
+.method-card.active {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+}
+
+.method-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.method-icon .icon {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.method-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.method-card p {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* Forms */
+.form-container,
+.csv-container {
+  margin-top: 2rem;
+}
+
+.elegant-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .form-section {
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  padding: var(--space-6);
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
 }
 
-.form-container {
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 0.5rem;
 }
 
-.form-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-4);
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
-.form-type-indicator {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.type-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+.form-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.type-badge.entree {
-  background: var(--color-success-100);
-  color: var(--color-success-800);
+.form-input,
+.form-textarea {
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
 }
 
-.type-badge.sortie {
-  background: var(--color-error-100);
-  color: var(--color-error-800);
-}
-
-.type-badge.ajustement {
-  background: var(--color-warning-100);
-  color: var(--color-warning-800);
-}
-
-.movement-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.form-steps {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.form-step {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.step-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.step-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  background: var(--color-primary-500);
-  color: var(--color-text-inverse);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  text-align: center;
-}
-
-.step-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-}
-
-.form-card {
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-light);
-}
-
-.movement-type-selector {
-  display: flex;
-  gap: var(--space-4);
-}
-
-.movement-type-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
-  border: 2px solid transparent;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  flex: 1;
-}
-
-.movement-type-option:hover {
-  border-color: var(--color-primary-300);
-  background: var(--color-primary-50);
-}
-
-.movement-type-option.active {
-  border-color: var(--color-primary-500);
-  background: var(--color-primary-100);
-}
-
-.option-icon {
-  height: 2rem;
-  width: 2rem;
-}
-
-.option-title {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-top: var(--space-2);
-}
-
-.option-description {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  text-align: center;
-}
-
-.form-grid-enhanced {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-4);
-}
-
-.form-group-enhanced {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.form-label-enhanced {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-}
-
-.select-wrapper {
-  position: relative;
-}
-
-.form-select-enhanced {
-  padding: var(--space-3);
-  padding-right: calc(var(--space-3) + 2rem);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-fast);
-  appearance: none;
-}
-
-.form-select-enhanced:focus {
+.form-input:focus,
+.form-textarea:focus {
   outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
-.input-wrapper {
-  position: relative;
-}
-
-.form-input-enhanced {
-  padding: var(--space-3);
-  padding-right: calc(var(--space-3) + 2rem);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-fast);
-}
-
-.form-input-enhanced:focus {
-  outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
-}
-
-.textarea-wrapper {
-  position: relative;
-}
-
-.form-textarea-enhanced {
-  padding: var(--space-3);
+.form-textarea {
   resize: vertical;
-  min-height: 80px;
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-fast);
+  min-height: 100px;
 }
 
-.form-textarea-enhanced:focus {
-  outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+/* Adjustment Types */
+.adjustment-types {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
-.adjustment-type-selector {
-  display: flex;
-  gap: var(--space-4);
-  margin-top: var(--space-2);
-}
-
-.adjustment-option {
+.adjustment-type {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  border: 2px solid transparent;
-  border-radius: var(--radius-lg);
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.3s ease;
 }
 
-.adjustment-option:hover {
-  border-color: var(--color-primary-300);
-  background: var(--color-primary-50);
-}
-
-.adjustment-option.active {
-  border-color: var(--color-primary-500);
-  background: var(--color-primary-100);
+.adjustment-type:hover,
+.adjustment-type.active {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
 }
 
 .adjustment-icon {
-  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  font-size: var(--font-size-base);
-  border-radius: var(--radius-full);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
 }
 
 .adjustment-icon.positive {
-  background: var(--color-success-500);
-  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, #10b981, #34d399);
 }
 
 .adjustment-icon.negative {
-  background: var(--color-error-500);
-  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, #ef4444, #f87171);
 }
 
-.form-actions-enhanced {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-3);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-border-light);
+.adjustment-content h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-decoration: none;
+.adjustment-content p {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0;
 }
 
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.btn-primary {
-  background: var(--color-primary-500);
-  color: var(--color-text-inverse);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--color-primary-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-secondary {
-  background: var(--color-bg-secondary);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border-light);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border-color: var(--color-border-medium);
-}
-
-.btn-success {
-  background: var(--color-success-500);
-  color: var(--color-text-inverse);
-}
-
-.btn-success:hover:not(:disabled) {
-  background: var(--color-success-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-danger {
-  background: var(--color-error-500);
-  color: var(--color-text-inverse);
-}
-
-.btn-danger:hover:not(:disabled) {
-  background: var(--color-error-600);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-outline-warning {
-  background: transparent;
-  color: var(--color-warning-600);
-  border: 1px solid var(--color-warning-500);
-}
-
-.btn-outline-warning:hover:not(:disabled) {
-  background: var(--color-warning-50);
-  color: var(--color-warning-700);
-}
-
-.btn-outline-danger {
-  background: transparent;
-  color: var(--color-error-600);
-  border: 1px solid var(--color-error-500);
-}
-
-.btn-outline-danger:hover:not(:disabled) {
-  background: var(--color-error-50);
-  color: var(--color-error-700);
-}
-
-.btn-outline-primary {
-  background: transparent;
-  color: var(--color-primary-600);
-  border: 1px solid var(--color-primary-500);
-}
-
-.btn-outline-primary:hover:not(:disabled) {
-  background: var(--color-primary-50);
-  color: var(--color-primary-700);
-}
-
-.btn-sm {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-xs);
-}
-
-.quick-actions {
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-border-light);
-}
-
-.quick-actions h4 {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-3);
-}
-
-.quick-buttons {
-  display: flex;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-}
-
-.batch-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.batch-movements {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.batch-movement-item {
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-light);
-}
-
-.movement-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-3);
-}
-
-.movement-number {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary-600);
-}
-
-.movement-form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.csv-upload {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.upload-area {
-  border: 2px dashed var(--color-border-light);
-  border-radius: var(--radius-lg);
-  padding: var(--space-8);
+/* CSV Upload */
+.csv-upload-zone {
+  border: 3px dashed #cbd5e1;
+  border-radius: 20px;
+  padding: 3rem;
   text-align: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  background: var(--color-bg-secondary);
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
 }
 
-.upload-area:hover {
-  border-color: var(--color-primary-300);
-  background: var(--color-primary-25);
+.csv-upload-zone:hover {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
 }
 
 .upload-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
+  gap: 1rem;
 }
 
 .upload-icon {
-  height: 3rem;
-  width: 3rem;
-  color: var(--color-text-secondary);
+  width: 64px;
+  height: 64px;
+  color: #64748b;
 }
 
-.upload-link {
-  color: var(--color-primary-600);
-  text-decoration: underline;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: inherit;
+.upload-content h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
 }
 
-.upload-link:hover {
-  color: var(--color-primary-700);
+.upload-content p {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0;
 }
 
-.upload-help {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
-  margin-top: var(--space-2);
+.upload-info {
+  color: #94a3b8;
+  font-size: 0.875rem;
 }
 
-.csv-preview {
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-light);
+/* CSV Preview */
+.csv-preview-container {
+  margin-top: 2rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
 }
 
-.csv-preview h4 {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-3);
+.csv-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.csv-table table {
+.csv-preview-header h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.csv-table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+.csv-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: var(--space-4);
 }
 
 .csv-table th,
 .csv-table td {
-  padding: var(--space-3);
+  padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .csv-table th {
-  background: var(--color-bg-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
+  background: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.csv-table td {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
+.status-valid {
+  color: #10b981;
+  font-weight: 600;
 }
 
-.preview-note {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
-  font-style: italic;
-  margin-bottom: var(--space-4);
+.status-invalid {
+  color: #ef4444;
+  font-weight: 600;
 }
 
 .csv-actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-3);
 }
 
-.table-section {
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
+/* Filters */
+.filters-container {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
 }
 
-.table-section .filters-section {
-  margin: 0;
-  border-radius: 0;
-  border-bottom: 1px solid var(--color-border-light);
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
 }
 
-.filters {
+.filter-group {
   display: flex;
-  gap: var(--space-3);
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
+.filter-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filter-input {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Data Table */
 .table-container {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table-header h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.table-wrapper {
   overflow-x: auto;
 }
 
-.movements-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.movements-table th,
-.movements-table td {
-  padding: var(--space-4);
+.data-table th,
+.data-table td {
+  padding: 1rem 1.5rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.movements-table th {
-  background: var(--color-bg-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
+.data-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   position: sticky;
   top: 0;
-  z-index: 1;
 }
 
-.movements-table td {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
+.data-table tbody tr:hover {
+  background: #f8fafc;
 }
 
-.movements-table tbody tr:hover {
-  background: var(--color-bg-hover);
+.quantity-cell {
+  font-weight: 600;
+  color: #1e293b;
 }
 
 .movement-badge {
-  display: inline-block;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .movement-badge.entree {
-  background: var(--color-success-100);
-  color: var(--color-success-800);
+  background: #dcfce7;
+  color: #166534;
 }
 
 .movement-badge.sortie {
-  background: var(--color-error-100);
-  color: var(--color-error-800);
+  background: #fecaca;
+  color: #991b1b;
 }
 
 .movement-badge.ajustement {
-  background: var(--color-warning-100);
-  color: var(--color-warning-800);
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .status-badge {
   display: inline-block;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .status-badge.success {
-  background: var(--color-success-100);
-  color: var(--color-success-800);
+  background: #dcfce7;
+  color: #166534;
 }
 
-.status-badge.warning {
-  background: var(--color-warning-100);
-  color: var(--color-warning-800);
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
 }
 
-.status-badge.error {
-  background: var(--color-error-100);
-  color: var(--color-error-800);
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
-.message {
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  color: #94a3b8;
+}
+
+.empty-content p {
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+.empty-content span {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pagination-info {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: white;
+}
+
+.btn-warning:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Toast Messages */
+.toast {
   position: fixed;
-  top: var(--space-4);
-  right: var(--space-4);
-  padding: var(--space-4) var(--space-6);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  box-shadow: var(--shadow-lg);
+  top: 2rem;
+  right: 2rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  animation: slideIn 0.3s ease-out;
+  animation: slideInToast 0.3s ease-out;
 }
 
-.message.success {
-  background: var(--color-success-100);
-  color: var(--color-success-800);
-  border: 1px solid var(--color-success-200);
+.toast.success {
+  background: linear-gradient(135deg, #10b981, #34d399);
 }
 
-.message.error {
-  background: var(--color-error-100);
-  color: var(--color-error-800);
-  border: 1px solid var(--color-error-200);
+.toast.error {
+  background: linear-gradient(135deg, #ef4444, #f87171);
 }
 
-@keyframes slideIn {
+@keyframes slideInToast {
   from {
     transform: translateX(100%);
     opacity: 0;
@@ -2083,157 +2149,71 @@ onMounted(() => {
   }
 }
 
-/* Pagination Styles */
-.pagination-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-4);
-  border-top: 1px solid var(--color-border-light);
-  background: var(--color-bg-secondary);
-}
-
-.pagination-info {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.pagination-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  min-width: 2.5rem;
-  text-align: center;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: var(--color-primary-50);
-  border-color: var(--color-primary-300);
-  color: var(--color-primary-700);
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-tertiary);
-}
-
-.pagination-btn.active {
-  background: var(--color-primary-500);
-  border-color: var(--color-primary-500);
-  color: var(--color-text-inverse);
-}
-
-.pagination-btn.active:hover {
-  background: var(--color-primary-600);
-  border-color: var(--color-primary-600);
-}
-
-.pagination-pages {
-  display: flex;
-  gap: var(--space-1);
-}
-
-.pagination-size {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.pagination-size-select {
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-}
-
-.pagination-size-select:focus {
-  outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px var(--color-primary-100);
-}
-
-.history-section {
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.history-header {
-  padding: var(--space-6);
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.history-header h3 {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-4);
-}
-
-.history-filters {
-  display: flex;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-}
-
-/* Responsive pagination */
+/* Responsive Design */
 @media (max-width: 768px) {
-  .pagination-container {
+  .movements-page {
+    padding: 1rem;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-content {
     flex-direction: column;
-    gap: var(--space-3);
-    align-items: stretch;
-  }
-
-  .pagination-controls {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .pagination-info {
+    gap: 1rem;
     text-align: center;
   }
 
-  .pagination-size {
-    justify-content: center;
+  .quick-stats {
+    flex-direction: row;
+    gap: 1rem;
   }
 
-  .history-filters {
+  .view-header {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .form-grid,
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .entry-methods {
+    grid-template-columns: 1fr;
+  }
+
+  .adjustment-types {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .table-wrapper {
+    font-size: 0.875rem;
   }
 }
 
 @media (max-width: 480px) {
-  .pagination-pages {
-    flex-wrap: wrap;
-    justify-content: center;
+  .page-title {
+    font-size: 2rem;
   }
 
-  .pagination-btn {
-    min-width: 2rem;
-    padding: var(--space-1) var(--space-2);
+  .action-card {
+    padding: 1.5rem;
+  }
+
+  .view-content {
+    padding: 1rem;
+  }
+
+  .form-section {
+    padding: 1rem;
   }
 }
 </style>

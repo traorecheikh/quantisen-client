@@ -18,6 +18,14 @@ export class BoissonService {
     )
   }
 
+  static async toggleBoissonStatus(id:number) : Promise<void> {
+    return await cachedPost<void>(
+      `${this.BASE_PATH}/status/${id}`,
+      {},
+      ['beverages', 'dashboard', 'stocks']
+    )
+  }
+
   static async updateBoisson(
     id: number,
     boissonData: Partial<CreateBoissonRequest>

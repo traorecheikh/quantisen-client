@@ -7,7 +7,7 @@
           <h1 class="page-title">Boissons</h1>
           <p class="page-subtitle">Gérer tous les produits de boisson de votre inventaire</p>
         </div>
-        <div class="header-actions">
+        <div class="header-actions" v-if="isGerant">
           <button class="add-btn primary" @click="openAddModal">
             <PlusIcon class="w-4 h-4" />
             Ajouter Boisson
@@ -27,6 +27,7 @@
               <th>Prix</th>
               <th>Volume</th>
               <th>Seuil de Stock</th>
+              <th>Statut</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -37,7 +38,23 @@
               <td class="price-cell">{{ beverage.prix.toFixed(2) }} FCFA</td>
               <td class="volume-cell">{{ beverage.volume }}{{ beverage.unite }}</td>
               <td class="threshold-cell">{{ beverage.seuil }}</td>
+              <td class="status-cell">
+                <span
+                  class="status-badge"
+                  :class="{ 'active': beverage.isActive, 'inactive': !beverage.isActive }"
+                >
+                  {{ beverage.isActive ? 'Actif' : 'Inactif' }}
+                </span>
+              </td>
               <td class="actions-cell">
+                <button
+                  class="toggle-btn"
+                  @click="toggleStatus(beverage)"
+                  :class="{ 'active': beverage.isActive, 'inactive': !beverage.isActive }"
+                  :title="beverage.isActive ? 'Désactiver' : 'Activer'"
+                >
+                  {{ beverage.isActive ? 'Désactiver' : 'Activer' }}
+                </button>
                 <button class="edit-btn" @click="openEditModal(beverage)" title="Modifier">
                   <PencilIcon class="w-4 h-4" />
                 </button>
@@ -235,10 +252,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { PlusIcon, PencilIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { type Boisson, BoissonService } from '../api'
 import { showToast } from '../utils/toast.ts'
+import { useAuthStore } from '../stores/auth'
+
+const authStore = useAuthStore()
 
 const showAddModal = ref(false)
 const showEditModal = ref(false)
@@ -264,6 +284,9 @@ const editForm = ref({
   seuil: 0,
   isActive: true,
 })
+
+// Check if current user is GERANT
+const isGerant = computed(() => authStore.user?.role === 'GERANT')
 
 const openAddModal = () => {
   addForm.value = {
@@ -313,6 +336,24 @@ const updateBeverage = async () => {
     showToast(`Boisson "${editForm.value.nom}" mise à jour avec succès!`, 'success')
   }
   closeEditModal()
+}
+
+const toggleStatus = async (beverage: Boisson) => {
+  try {
+    await BoissonService.toggleBoissonStatus(beverage.id)
+
+    // Update local state
+    const index = beverages.value.findIndex(b => b.id === beverage.id)
+    if (index !== -1) {
+      beverages.value[index].isActive = !beverages.value[index].isActive
+    }
+
+    const statusText = beverage.isActive ? 'désactivée' : 'activée'
+    showToast(`Boisson "${beverage.nom}" ${statusText} avec succès!`, 'success')
+  } catch (error) {
+    console.error('Error toggling beverage status:', error)
+    showToast('Erreur lors de la modification du statut', 'error')
+  }
 }
 
 async function loadLots() {
@@ -427,7 +468,34 @@ onMounted(loadLots)
 }
 
 .actions-cell {
-  width: 80px;
+  width: 140px;
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.status-cell {
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.inactive {
+  background: #f3f4f6;
+  color: #6b7280;
 }
 
 .edit-btn {
@@ -447,6 +515,35 @@ onMounted(loadLots)
 .edit-btn:hover {
   background: var(--color-primary-50);
   color: var(--color-primary-600);
+}
+
+.toggle-btn {
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-right: var(--space-2);
+}
+
+.toggle-btn.active {
+  background: #ef4444;
+  color: white;
+}
+
+.toggle-btn.active:hover {
+  background: #dc2626;
+}
+
+.toggle-btn.inactive {
+  background: #10b981;
+  color: white;
+}
+
+.toggle-btn.inactive:hover {
+  background: #059669;
 }
 
 /* Modal Styles */
