@@ -13,12 +13,12 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "main" {
-  name     = "quantisen-rg"
+  name     = "quantisen-client-rg"
   location = "East US"
 }
 
 resource "azurerm_service_plan" "main" {
-  name                = "gestionboisson-plan"
+  name                = "quantisen-client-plan"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   os_type             = "Linux"
