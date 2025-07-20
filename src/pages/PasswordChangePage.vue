@@ -275,7 +275,7 @@ const handlePasswordChange = async () => {
 <style scoped>
 .password-change-page {
   min-height: 100vh;
-  display: grid;
+  display: block;
   grid-template-columns: 1fr 1fr;
   background: var(--color-bg-secondary);
 }
@@ -315,7 +315,7 @@ const handlePasswordChange = async () => {
 }
 
 .form-container {
-  max-width: 400px;
+  max-width: 500px;
   width: 100%;
   margin: 0 auto;
 }
