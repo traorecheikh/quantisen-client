@@ -16,7 +16,7 @@
             <path d="M24 16h16v8H24z" fill="var(--color-primary-200)" />
           </svg>
         </div>
-        <h1 class="welcome-title">Bienvenue sur QuantiSen !</h1>
+        <h1 class="welcome-title">Bienvenue dans la team QuantiSen, {{useAuthStore().user?.firstName}} {{useAuthStore().user?.lastName}} !</h1>
         <p class="welcome-subtitle">Changez votre mot de passe pour continuer</p>
       </div>
 
@@ -143,57 +143,6 @@
           <div v-if="errorMessage" class="error-message">
             <ExclamationTriangleIcon class="w-5 h-5" />
             {{ errorMessage }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Onboarding Section -->
-      <div class="onboarding-section">
-        <div class="onboarding-container">
-          <h3 class="onboarding-title">Découvrez QuantiSen</h3>
-          <div class="features-grid">
-            <div class="feature-card">
-              <div class="feature-icon">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-              </div>
-              <h4>Suivi des stocks</h4>
-              <p>Surveillez vos niveaux de stock en temps réel</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h4>Gestion des lots</h4>
-              <p>Gérez les dates d'expiration et la traçabilité</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-              </div>
-              <h4>Analyses avancées</h4>
-              <p>Obtenez des insights sur vos données</p>
-            </div>
           </div>
         </div>
       </div>

@@ -10,6 +10,7 @@ import type {
 } from './../models/utilisateurModel.ts'
 
 export class UtilisateurService {
+
   private static readonly BASE_PATH = '/utilisateurs'
 
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
